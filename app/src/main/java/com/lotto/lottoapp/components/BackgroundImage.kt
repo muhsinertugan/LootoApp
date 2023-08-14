@@ -10,6 +10,7 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.lotto.lottoapp.R
 
 @Composable
@@ -18,8 +19,8 @@ fun BackgroundImage(){
         modifier = Modifier.fillMaxSize()
     ){
         Image(painter = painterResource(id = R.drawable.screen_bg),
-            contentDescription = "Splash Screen",
-            modifier = Modifier.fillMaxSize().blur(10.dp),
+            contentDescription = "background image",
+            modifier = Modifier.fillMaxSize().blur(10.dp).zIndex(-10F),
             contentScale = ContentScale.FillBounds
 
         )
