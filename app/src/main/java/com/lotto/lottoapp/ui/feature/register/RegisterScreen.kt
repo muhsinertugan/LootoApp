@@ -1,4 +1,4 @@
-package com.lotto.lottoapp.screens
+package com.lotto.lottoapp.ui.feature.register
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,16 +15,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.lotto.lottoapp.components.CustomInputField
+import androidx.navigation.NavHostController
+import com.lotto.lottoapp.core.components.CustomDropdownMenu
+import com.lotto.lottoapp.core.components.CustomInputField
 import com.lotto.lottoapp.ui.theme.Typography
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterScreen(){
+fun RegisterScreen(navController: NavHostController,
+                   state: RegisterScreenContract.State,
+
+) {
+
     val horizontalGradient = Brush.horizontalGradient(
         colors = listOf(  Color(204,0,255), Color(128, 1,255) ),
     )
-
 
     Column(
 
@@ -37,8 +42,9 @@ fun RegisterScreen(){
         CustomInputField(fieldName = "Name", placeholderText = "Enter your name")
         CustomInputField(fieldName = "Surname", placeholderText = "Enter your surname")
         CustomInputField(fieldName = "Phone", placeholderText = "Enter your phone number")
-        CustomInputField(fieldName = "City", placeholderText = "Select your city")
+        CustomDropdownMenu(fieldName = "City", placeholderText = "Select your city", state = state)
         CustomInputField(fieldName = "Birthdate", placeholderText = "Select your birthdate")
+
 
         Spacer(modifier = Modifier.height(90.dp))
 

@@ -1,4 +1,4 @@
-package com.lotto.lottoapp.screens
+package com.lotto.lottoapp.ui.feature.login
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,11 +12,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.lotto.lottoapp.components.CustomInputField
+import androidx.navigation.NavHostController
+import com.lotto.lottoapp.core.components.CustomInputField
 import com.lotto.lottoapp.ui.theme.Typography
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(navController: NavHostController) {
 
     val horizontalGradient = Brush.horizontalGradient(
         colors = listOf(  Color(204,0,255),Color(128, 1,255) ),
@@ -37,7 +38,7 @@ fun LoginScreen() {
             text = "Send Code",
             style = Typography.titleMedium.copy(color = Color.White),
             modifier = Modifier
-                .clickable(onClick = {})
+                .clickable(onClick = {navController.navigate("register_screen")})
                 .clip(RoundedCornerShape(8.dp))
                 .background(brush = horizontalGradient)
                 .padding(vertical = 16.dp, horizontal = 30.dp)

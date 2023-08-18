@@ -1,18 +1,19 @@
-package com.lotto.lottoapp
+package com.lotto.lottoapp.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.lotto.lottoapp.app.LottoApp
+import com.lotto.lottoapp.navigation.Index
 import com.lotto.lottoapp.ui.theme.LottoAppTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             LottoAppTheme {
-
-                LottoApp()
+                Index()
             }
         }
     }
