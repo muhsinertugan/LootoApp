@@ -1,8 +1,10 @@
 plugins {
+    id("com.google.devtools.ksp")
     id ("com.android.application")
     id ("org.jetbrains.kotlin.android")
     id ("kotlin-kapt")
     id ("com.google.dagger.hilt.android")
+    id("kotlin-parcelize")
 }
 
 android {
@@ -56,6 +58,12 @@ android {
 }
 
 dependencies {
+
+    val roomVersion = "2.5.2"
+    val hiltVersion = "2.47"
+    val retrofitVersion = "2.9.0"
+    val coroutinesVersion = "1.7.3"
+
     implementation ("androidx.core:core-ktx:1.10.1")
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
     implementation ("androidx.activity:activity-compose:1.7.2")
@@ -71,35 +79,35 @@ dependencies {
     androidTestImplementation ("androidx.compose.ui:ui-test-junit4")
     debugImplementation ("androidx.compose.ui:ui-tooling")
     debugImplementation ("androidx.compose.ui:ui-test-manifest")
+
     // Lifecycle
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
     implementation ("androidx.lifecycle:lifecycle-extensions:2.2.0")
     implementation ("androidx.lifecycle:lifecycle-common-java8:2.6.1")
 
     // Hilt
-    implementation ("com.google.dagger:dagger:2.47")
-    kapt ("com.google.dagger:dagger-compiler:2.47")
-    api ("com.google.dagger:dagger-android:2.47")
-    api ("com.google.dagger:dagger-android-support:2.47")
-    kapt ("com.google.dagger:dagger-android-processor:2.47")
-    implementation ("com.google.dagger:hilt-android:2.47")
-    kapt ("com.google.dagger:hilt-android-compiler:2.47")
-    kapt ("com.google.dagger:hilt-compiler:2.47")
+    implementation ("com.google.dagger:dagger:$hiltVersion")
+    kapt ("com.google.dagger:dagger-compiler:$hiltVersion")
+    api ("com.google.dagger:dagger-android:$hiltVersion")
+    api ("com.google.dagger:dagger-android-support:$hiltVersion")
+    kapt ("com.google.dagger:dagger-android-processor:$hiltVersion")
+    implementation ("com.google.dagger:hilt-android:$hiltVersion")
+    kapt ("com.google.dagger:hilt-android-compiler:$hiltVersion")
+    kapt ("com.google.dagger:hilt-compiler:$hiltVersion")
     implementation ("androidx.hilt:hilt-navigation-compose:1.0.0")
 
     // Retrofit
-    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation ("com.squareup.retrofit2:adapter-rxjava2:2.9.0")
+    implementation ("com.squareup.retrofit2:retrofit:$retrofitVersion")
+    implementation ("com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion")
     implementation( "com.google.code.gson:gson:2.10.1")
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:$retrofitVersion")
     implementation ("com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2")
 
     // Coroutines
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
-    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
+    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
 
-
-
+    implementation ("androidx.navigation:navigation-compose:2.7.3")
 }

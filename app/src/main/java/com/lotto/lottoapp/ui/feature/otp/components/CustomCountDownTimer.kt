@@ -11,35 +11,16 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.delay
 
 @Composable
-fun CustomCountDownTimer(){
+fun CustomCountDownTimer(totalDuration: Float, remainingTime: Float){
 
-    val totalDuration = 180f
-    var remainingTime by remember { mutableFloatStateOf(totalDuration) }
-    var isRunning by remember { mutableStateOf(true) }
 
-    LaunchedEffect(isRunning) {
-        if (isRunning) {
-            while (remainingTime > 0) {
-                delay(1000)
-                remainingTime--
-            }
-            isRunning = false
-        }
-    }
 
     Box(modifier = Modifier
         .width(96.dp)

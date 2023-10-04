@@ -7,56 +7,115 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.lotto.lottoapp.core.components.CustomDatePicker
 import com.lotto.lottoapp.core.components.CustomDropdownMenu
 import com.lotto.lottoapp.core.components.CustomInputField
+import com.lotto.lottoapp.ui.theme.CustomPurple
 import com.lotto.lottoapp.ui.theme.Typography
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterScreen(navController: NavHostController,
-                   state: RegisterScreenContract.State,
+fun RegisterScreen(
 
+    navController: NavHostController,
+    viewModel: RegisterScreenViewModel = hiltViewModel()
 ) {
 
-    val horizontalGradient = Brush.horizontalGradient(
-        colors = listOf(  Color(204,0,255), Color(128, 1,255) ),
-    )
+
+
+    val userRegisterInput by viewModel.userInput.collectAsState()
+    val userRegisterState by viewModel.userState.collectAsState()
+
 
     Column(
-
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .height(700.dp)
             .padding(top = 10.dp)
     ) {
-        CustomInputField(fieldName = "Email", placeholderText = "Enter your email")
-        CustomInputField(fieldName = "Name", placeholderText = "Enter your name")
-        CustomInputField(fieldName = "Surname", placeholderText = "Enter your surname")
-        CustomInputField(fieldName = "Phone", placeholderText = "Enter your phone number")
-        CustomDropdownMenu(fieldName = "City", placeholderText = "Select your city", state = state)
-        CustomInputField(fieldName = "Birthdate", placeholderText = "Select your birthdate")
+
+        CustomInputField(
+            fieldName = "Email",
+            placeholderText = "Enter your email",
+            text = userRegisterInput.email,
+            onFieldValueChange = { newValue ->
+                viewModel.updateField("email", newValue)
+            },
+            isError = false
+        )
+        CustomInputField(
+            fieldName = "Name",
+            placeholderText = "Enter your name",
+            text = userRegisterInput.name,
+            onFieldValueChange = { newValue ->
+                viewModel.updateField("name", newValue)
+            },
+            isError = false
+        )
+        CustomInputField(
+            fieldName = "Surname",
+            placeholderText = "Enter your surname",
+            text = userRegisterInput.lastName,
+            onFieldValueChange = { newValue ->
+                viewModel.updateField("lastName", newValue)
+            },
+            isError = false
+        )
+        CustomInputField(
+            fieldName = "Phone",
+            placeholderText = "Enter your phone",
+            text = userRegisterInput.phoneNumber,
+            onFieldValueChange = { newValue ->
+                viewModel.updateField("phoneNumber", newValue)
+            },
+            isError = false
+        )
+        CustomDropdownMenu(
+            fieldName = "City", state = viewModel.cityState,
+            onFieldValueChange = { newValue ->
+                viewModel.updateField("cityId", newValue)
+            }
+        )
+        CustomDatePicker(
+            fieldName = "Date",
+            placeholderText = "Enter your birthday",
+            text = userRegisterInput.birthDate
+        ) { newValue: Long ->
+            viewModel.updateField("birthDate", newValue)
+        }
 
 
-        Spacer(modifier = Modifier.height(90.dp))
+        Spacer(modifier = Modifier.height(60.dp))
 
         Text(
             text = "Submit",
             style = Typography.titleMedium.copy(color = Color.White),
             modifier = Modifier
-                .clickable(onClick = {})
+                .clickable {
+                    CoroutineScope(Dispatchers.Default).launch {
+                        viewModel.onClick(navController= navController)
+                    }
+                    if (userRegisterState.value.success){
+                        navController.navigate("otp_screen")
+
+                    }
+                }
                 .clip(RoundedCornerShape(8.dp))
-                .background(brush = horizontalGradient)
+                .background(color = CustomPurple)
                 .padding(vertical = 16.dp, horizontal = 136.dp)
         )
     }
 }
-

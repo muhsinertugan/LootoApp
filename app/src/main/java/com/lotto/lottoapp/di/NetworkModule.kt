@@ -24,7 +24,7 @@ object CitiesAPIProvider {
         return Retrofit.Builder()
             .client(httpClient.build())
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("https://semiz.fun/api/v1/")
+            .baseUrl("https://sea-turtle-app-qpyzd.ondigitalocean.app/api/v1/")
             .build()
     }
 

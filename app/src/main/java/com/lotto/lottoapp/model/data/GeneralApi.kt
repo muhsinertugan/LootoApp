@@ -1,6 +1,6 @@
 package com.lotto.lottoapp.model.data
 
-import com.lotto.lottoapp.model.response.CityResponseList
+import com.lotto.lottoapp.model.response.general.CityResponseList
 import javax.inject.Inject
 import javax.inject.Singleton
 

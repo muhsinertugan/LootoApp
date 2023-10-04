@@ -1,4 +1,4 @@
-package com.lotto.lottoapp.model.response
+package com.lotto.lottoapp.model.response.general
 
 
 data class CityResponseItem(
