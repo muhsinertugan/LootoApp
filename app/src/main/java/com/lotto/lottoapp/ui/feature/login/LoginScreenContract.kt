@@ -26,6 +26,25 @@ class LoginScreenContract {
 
     }
 
+    data class ErrorState(
+        val code: String,
+        val message: String,
+        val success: Boolean
+    ): StateFlow<ErrorState> {
+
+        private val _state = MutableStateFlow(this)
+        override val replayCache : List<ErrorState>
+            get() = _state.replayCache
+
+        override suspend fun collect(collector: FlowCollector<ErrorState>): Nothing {
+            _state.collect(collector)
+        }
+
+        override val value: ErrorState
+            get() = _state.value
+
+    }
+
     sealed class Effect {
         object DataFetched : Effect()
     }

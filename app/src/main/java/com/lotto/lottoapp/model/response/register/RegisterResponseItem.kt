@@ -5,7 +5,9 @@ package com.lotto.lottoapp.model.response.register
      val `data`: RegisterData,
      val message: String,
      val success: Boolean
- )
+ ){
+     var code = ""
+ }
 
  data class RegisterData(
      val createdAt: String,

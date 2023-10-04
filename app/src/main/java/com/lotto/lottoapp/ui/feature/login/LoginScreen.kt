@@ -30,6 +30,7 @@ fun LoginScreen(
 
     val userLoginInput by viewModel.userInput.collectAsState()
     val userLoginState by viewModel.userState.collectAsState()
+    val errorState by viewModel.errorState.collectAsState()
 
     Column(
 
@@ -55,7 +56,7 @@ fun LoginScreen(
             modifier = Modifier
                 .clickable {
 
-                        viewModel.onClick(navController= navController)
+                    viewModel.onClick(navController = navController)
 
                 }
                 .clip(RoundedCornerShape(8.dp))

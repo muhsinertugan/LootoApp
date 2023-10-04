@@ -31,6 +31,23 @@ class RegisterScreenViewModel @Inject constructor(
         // viewModelScope.launch { getCities() }
     }
 
+    private var _errorState = MutableStateFlow(
+        RegisterScreenContract.ErrorState(
+            code = "",
+            message = "",
+            success = false,
+        )
+    )
+
+    var errorState = _errorState.asStateFlow()
+
+    private fun updateErrorState(newState: RegisterScreenContract.ErrorState) {
+        viewModelScope.launch(Dispatchers.Main) {
+            _errorState.value = newState
+        }
+
+    }
+
     var cityState by mutableStateOf(
         RegisterScreenContract.CityState(
             cities = listOf(), isLoading = true
@@ -118,22 +135,32 @@ class RegisterScreenViewModel @Inject constructor(
                         val registerResponse = response.body()
                         if (registerResponse != null) {
                             //TODO: Handle success false cases for register and login UI and logic both.
-                            val newState = RegisterScreenContract.UserState(
-                                data = registerResponse.data,
-                                message = registerResponse.message,
-                                success = registerResponse.success
-                            )
-                            updateState(newState)
+
                             if (registerResponse.success) {
-                                navController.navigate("otp_screen/${registerRequest.email}/${registerRequest.email}/${registerRequest.email}/${registerRequest.email}/${registerRequest.email}/${registerRequest.email}")
-                            }else{
-                                updateState(
-                                    RegisterScreenContract.UserState(
-                                        message = "Null response body", success = false, data = null
-                                    )
+                                val newState = RegisterScreenContract.UserState(
+                                    data = registerResponse.data,
+                                    message = registerResponse.message,
+                                    success = registerResponse.success
                                 )
+                                updateState(newState)
+                                navController.navigate("otp_screen/${registerRequest.email}/${registerRequest.email}/${registerRequest.email}/${registerRequest.email}/${registerRequest.email}/${registerRequest.email}")
+                            } else {
+                                val newState = RegisterScreenContract.ErrorState(
+                                    code = registerResponse.code,
+                                    message = registerResponse.message,
+                                    success = registerResponse.success
+                                )
+                                updateErrorState(newState)
+                                TODO("Handle Error Cases")
+
                             }
 
+                        } else {
+                            updateState(
+                                RegisterScreenContract.UserState(
+                                    message = "Null response body", success = false, data = null
+                                )
+                            )
                         }
 
                     } else {

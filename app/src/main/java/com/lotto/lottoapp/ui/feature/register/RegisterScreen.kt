@@ -38,8 +38,9 @@ fun RegisterScreen(
 
     val userRegisterInput by viewModel.userInput.collectAsState()
     val userRegisterState by viewModel.userState.collectAsState()
-
-
+    val errorState by viewModel.errorState.collectAsState()
+    
+    
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -106,9 +107,9 @@ fun RegisterScreen(
             modifier = Modifier
                 .clickable {
                     CoroutineScope(Dispatchers.Default).launch {
-                        viewModel.onClick(navController= navController)
+                        viewModel.onClick(navController = navController)
                     }
-                    if (userRegisterState.value.success){
+                    if (userRegisterState.value.success) {
                         navController.navigate("otp_screen")
 
                     }
@@ -117,5 +118,8 @@ fun RegisterScreen(
                 .background(color = CustomPurple)
                 .padding(vertical = 16.dp, horizontal = 136.dp)
         )
+        
+        TODO("implement snackbar for error messages.")
+        
     }
 }

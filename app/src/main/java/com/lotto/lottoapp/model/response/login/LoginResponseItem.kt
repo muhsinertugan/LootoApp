@@ -4,7 +4,9 @@ data class LoginResponseItem(
     val `data`: LoginData,
     val message: String,
     val success: Boolean
-)
+){
+    var code = ""
+}
 
 
 data class LoginData(

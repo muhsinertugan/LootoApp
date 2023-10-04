@@ -18,6 +18,23 @@ import javax.inject.Inject
 class LoginScreenViewModel @Inject constructor(private val loginRegisterService: LoginRegisterApi) :
     ViewModel() {
 
+    private var _errorState = MutableStateFlow(
+        LoginScreenContract.ErrorState(
+            code = "",
+            message = "",
+            success = false,
+        )
+    )
+
+    var errorState = _errorState.asStateFlow()
+
+    private fun updateErrorState(newState: LoginScreenContract.ErrorState) {
+        viewModelScope.launch(Dispatchers.Main) {
+            _errorState.value = newState
+        }
+
+    }
+
     private var _userState = MutableStateFlow(
         LoginScreenContract.UserState(
             data = LoginData(email = ""),
@@ -65,14 +82,27 @@ class LoginScreenViewModel @Inject constructor(private val loginRegisterService:
                     if (response.isSuccessful) {
                         val loginResponse = response.body()
                         if (loginResponse != null) {
-                            val newState = LoginScreenContract.UserState(
-                                data = loginResponse.data,
-                                message = loginResponse.message,
-                                success = loginResponse.success
-                            )
-                            updateState(newState)
+
                             if (loginResponse.success) {
+                                val newState = LoginScreenContract.UserState(
+                                    data = loginResponse.data,
+                                    message = loginResponse.message,
+                                    success = loginResponse.success
+                                )
+                                updateState(newState)
+
                                 navController.navigate("otp_screen/${loginRequest.email}")
+                            } else{
+                                val newState = LoginScreenContract.ErrorState(
+                                    code = loginResponse.code,
+                                    message = loginResponse.message,
+                                    success = loginResponse.success
+                                )
+                                updateErrorState(newState)
+                                    when(loginResponse.code){
+                                        "2023" -> navController.navigate("register_screen")
+                                    }
+
                             }
                         } else {
                             updateState(
