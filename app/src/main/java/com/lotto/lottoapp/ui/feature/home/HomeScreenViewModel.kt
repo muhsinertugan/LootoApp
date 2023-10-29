@@ -19,7 +19,7 @@ class HomeScreenViewModel @Inject constructor(
 ) :
     ViewModel() {
     init {
-        //   viewModelScope.launch() {  initHomeScreen() }
+       // viewModelScope.launch { initHomeScreen() }
     }
 
     var gamesState by mutableStateOf(

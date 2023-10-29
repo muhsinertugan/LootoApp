@@ -1,6 +1,5 @@
 package com.lotto.lottoapp.ui.feature.home.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -24,21 +22,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lotto.lottoapp.model.response.home.Draw
+import com.lotto.lottoapp.ui.utils.convertDateFormat
 
 @Composable
 fun RecentDraws(recentDrawsState: Draw) {
 
     Box(
         modifier = Modifier
-            .shadow(
-                elevation = 4.dp, spotColor = Color.Black, ambientColor = Color.Black
-            )
             .border(
                 width = 0.dp, color = Color.Black, shape = RoundedCornerShape(size = 20.dp)
             )
             .width(360.dp)
             .height(210.dp)
-            .background(Color.Black)
+        //.background(Color.Black)
     ) {
         Box(
             modifier = Modifier
@@ -47,7 +43,7 @@ fun RecentDraws(recentDrawsState: Draw) {
                 .padding(12.dp)
         ) {
             Text(
-                text = "27/12/2023", style = TextStyle(
+                text = convertDateFormat(recentDrawsState.createdAt), style = TextStyle(
                     fontSize = 20.sp,
                     fontWeight = FontWeight(500),
                     color = Color(0xFFFFFFFF),
@@ -68,7 +64,7 @@ fun RecentDraws(recentDrawsState: Draw) {
                     .wrapContentSize(align = Alignment.Center)
             ) {
                 Text(
-                    text = recentDrawsState.game.prize.toString(), style = TextStyle(
+                    text = "${recentDrawsState.game.prize} $", style = TextStyle(
                         fontSize = 24.sp,
                         fontWeight = FontWeight(500),
                         color = Color(0xFFFFFFFF),

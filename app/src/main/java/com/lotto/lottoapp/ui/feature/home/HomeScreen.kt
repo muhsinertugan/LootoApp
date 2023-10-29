@@ -55,7 +55,7 @@ fun HomeScreen(
             pageSpacing = 12.dp,
             pageSize = PageSize.Fixed(360.dp)
         ) { page ->
-            FutureDraws(gamesState = gamesState.games[page])
+            FutureDraws(gameState = gamesState.games[page])
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(

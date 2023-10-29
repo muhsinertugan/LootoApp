@@ -1,7 +1,6 @@
 package com.lotto.lottoapp.ui.feature.home.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -25,18 +23,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lotto.lottoapp.model.response.home.Game
+import com.lotto.lottoapp.ui.utils.calculateRemainingTime
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun FutureDraws( gamesState: Game) {
+fun FutureDraws(gameState: Game) {
 
         Box(
             modifier = Modifier
-                .shadow(
-                    elevation = 4.dp,
-                    spotColor = Color(0x40000000),
-                    ambientColor = Color(0x40000000)
-                )
                 .border(
                     width = 0.dp,
                     color = Color(0xFF000000),
@@ -44,7 +38,7 @@ fun FutureDraws( gamesState: Game) {
                 )
                 .width(360.dp)
                 .height(210.dp)
-                .background(Color.Black)
+                //.background(Color.Black)
         )
         {
             Column(modifier= Modifier
@@ -55,7 +49,7 @@ fun FutureDraws( gamesState: Game) {
                     .wrapContentSize(align = Alignment.Center)
                     .padding(12.dp)) {
                     Text(
-                        text = "999,999,999 $",
+                        text = "${gameState.prize} $",
                         style = TextStyle(
                             fontSize = 24.sp,
                             fontWeight = FontWeight(700),
@@ -66,7 +60,7 @@ fun FutureDraws( gamesState: Game) {
                 }
                 Box {
                     Text(
-                        text = "remains  6h 2d 4w",
+                        text = "remains  ${calculateRemainingTime(gameState.nextDrawDate)}",
                         style = TextStyle(
                             fontSize = 12.sp,
                             fontWeight = FontWeight(700),
