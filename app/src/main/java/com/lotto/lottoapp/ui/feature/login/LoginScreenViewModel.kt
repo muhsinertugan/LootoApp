@@ -3,7 +3,7 @@ package com.lotto.lottoapp.ui.feature.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import com.lotto.lottoapp.model.data.LoginRegisterApi
+import com.lotto.lottoapp.model.data.loginRegister.LoginRegisterApi
 import com.lotto.lottoapp.model.request.LoginRequest
 import com.lotto.lottoapp.model.response.login.LoginData
 import dagger.hilt.android.lifecycle.HiltViewModel

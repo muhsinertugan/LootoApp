@@ -1,4 +1,4 @@
-package com.lotto.lottoapp.model.data
+package com.lotto.lottoapp.model.data.general
 
 import com.lotto.lottoapp.model.CityItem
 import com.lotto.lottoapp.model.response.general.CityResponseList

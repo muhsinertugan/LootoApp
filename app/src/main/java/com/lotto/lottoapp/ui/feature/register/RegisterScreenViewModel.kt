@@ -6,8 +6,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import com.lotto.lottoapp.model.data.GeneralRemoteSource
-import com.lotto.lottoapp.model.data.LoginRegisterApi
+import com.lotto.lottoapp.model.data.general.GeneralRemoteSource
+import com.lotto.lottoapp.model.data.loginRegister.LoginRegisterApi
 import com.lotto.lottoapp.model.request.RegisterRequest
 import com.lotto.lottoapp.model.response.register.RegisterData
 import dagger.hilt.android.lifecycle.HiltViewModel

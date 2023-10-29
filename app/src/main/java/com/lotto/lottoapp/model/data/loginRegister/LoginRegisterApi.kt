@@ -1,4 +1,4 @@
-package com.lotto.lottoapp.model.data
+package com.lotto.lottoapp.model.data.loginRegister
 
 import com.lotto.lottoapp.model.request.LoginOtpRequest
 import com.lotto.lottoapp.model.request.LoginRequest

@@ -35,12 +35,11 @@ fun RegisterScreen(
 ) {
 
 
-
     val userRegisterInput by viewModel.userInput.collectAsState()
     val userRegisterState by viewModel.userState.collectAsState()
     val errorState by viewModel.errorState.collectAsState()
-    
-    
+
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -118,8 +117,7 @@ fun RegisterScreen(
                 .background(color = CustomPurple)
                 .padding(vertical = 16.dp, horizontal = 136.dp)
         )
-        
-        TODO("implement snackbar for error messages.")
-        
+
+
     }
 }
