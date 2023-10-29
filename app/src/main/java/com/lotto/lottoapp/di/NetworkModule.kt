@@ -1,8 +1,10 @@
 package com.lotto.lottoapp.di
 
 
-import com.lotto.lottoapp.model.data.GeneralService
-import com.lotto.lottoapp.model.data.LoginRegisterService
+import com.lotto.lottoapp.model.data.draws.RecentDrawsService
+import com.lotto.lottoapp.model.data.games.GamesListService
+import com.lotto.lottoapp.model.data.general.GeneralService
+import com.lotto.lottoapp.model.data.loginRegister.LoginRegisterService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -38,6 +40,17 @@ object CitiesAPIProvider {
     @Singleton
     fun provideLoginRegisterService(retrofit: Retrofit): LoginRegisterService {
         return retrofit.create(LoginRegisterService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGamesListService(retrofit: Retrofit): GamesListService {
+        return retrofit.create(GamesListService::class.java)
+    }
+    @Provides
+    @Singleton
+    fun provideRecentDrawsService(retrofit: Retrofit): RecentDrawsService {
+        return retrofit.create(RecentDrawsService::class.java)
     }
 
 }
