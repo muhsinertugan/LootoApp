@@ -12,6 +12,7 @@ import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,8 +32,8 @@ fun HomeScreen(
     viewModel: HomeScreenViewModel = hiltViewModel()
 ) {
 
-    val gamesState = viewModel.gamesState
-    val recentDrawsState = viewModel.recentDrawsState
+    val gamesState = viewModel.gamesState.collectAsState().value
+    val recentDrawsState = viewModel.recentDrawsState.collectAsState().value
 
     val gamesPagerState = rememberPagerState(pageCount = {
         gamesState.games.size

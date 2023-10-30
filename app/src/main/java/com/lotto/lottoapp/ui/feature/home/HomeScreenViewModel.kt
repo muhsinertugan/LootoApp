@@ -1,15 +1,15 @@
 package com.lotto.lottoapp.ui.feature.home
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lotto.lottoapp.model.data.draws.RecentDrawsApi
 import com.lotto.lottoapp.model.data.games.GamesListApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -19,44 +19,93 @@ class HomeScreenViewModel @Inject constructor(
 ) :
     ViewModel() {
     init {
-       // viewModelScope.launch { initHomeScreen() }
+        viewModelScope.launch(Dispatchers.IO) { initHomeScreen() }
     }
 
-    var gamesState by mutableStateOf(
+    private var _gamesState = MutableStateFlow(
         HomeScreenContract.GamesListState(
             games = listOf(), success = false
         )
     )
 
-    var recentDrawsState by mutableStateOf(
+    var gamesState = _gamesState.asStateFlow()
+
+    private var _recentDrawsState = MutableStateFlow(
         HomeScreenContract.RecentDrawsState(recentDraws = listOf(), count = 0, success = false)
     )
 
+    var recentDrawsState = _recentDrawsState.asStateFlow()
+    private fun updateGamesListState(newState: HomeScreenContract.GamesListState) {
+        viewModelScope.launch(Dispatchers.Main) {
+            _gamesState.value = newState
+        }
+    }
+
+    private fun updateRecentDrawsState(newState: HomeScreenContract.RecentDrawsState) {
+        viewModelScope.launch(Dispatchers.Main) {
+            _recentDrawsState.value = newState
+        }
+
+    }
+
+
     private suspend fun getGames() {
 
-        val games = gamesListApi.getGamesList()
-        gamesState =
-            gamesState.copy(games = games.body()!!.gameList, success = games.body()!!.success)
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = gamesListApi.getGamesList()
 
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        val gamesListResponse = response.body()
+
+                        if (gamesListResponse != null) {
+                            val newState = HomeScreenContract.GamesListState(
+                                games = gamesListResponse.gameList,
+                                success = gamesListResponse.success
+                            )
+                            updateGamesListState(newState)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+
+            }
+        }
     }
 
     private suspend fun getRecentDraws() {
 
-        val recentDraws = recentDrawsApi.getRecentDraws()
-        recentDrawsState =
-            recentDrawsState.copy(
-                recentDraws = recentDraws.body()!!.draws,
-                count = recentDraws.body()!!.count,
-                success = recentDraws.body()!!.success
-            )
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = recentDrawsApi.getRecentDraws()
+
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        val recentDrawsResponse = response.body()
+
+                        if (recentDrawsResponse != null) {
+                            val newState = HomeScreenContract.RecentDrawsState(
+                                recentDraws = recentDrawsResponse.draws,
+                                count = recentDrawsResponse.count,
+                                success = recentDrawsResponse.success
+                            )
+
+                            updateRecentDrawsState(newState)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+
+            }
+        }
 
     }
 
     private suspend fun initHomeScreen() {
-        viewModelScope.launch(Dispatchers.IO) {
-            getGames()
-            getRecentDraws()
-        }
+        getGames()
+        getRecentDraws()
+
     }
 
 }
