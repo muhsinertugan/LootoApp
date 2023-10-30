@@ -53,6 +53,7 @@ class RegisterScreenViewModel @Inject constructor(
             cities = listOf(), isLoading = true
         )
     )
+    //TODO: fix cityState
 
     private var _userInput = MutableStateFlow(
         RegisterRequest(
