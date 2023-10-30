@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.lotto.lottoapp.R
 import com.lotto.lottoapp.core.components.BackgroundImage
-import com.lotto.lottoapp.navigation.BottomBarNavigation
+import com.lotto.lottoapp.navigation.bottomNavigation.BottomBarNavigation
 
 @Composable
 fun LoginRegisterLayout(
@@ -101,6 +101,8 @@ fun GeneralLayout(
     navController: NavHostController
 ) {
 
+
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween,
@@ -108,7 +110,7 @@ fun GeneralLayout(
     ) {
 
         Scaffold(
-            bottomBar = { BottomBarNavigation() }
+            bottomBar = { BottomBarNavigation(navController= navController) }
         ) {
             BackgroundImage()
             inputComponent(navController = navController)
