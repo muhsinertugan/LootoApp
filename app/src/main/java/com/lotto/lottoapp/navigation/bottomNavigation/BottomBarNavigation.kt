@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
+import com.lotto.lottoapp.ui.theme.CustomGray
 
 
 @Composable
@@ -46,7 +47,7 @@ fun BottomBarNavigation(navController: NavHostController) {
                     }
                 },
                 colors = NavigationBarItemDefaults.colors(
-                    indicatorColor = Color.Gray
+                    indicatorColor = CustomGray
                 )
             )
         }
