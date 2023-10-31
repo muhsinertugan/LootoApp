@@ -1,11 +1,9 @@
 package com.lotto.lottoapp.ui.layout
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.lotto.lottoapp.R
 import com.lotto.lottoapp.core.components.BackgroundImage
+import com.lotto.lottoapp.core.components.TopBarComponent
 import com.lotto.lottoapp.navigation.bottomNavigation.BottomBarNavigation
 
 @Composable
@@ -93,15 +92,11 @@ fun OtpScreenLayout(
     }
 }
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun GeneralLayout(
-    profileComponent: @Composable (navController: NavHostController) -> Unit,
     inputComponent: @Composable (navController: NavHostController) -> Unit,
     navController: NavHostController
 ) {
-
-
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -110,42 +105,14 @@ fun GeneralLayout(
     ) {
 
         Scaffold(
-            bottomBar = { BottomBarNavigation(navController= navController) }
-        ) {
+            bottomBar = { BottomBarNavigation(navController = navController) },
+            topBar = { TopBarComponent(navController = navController) }
+        ) { innerPadding ->
             BackgroundImage()
-            inputComponent(navController = navController)
-            Box(modifier = Modifier
-                .height(125.dp)
-                .fillMaxSize()) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 20.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.lotto_logo),
-                        contentDescription = "logo",
-                        contentScale = ContentScale.FillBounds,
-                        modifier = Modifier
-                            .padding(start = 20.dp)
-                            .width(160.dp)
-                            .height(50.dp)
-
-
-                    )
-                    profileComponent(navController = navController)
-                    // Icon(
-                    //     imageVector = Icons.Default.AccountCircle,
-                    //     modifier = Modifier
-                    //         .width(50.dp)
-                    //         .height(50.dp)
-                    //         .padding(end = 20.dp),
-                    //     contentDescription = "profile-logo"
-                    // )
-                }
+            Column(modifier = Modifier.padding(innerPadding)) {
+                inputComponent(navController = navController)
             }
+
         }
     }
 }
