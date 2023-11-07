@@ -1,7 +1,7 @@
 package com.lotto.lottoapp.ui.feature.home
 
+import com.lotto.lottoapp.model.response.game.Game
 import com.lotto.lottoapp.model.response.home.Draw
-import com.lotto.lottoapp.model.response.home.Game
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

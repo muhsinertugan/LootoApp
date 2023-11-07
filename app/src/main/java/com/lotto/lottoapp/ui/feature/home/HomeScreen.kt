@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.lotto.lottoapp.ui.feature.home.components.FutureDraws
 import com.lotto.lottoapp.ui.feature.home.components.RecentDraws
 
@@ -29,7 +30,8 @@ import com.lotto.lottoapp.ui.feature.home.components.RecentDraws
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
-    viewModel: HomeScreenViewModel = hiltViewModel()
+    viewModel: HomeScreenViewModel = hiltViewModel(),
+    navController: NavHostController,
 ) {
 
     val gamesState = viewModel.gamesState.collectAsState().value
@@ -56,7 +58,7 @@ fun HomeScreen(
             pageSpacing = 12.dp,
             pageSize = PageSize.Fixed(360.dp)
         ) { page ->
-            FutureDraws(gameState = gamesState.games[page])
+            FutureDraws(gameState = gamesState.games[page], navController= navController )
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(

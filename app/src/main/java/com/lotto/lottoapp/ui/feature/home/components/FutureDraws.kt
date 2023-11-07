@@ -2,6 +2,7 @@ package com.lotto.lottoapp.ui.feature.home.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,12 +23,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.lotto.lottoapp.model.response.home.Game
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import com.lotto.lottoapp.model.response.game.Game
+import com.lotto.lottoapp.ui.feature.home.HomeScreenViewModel
 import com.lotto.lottoapp.ui.utils.calculateRemainingTime
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun FutureDraws(gameState: Game) {
+fun FutureDraws(gameState: Game, navController: NavHostController, viewModel : HomeScreenViewModel = hiltViewModel()) {
 
         Box(
             modifier = Modifier
@@ -38,7 +42,7 @@ fun FutureDraws(gameState: Game) {
                 )
                 .width(360.dp)
                 .height(210.dp)
-                //.background(Color.Black)
+                .clickable { viewModel.navigateToGame(navController= navController, gameId = gameState._id ) }
         )
         {
             Column(modifier= Modifier

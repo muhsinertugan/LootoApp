@@ -2,6 +2,7 @@ package com.lotto.lottoapp.ui.feature.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.lotto.lottoapp.model.data.draws.RecentDrawsApi
 import com.lotto.lottoapp.model.data.games.GamesListApi
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
     private val gamesListApi: GamesListApi,
-    private val recentDrawsApi: RecentDrawsApi
+    private val recentDrawsApi: RecentDrawsApi,
 ) :
     ViewModel() {
     init {
@@ -105,7 +106,11 @@ class HomeScreenViewModel @Inject constructor(
     private suspend fun initHomeScreen() {
         getGames()
         getRecentDraws()
-
     }
+
+    fun navigateToGame(navController: NavController, gameId: String){
+        navController.navigate("game_screen/${gameId}")
+    }
+
 
 }
