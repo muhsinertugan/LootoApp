@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,13 +27,22 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.lotto.lottoapp.ui.theme.CustomGrayV2
 import com.lotto.lottoapp.ui.theme.CustomLightGray
 import com.lotto.lottoapp.ui.theme.CustomPurple
 import com.lotto.lottoapp.ui.theme.Typography
 
 @Composable
-fun GameScreen() {
+fun GameScreen(
+
+    viewModel: GameScreenViewModel = hiltViewModel()
+) {
+
+    val game = viewModel.gameState.collectAsState()
+    val selectedNumber = viewModel.selectedState.collectAsState()
+
+
 
     Column(
         modifier = Modifier
@@ -40,19 +50,19 @@ fun GameScreen() {
         verticalArrangement = Arrangement.SpaceBetween
     ) {
 
-
         LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.FixedSize(32.dp),
             verticalItemSpacing = 12.dp,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             contentPadding = PaddingValues(12.dp),
             content = {
-                items(50) {
+                items(game.value.game.maximumNumber) {
                     Row(
                         modifier = Modifier
                             .size(32.dp)
                             .clip(CircleShape)
-                            .background(CustomPurple),
+                            .background(CustomPurple)
+                            .clickable { viewModel.selectNumber(it + 1) },
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
@@ -89,7 +99,7 @@ fun GameScreen() {
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "1",
+                            text = selectedNumber.value.selectedNumber[it].toString(),
                             style = TextStyle(
                                 fontSize = 16.sp,
                                 color = Color.White,
@@ -202,7 +212,7 @@ fun GameScreen() {
                     style = Typography.titleMedium.copy(color = Color.White),
                     modifier = Modifier
                         .clickable {
-                            //TODO
+
                         }
                         .clip(RoundedCornerShape(8.dp))
                         .background(color = CustomPurple)

@@ -2,6 +2,7 @@ package com.lotto.lottoapp.di
 
 
 import com.lotto.lottoapp.model.data.draws.RecentDrawsService
+import com.lotto.lottoapp.model.data.games.GameService
 import com.lotto.lottoapp.model.data.games.GamesListService
 import com.lotto.lottoapp.model.data.general.GeneralService
 import com.lotto.lottoapp.model.data.loginRegister.LoginRegisterService
@@ -51,6 +52,12 @@ object CitiesAPIProvider {
     @Singleton
     fun provideRecentDrawsService(retrofit: Retrofit): RecentDrawsService {
         return retrofit.create(RecentDrawsService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGameService(retrofit: Retrofit): GameService {
+        return retrofit.create(GameService::class.java)
     }
 
 }

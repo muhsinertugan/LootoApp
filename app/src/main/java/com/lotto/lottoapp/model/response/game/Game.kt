@@ -1,4 +1,4 @@
-package com.lotto.lottoapp.model.response.home
+package com.lotto.lottoapp.model.response.game
 
 data class Game(
     val __v: Int,
