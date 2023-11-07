@@ -87,7 +87,7 @@ class OtpScreenViewModel @Inject constructor(
                         )
                         updateState(newState)
                         if (registerOtpResponse.success) {
-                            navController.navigate("home")
+                            navController.navigate("home_screen")
                         }
                     } else {
                         updateState(
@@ -134,7 +134,7 @@ class OtpScreenViewModel @Inject constructor(
                         )
                         updateState(newState)
                         if (loginOtpResponse.success) {
-                            navController.navigate("home")
+                            navController.navigate("home_screen")
                         }
                     } else {
                         updateState(
@@ -164,12 +164,5 @@ class OtpScreenViewModel @Inject constructor(
         }
     }
 
-    fun handleOtp(navController: NavController) {
-        if (userLoginOtpState.value.success) {
-            navController.navigate("home")
-        } else {
-            userLoginOtpState.value.message
-        }
-    }
 
 }

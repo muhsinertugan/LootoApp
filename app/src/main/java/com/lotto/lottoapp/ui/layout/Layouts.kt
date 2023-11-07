@@ -94,7 +94,7 @@ fun OtpScreenLayout(
 
 @Composable
 fun GeneralLayout(
-    inputComponent: @Composable (navController: NavHostController) -> Unit,
+    inputComponent: @Composable () -> Unit,
     navController: NavHostController
 ) {
 
@@ -110,7 +110,7 @@ fun GeneralLayout(
         ) { innerPadding ->
             BackgroundImage()
             Column(modifier = Modifier.padding(innerPadding)) {
-                inputComponent(navController = navController)
+                inputComponent()
             }
 
         }
