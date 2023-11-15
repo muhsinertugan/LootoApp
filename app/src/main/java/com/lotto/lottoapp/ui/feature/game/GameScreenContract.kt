@@ -24,15 +24,15 @@ class GameScreenContract {
 
     }
 
-    data class SelectedNumber(
-        val selectedNumber: Array<Int?>,
+    data class SelectedNumbers(
+        val selectedNumbers: Array<Int?>,
 
-        ) : StateFlow<SelectedNumber> {
+        ) : StateFlow<SelectedNumbers> {
         private val _state = MutableStateFlow(this)
-        override val replayCache: List<SelectedNumber>
+        override val replayCache: List<SelectedNumbers>
             get() = _state.replayCache
 
-        override suspend fun collect(collector: FlowCollector<SelectedNumber>): Nothing {
+        override suspend fun collect(collector: FlowCollector<SelectedNumbers>): Nothing {
             _state.collect(collector)
         }
 
@@ -40,22 +40,59 @@ class GameScreenContract {
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
 
-            other as SelectedNumber
+            other as SelectedNumbers
 
-            if (!selectedNumber.contentEquals(other.selectedNumber)) return false
+            if (!selectedNumbers.contentEquals(other.selectedNumbers)) return false
             if (_state != other._state) return false
 
             return true
         }
 
         override fun hashCode(): Int {
-            var result = selectedNumber.contentHashCode()
+            var result = selectedNumbers.contentHashCode()
             result = 31 * result + _state.hashCode()
             return result
         }
 
-        override val value: SelectedNumber
+        override val value: SelectedNumbers
             get() = _state.value
 
     }
+
+    data class Column(
+        val column: SelectedNumbers,
+        val isReady: Boolean
+
+        ) : StateFlow<Column> {
+        private val _state = MutableStateFlow(this)
+        override val replayCache: List<Column>
+            get() = _state.replayCache
+
+        override suspend fun collect(collector: FlowCollector<Column>): Nothing {
+            _state.collect(collector)
+        }
+
+        override val value: Column
+            get() = _state.value
+
+    }
+
+    data class Columns(
+        val columns: List<Column>,
+
+        ) : StateFlow<Columns> {
+        private val _state = MutableStateFlow(this)
+        override val replayCache: List<Columns>
+            get() = _state.replayCache
+
+        override suspend fun collect(collector: FlowCollector<Columns>): Nothing {
+            _state.collect(collector)
+        }
+
+        override val value: Columns
+            get() = _state.value
+
+    }
+
+
 }
