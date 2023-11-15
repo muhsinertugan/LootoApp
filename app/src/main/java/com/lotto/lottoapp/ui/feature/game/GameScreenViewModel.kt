@@ -1,5 +1,6 @@
 package com.lotto.lottoapp.ui.feature.game
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,8 +18,7 @@ import javax.inject.Inject
 class GameScreenViewModel @Inject constructor(
     private val gameApi: GameApi,
     private val savedStateHandle: SavedStateHandle,
-) :
-    ViewModel() {
+) : ViewModel() {
 
     init {
         viewModelScope.launch {
@@ -26,21 +26,110 @@ class GameScreenViewModel @Inject constructor(
         }
     }
 
-    private var _selectedState = MutableStateFlow(
-        GameScreenContract.SelectedNumber(
-            selectedNumber = arrayOfNulls<Int>(5)
+    private var _selectedNumbersState = MutableStateFlow(
+        GameScreenContract.SelectedNumbers(
+            selectedNumbers = arrayOfNulls(5)
         )
     )
 
-    var selectedState = _selectedState.asStateFlow()
+    private var selectedNumbersState = _selectedNumbersState.asStateFlow()
 
 
+    private var _column = MutableStateFlow(
+        GameScreenContract.Column(column = selectedNumbersState.value, isReady = false)
+    )
 
-    private fun updateSelectedState(newState: GameScreenContract.SelectedNumber) {
+    var column = _column.asStateFlow()
+
+
+    private var _columns = MutableStateFlow(
+        GameScreenContract.Columns(columns = listOf(column.value))
+    )
+
+    var columns = _columns.asStateFlow()
+
+    private fun updateSelectedNumbersState(newState: GameScreenContract.SelectedNumbers) {
+        Log.d("Debug", "Updating selected numbers state")
         viewModelScope.launch(Dispatchers.Main) {
-            _selectedState.value = newState
+            _selectedNumbersState.value = newState
         }
     }
+
+    private fun updateColumn(newState: GameScreenContract.SelectedNumbers, isReady: Boolean) {
+        Log.d("Debug", "Updating column state")
+        viewModelScope.launch(Dispatchers.Main) {
+            val newColumn = GameScreenContract.Column(
+                column = newState, isReady = isReady
+            )
+            _column.value = newColumn
+        }
+    }
+
+    private fun updateColumns(newState: GameScreenContract.Column, isReady: Boolean) {
+        Log.d("Debug", "Updating columns state")
+        viewModelScope.launch(Dispatchers.Main) {
+            val nullColumn = GameScreenContract.Column(
+                column = GameScreenContract.SelectedNumbers(
+                    selectedNumbers = arrayOfNulls(5)
+                ), isReady = false
+            )
+
+            val currentColumns = _columns.value.columns.toMutableList()
+            currentColumns.set(index = currentColumns.lastIndex, element = newState)
+            if (isReady) {
+                currentColumns.add(nullColumn)
+            }
+            val newColumnsState = GameScreenContract.Columns(columns = currentColumns)
+            _columns.value = newColumnsState
+        }
+    }
+
+
+    fun selectNumber(selected: Int) {
+
+        viewModelScope.launch(Dispatchers.Main) {
+            val currentSelectedNumbersState = _selectedNumbersState.value
+            val currentSelectedNumber = currentSelectedNumbersState.selectedNumbers.toMutableList()
+
+            for (i in 0 until currentSelectedNumber.size) {
+                if (currentSelectedNumber[i] == null) {
+                    currentSelectedNumber[i] = selected
+                    break
+                }
+            }
+
+            val newState = GameScreenContract.SelectedNumbers(
+                selectedNumbers = currentSelectedNumber.toTypedArray()
+            )
+            updateSelectedNumbersState(newState)
+
+            val updatedColumn = _column.value.copy(column = newState)
+            updateColumn(newState, false)
+            updateColumns(updatedColumn, false)
+
+        }
+
+
+    }
+
+    fun addColumnToTicket() {
+        viewModelScope.launch(Dispatchers.Main) {
+            updateColumn(column.value.column, true)
+            updateColumns(newState = column.value, isReady = true)
+
+            updateSelectedNumbersState(
+                newState = GameScreenContract.SelectedNumbers(
+                    selectedNumbers = arrayOfNulls(5)
+                )
+            )
+            updateColumn(
+                newState = GameScreenContract.SelectedNumbers(
+                    selectedNumbers = arrayOfNulls(5)
+                ), isReady = false
+            )
+        }
+    }
+
 
     private var _gameState = MutableStateFlow(
         GameScreenContract.GameState(
@@ -63,7 +152,8 @@ class GameScreenViewModel @Inject constructor(
                 nextDrawDate = "",
                 prize = 0,
                 requriedNumbers = 0,
-                status = ""
+                status = "",
+                lastDrawDate = ""
             )
         )
     )
@@ -106,7 +196,8 @@ class GameScreenViewModel @Inject constructor(
                                     nextDrawDate = gameResponse.game.nextDrawDate,
                                     prize = gameResponse.game.prize,
                                     requriedNumbers = gameResponse.game.requriedNumbers,
-                                    status = gameResponse.game.status
+                                    status = gameResponse.game.status,
+                                    lastDrawDate = gameResponse.game.lastDrawDate
                                 )
                             )
                             updateGameState(newState)
@@ -118,13 +209,5 @@ class GameScreenViewModel @Inject constructor(
         }
     }
 
-
-    fun selectNumber(selected: Int) {
-       val myState =  _selectedState.value.selectedNumber + selected
-        val newState = GameScreenContract.SelectedNumber(
-            selectedNumber = myState
-        )
-        updateSelectedState(newState)
-    }
 
 }

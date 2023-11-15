@@ -1,5 +1,6 @@
 package com.lotto.lottoapp.ui.feature.game
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,8 +14,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -28,8 +31,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.lotto.lottoapp.ui.feature.game.components.ticketColumn.TicketColumn
 import com.lotto.lottoapp.ui.theme.CustomGrayV2
-import com.lotto.lottoapp.ui.theme.CustomLightGray
 import com.lotto.lottoapp.ui.theme.CustomPurple
 import com.lotto.lottoapp.ui.theme.Typography
 
@@ -40,9 +43,9 @@ fun GameScreen(
 ) {
 
     val game = viewModel.gameState.collectAsState()
-    val selectedNumber = viewModel.selectedState.collectAsState()
+    val columns = viewModel.columns.collectAsState()
 
-
+    Log.d("columns", columns.value.toString())
 
     Column(
         modifier = Modifier
@@ -80,123 +83,34 @@ fun GameScreen(
             })
 
 
-
-        Column(modifier = Modifier.background(CustomGrayV2)) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 30.dp, top = 20.dp, bottom = 10.dp)
-            ) {
-                repeat(5) {
-                    Row(
-                        modifier = Modifier
-                            .size(48.dp)
-                            .clip(CircleShape)
-                            .background(CustomPurple),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = selectedNumber.value.selectedNumber[it].toString(),
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                color = Color.White,
-                                textAlign = TextAlign.Center,
-                            )
-                        )
-
-                    }
-                }
-
-
-                Box(
+        Column(
+            modifier = Modifier
+                .background(CustomGrayV2)
+                .verticalScroll(rememberScrollState())
+        ) {
+            columns.value.columns.map { column ->
+                val readyButtonColors = if(!column.column.selectedNumbers.contains(null) ) CustomPurple else CustomGrayV2
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
-                        .rotate(270f)
-                        .padding(top = 20.dp)
-                        .background(CustomPurple)
+                        .fillMaxWidth()
+                        .padding(start = 30.dp, top = 20.dp, bottom = 10.dp)
                 ) {
-                    Text(text = "Ready", color = Color.White)
-                }
 
-            }
+                        TicketColumn(column)
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 30.dp, top = 20.dp, bottom = 10.dp)
-            ) {
-                repeat(5) {
-                    Row(
+                    Box(
                         modifier = Modifier
-                            .size(48.dp)
-                            .clip(CircleShape)
-                            .background(CustomLightGray),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
+                            .rotate(270f)
+                            .padding(top = 20.dp)
+                            .background(readyButtonColors)
+                            .clickable { if (!column.column.selectedNumbers.contains(null)) viewModel.addColumnToTicket() }
+
                     ) {
-                        Text(
-                            text = "",
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                color = Color.White,
-                                textAlign = TextAlign.Center,
-                            )
-                        )
-
+                        Text(text = "Ready", color = Color.White)
                     }
-                }
 
-
-                Box(
-                    modifier = Modifier
-                        .rotate(270f)
-                        .padding(top = 20.dp)
-                        .background(CustomLightGray)
-                ) {
-                    Text(text = "Ready", color = Color.White)
-                }
-
-            }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 30.dp, top = 20.dp, bottom = 10.dp)
-            ) {
-                repeat(5) {
-                    Row(
-                        modifier = Modifier
-                            .size(48.dp)
-                            .clip(CircleShape)
-                            .background(CustomLightGray),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = "",
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                color = Color.White,
-                                textAlign = TextAlign.Center,
-                            )
-                        )
-
-                    }
-                }
-
-
-                Box(
-                    modifier = Modifier
-                        .rotate(270f)
-                        .padding(top = 20.dp)
-                        .background(CustomLightGray)
-                ) {
-                    Text(text = "Ready", color = Color.White)
                 }
 
             }
