@@ -20,7 +20,7 @@ sealed class BottomNavItem(
     object Results :
         BottomNavItem(
             "Results",
-            "profile_screen",
+            "result_screen",
             Icons.Outlined.Search
         )
     object Profile :

@@ -210,4 +210,9 @@ class GameScreenViewModel @Inject constructor(
     }
 
 
+    fun buyTicket(){
+
+    }
+
+
 }

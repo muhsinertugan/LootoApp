@@ -16,6 +16,7 @@ import com.lotto.lottoapp.ui.feature.login.LoginScreen
 import com.lotto.lottoapp.ui.feature.otp.OtpScreen
 import com.lotto.lottoapp.ui.feature.profile.ProfileScreen
 import com.lotto.lottoapp.ui.feature.register.RegisterScreen
+import com.lotto.lottoapp.ui.feature.result.ResultScreen
 import com.lotto.lottoapp.ui.feature.splash.SplashScreen
 import com.lotto.lottoapp.ui.layout.GeneralLayout
 import com.lotto.lottoapp.ui.layout.LoginRegisterLayout
@@ -25,7 +26,7 @@ import com.lotto.lottoapp.ui.layout.OtpScreenLayout
 fun Index() {
     Surface(modifier = Modifier.fillMaxSize()) {
         val navController = rememberNavController()
-        NavHost(navController = navController, startDestination = "home_screen") {
+        NavHost(navController = navController, startDestination = "result_screen") {
 
             //TODO: Re-do the route logic
             composable(route = "splash_screen") {
@@ -106,6 +107,11 @@ fun Index() {
             )) {
                 GeneralLayout(
                     inputComponent = { GameScreen() }, navController = navController
+                )
+            }
+            composable(route = "result_screen") {
+                GeneralLayout(
+                    inputComponent = { ResultScreen() }, navController = navController
                 )
             }
         }

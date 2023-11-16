@@ -34,8 +34,11 @@ fun HomeScreen(
     navController: NavHostController,
 ) {
 
+
+
     val gamesState = viewModel.gamesState.collectAsState().value
     val recentDrawsState = viewModel.recentDrawsState.collectAsState().value
+
 
     val gamesPagerState = rememberPagerState(pageCount = {
         gamesState.games.size
@@ -76,7 +79,7 @@ fun HomeScreen(
                 contentPadding = PaddingValues(horizontal = 24.dp),
                 pageSpacing = 12.dp,
                 pageSize = PageSize.Fixed(360.dp)
-            ) { page -> RecentDraws(recentDrawsState = recentDrawsState.recentDraws[page]) }
+            ) { page -> RecentDraws(recentDrawsState = recentDrawsState.recentDraws[page], gamesState) }
         }
 
     }
