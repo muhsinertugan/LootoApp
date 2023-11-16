@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -25,55 +26,77 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import com.lotto.lottoapp.model.response.game.Game
 import com.lotto.lottoapp.ui.feature.home.HomeScreenViewModel
 import com.lotto.lottoapp.ui.utils.calculateRemainingTime
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun FutureDraws(gameState: Game, navController: NavHostController, viewModel : HomeScreenViewModel = hiltViewModel()) {
+fun FutureDraws(
+    gameState: Game,
+    navController: NavHostController,
+    viewModel: HomeScreenViewModel = hiltViewModel()
+) {
 
-        Box(
-            modifier = Modifier
-                .border(
-                    width = 0.dp,
-                    color = Color(0xFF000000),
-                    shape = RoundedCornerShape(size = 20.dp)
+    Box(
+        modifier = Modifier
+            .border(
+                width = 0.dp,
+                color = Color.Transparent,
+                shape = RoundedCornerShape(size = 20.dp)
+            )
+            .width(360.dp)
+            .height(210.dp)
+            .clickable {
+                viewModel.navigateToGame(
+                    navController = navController,
+                    gameId = gameState._id
                 )
-                .width(360.dp)
-                .height(210.dp)
-                .clickable { viewModel.navigateToGame(navController= navController, gameId = gameState._id ) }
+            }
+    )
+    {
+
+        AsyncImage(
+            model = gameState.image,
+            contentDescription = gameState.description,
+            contentScale = ContentScale.FillBounds,
+            modifier = Modifier.fillMaxSize()
         )
-        {
-            Column(modifier= Modifier
+
+        Column(
+            modifier = Modifier
                 .fillMaxSize()
-                .padding(18.dp),  verticalArrangement = Arrangement.Bottom) {
-                Box(modifier = Modifier
+                .padding(18.dp), verticalArrangement = Arrangement.Bottom
+        ) {
+            Box(
+                modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentSize(align = Alignment.Center)
-                    .padding(12.dp)) {
-                    Text(
-                        text = "${gameState.prize} $",
-                        style = TextStyle(
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight(700),
-                            color = Color(0xFFFFFFFF),
-                            textAlign = TextAlign.Center,
-                        )
+                    .padding(12.dp)
+            ) {
+                Text(
+                    text = "${gameState.prize} $",
+                    style = TextStyle(
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight(700),
+                        color = Color(0xFFFFFFFF),
+                        textAlign = TextAlign.Center,
                     )
-                }
-                Box {
-                    Text(
-                        text = "remains  ${calculateRemainingTime(gameState.nextDrawDate)}",
-                        style = TextStyle(
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight(700),
-                            color = Color(0xFFFFFFFF),
-                            textAlign = TextAlign.Center,
-                        )
+                )
+            }
+            Box {
+                Text(
+                    text = "remains  ${calculateRemainingTime(gameState.nextDrawDate)}",
+                    style = TextStyle(
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight(700),
+                        color = Color(0xFFFFFFFF),
+                        textAlign = TextAlign.Center,
                     )
-                }
+                )
             }
         }
+    }
 
 }

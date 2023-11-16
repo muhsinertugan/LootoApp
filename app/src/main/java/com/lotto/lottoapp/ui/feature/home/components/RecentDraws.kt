@@ -16,16 +16,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import com.lotto.lottoapp.model.response.game.Game
 import com.lotto.lottoapp.model.response.home.Draw
+import com.lotto.lottoapp.ui.feature.home.HomeScreenContract
 import com.lotto.lottoapp.ui.utils.convertDateFormat
 
 @Composable
-fun RecentDraws(recentDrawsState: Draw) {
+fun RecentDraws(recentDrawsState: Draw, gamesState: HomeScreenContract.GamesListState) {
+
+
+    val gameImage = gamesState.games.find { game: Game -> game._id == recentDrawsState.game._id  }
 
     Box(
         modifier = Modifier
@@ -36,6 +43,15 @@ fun RecentDraws(recentDrawsState: Draw) {
             .height(210.dp)
         //.background(Color.Black)
     ) {
+
+        if (gameImage != null) {
+            AsyncImage(
+                model = gameImage.image,
+                contentDescription = gameImage.description,
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
         Box(
             modifier = Modifier
                 .fillMaxWidth()
