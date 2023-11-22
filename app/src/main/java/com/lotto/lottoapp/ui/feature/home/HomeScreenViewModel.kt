@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.lotto.lottoapp.model.data.draws.RecentDrawsApi
 import com.lotto.lottoapp.model.data.games.GamesListApi
+import com.lotto.lottoapp.navigation.Paths
+import com.lotto.lottoapp.utils.SharedPreferencesUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,11 +19,16 @@ import javax.inject.Inject
 class HomeScreenViewModel @Inject constructor(
     private val gamesListApi: GamesListApi,
     private val recentDrawsApi: RecentDrawsApi,
+    private val sharedPreferencesUtil: SharedPreferencesUtil
 ) :
     ViewModel() {
     init {
+        val anan = sharedPreferencesUtil.loadData(key = "userToken")
+
         viewModelScope.launch(Dispatchers.IO) { initHomeScreen() }
     }
+
+
 
     private var _gamesState = MutableStateFlow(
         HomeScreenContract.GamesListState(
@@ -109,7 +116,7 @@ class HomeScreenViewModel @Inject constructor(
     }
 
     fun navigateToGame(navController: NavController, gameId: String){
-        navController.navigate("game_screen/${gameId}")
+        navController.navigate("${Paths.GAME_SCREEN}/${gameId}")
     }
 
 

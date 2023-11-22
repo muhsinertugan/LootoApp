@@ -11,6 +11,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import com.lotto.lottoapp.R
+import com.lotto.lottoapp.navigation.Paths
 import kotlinx.coroutines.delay
 
 
@@ -19,7 +20,7 @@ import kotlinx.coroutines.delay
 fun SplashScreen (navController: NavController){
     LaunchedEffect(key1 = true){
         delay(5000L)
-        navController.navigate("login_screen")
+        navController.navigate(Paths.LOGIN_SCREEN)
     }
     Box( contentAlignment = Alignment.Center,
         modifier = Modifier.fillMaxSize()

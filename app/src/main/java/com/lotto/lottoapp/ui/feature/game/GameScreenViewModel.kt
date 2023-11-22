@@ -1,6 +1,5 @@
 package com.lotto.lottoapp.ui.feature.game
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -49,14 +48,12 @@ class GameScreenViewModel @Inject constructor(
     var columns = _columns.asStateFlow()
 
     private fun updateSelectedNumbersState(newState: GameScreenContract.SelectedNumbers) {
-        Log.d("Debug", "Updating selected numbers state")
         viewModelScope.launch(Dispatchers.Main) {
             _selectedNumbersState.value = newState
         }
     }
 
     private fun updateColumn(newState: GameScreenContract.SelectedNumbers, isReady: Boolean) {
-        Log.d("Debug", "Updating column state")
         viewModelScope.launch(Dispatchers.Main) {
             val newColumn = GameScreenContract.Column(
                 column = newState, isReady = isReady
@@ -66,7 +63,6 @@ class GameScreenViewModel @Inject constructor(
     }
 
     private fun updateColumns(newState: GameScreenContract.Column, isReady: Boolean) {
-        Log.d("Debug", "Updating columns state")
         viewModelScope.launch(Dispatchers.Main) {
             val nullColumn = GameScreenContract.Column(
                 column = GameScreenContract.SelectedNumbers(
@@ -210,7 +206,7 @@ class GameScreenViewModel @Inject constructor(
     }
 
 
-    fun buyTicket(){
+    fun buyTicket() {
 
     }
 

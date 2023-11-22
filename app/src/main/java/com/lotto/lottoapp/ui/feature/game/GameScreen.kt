@@ -1,6 +1,5 @@
 package com.lotto.lottoapp.ui.feature.game
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -31,21 +30,22 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.lotto.lottoapp.ui.constants.Buttons
 import com.lotto.lottoapp.ui.feature.game.components.ticketColumn.TicketColumn
 import com.lotto.lottoapp.ui.theme.CustomGrayV2
 import com.lotto.lottoapp.ui.theme.CustomPurple
 import com.lotto.lottoapp.ui.theme.Typography
 
+
+
 @Composable
 fun GameScreen(
-
     viewModel: GameScreenViewModel = hiltViewModel()
 ) {
 
     val game = viewModel.gameState.collectAsState()
     val columns = viewModel.columns.collectAsState()
 
-    Log.d("columns", columns.value.toString())
 
     Column(
         modifier = Modifier
@@ -108,7 +108,7 @@ fun GameScreen(
                             .clickable { if (!column.column.selectedNumbers.contains(null)) viewModel.addColumnToTicket() }
 
                     ) {
-                        Text(text = "Ready", color = Color.White)
+                        Text(text = Buttons.READY_BTN, color = Color.White)
                     }
 
                 }
@@ -122,11 +122,11 @@ fun GameScreen(
                 horizontalArrangement = Arrangement.End
             ) {
                 Text(
-                    text = "Submit",
+                    text = Buttons.SUBMIT_BTN,
                     style = Typography.titleMedium.copy(color = Color.White),
                     modifier = Modifier
                         .clickable {
-
+                            //TODO: add submit ticket
                         }
                         .clip(RoundedCornerShape(8.dp))
                         .background(color = CustomPurple)

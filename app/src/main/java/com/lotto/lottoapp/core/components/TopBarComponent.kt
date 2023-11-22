@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.lotto.lottoapp.R
+import com.lotto.lottoapp.navigation.Paths
 
 @Composable
 
@@ -45,7 +46,7 @@ fun TopBarComponent(navController: NavHostController) {
                 .height(50.dp)
         )
         Row(
-            modifier = Modifier.clickable { navController.navigate("profile_screen") },
+            modifier = Modifier.clickable { navController.navigate(Paths.PROFILE_SCREEN) },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {

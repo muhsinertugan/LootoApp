@@ -16,9 +16,26 @@ import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 
+
+object ENDPOINTS{
+    const val BASE_URL = "https://sea-turtle-app-qpyzd.ondigitalocean.app/api/v1/"
+    const val GAMES_URL = "games"
+    const val DRAWS_URL= "draws/recents"
+    const val CITIES_URL = "cities"
+    const val AUTH_LOGIN_URL="auth/login/email"
+    const val OTP_LOGIN_URL="auth/login/email/otp"
+    const val AUTH_REGISTER_URL="auth/register/email"
+    const val OTP_REGISTER_URL="auth/register/email/otp"
+    const val PROFILE_URL = "profile/user"
+    const val TICKETS_URL="tickets"
+    const val BALANCE_URL="balance"
+    const val BALANCE_ADD_URL="balance/add"
+}
+
+
 @Module
 @InstallIn(SingletonComponent::class)
-object CitiesAPIProvider {
+object RetrofitModule {
 
     @Provides
     @Singleton
@@ -27,37 +44,62 @@ object CitiesAPIProvider {
         return Retrofit.Builder()
             .client(httpClient.build())
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("https://sea-turtle-app-qpyzd.ondigitalocean.app/api/v1/")
+            .baseUrl(ENDPOINTS.BASE_URL)
             .build()
     }
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object GeneralServiceModule {
 
     @Provides
     @Singleton
-    fun provideCityApiService(retrofit: Retrofit): GeneralService {
+    fun provideGeneralService(retrofit: Retrofit): GeneralService {
         return retrofit.create(GeneralService::class.java)
     }
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object LoginRegisterServiceModule {
 
     @Provides
     @Singleton
     fun provideLoginRegisterService(retrofit: Retrofit): LoginRegisterService {
         return retrofit.create(LoginRegisterService::class.java)
     }
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object RecentDrawsServiceModule {
+
+    @Provides
+    @Singleton
+    fun provideRecentDrawsService(retrofit: Retrofit): RecentDrawsService {
+        return retrofit.create(RecentDrawsService::class.java)
+    }
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object GamesListServiceModule {
 
     @Provides
     @Singleton
     fun provideGamesListService(retrofit: Retrofit): GamesListService {
         return retrofit.create(GamesListService::class.java)
     }
-    @Provides
-    @Singleton
-    fun provideRecentDrawsService(retrofit: Retrofit): RecentDrawsService {
-        return retrofit.create(RecentDrawsService::class.java)
-    }
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object GameServiceModule {
 
     @Provides
     @Singleton
     fun provideGameService(retrofit: Retrofit): GameService {
         return retrofit.create(GameService::class.java)
     }
-
 }

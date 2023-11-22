@@ -6,5 +6,4 @@ import javax.inject.Inject
 
 class RecentDrawsApi @Inject constructor(private val service: RecentDrawsService) {
     suspend fun getRecentDraws(): Response<RecentDrawsResponse> = service.getRecentDraws()
-
 }

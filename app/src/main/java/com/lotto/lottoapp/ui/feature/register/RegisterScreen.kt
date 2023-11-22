@@ -21,6 +21,10 @@ import androidx.navigation.NavHostController
 import com.lotto.lottoapp.core.components.CustomDatePicker
 import com.lotto.lottoapp.core.components.CustomDropdownMenu
 import com.lotto.lottoapp.core.components.CustomInputField
+import com.lotto.lottoapp.navigation.Paths
+import com.lotto.lottoapp.ui.constants.Buttons
+import com.lotto.lottoapp.ui.constants.Constants
+import com.lotto.lottoapp.ui.constants.Placeholders
 import com.lotto.lottoapp.ui.theme.CustomPurple
 import com.lotto.lottoapp.ui.theme.Typography
 import kotlinx.coroutines.CoroutineScope
@@ -48,8 +52,8 @@ fun RegisterScreen(
     ) {
 
         CustomInputField(
-            fieldName = "Email",
-            placeholderText = "Enter your email",
+            fieldName = Constants.EMAIL,
+            placeholderText = Placeholders.EMAIL_PLACEHOLDER,
             text = userRegisterInput.email,
             onFieldValueChange = { newValue ->
                 viewModel.updateField("email", newValue)
@@ -57,8 +61,8 @@ fun RegisterScreen(
             isError = false
         )
         CustomInputField(
-            fieldName = "Name",
-            placeholderText = "Enter your name",
+            fieldName = Constants.NAME,
+            placeholderText = Placeholders.NAME_PLACEHOLDER,
             text = userRegisterInput.name,
             onFieldValueChange = { newValue ->
                 viewModel.updateField("name", newValue)
@@ -66,8 +70,8 @@ fun RegisterScreen(
             isError = false
         )
         CustomInputField(
-            fieldName = "Surname",
-            placeholderText = "Enter your surname",
+            fieldName = Constants.SURNAME,
+            placeholderText = Placeholders.SURNAME_PLACEHOLDER,
             text = userRegisterInput.lastName,
             onFieldValueChange = { newValue ->
                 viewModel.updateField("lastName", newValue)
@@ -75,8 +79,8 @@ fun RegisterScreen(
             isError = false
         )
         CustomInputField(
-            fieldName = "Phone",
-            placeholderText = "Enter your phone",
+            fieldName = Constants.PHONE,
+            placeholderText = Placeholders.PHONE_PLACEHOLDER,
             text = userRegisterInput.phoneNumber,
             onFieldValueChange = { newValue ->
                 viewModel.updateField("phoneNumber", newValue)
@@ -84,14 +88,14 @@ fun RegisterScreen(
             isError = false
         )
         CustomDropdownMenu(
-            fieldName = "City", state = viewModel.cityState,
+            fieldName = Constants.CITY, state = viewModel.cityState,
             onFieldValueChange = { newValue ->
                 viewModel.updateField("cityId", newValue)
             }
         )
         CustomDatePicker(
-            fieldName = "Date",
-            placeholderText = "Enter your birthday",
+            fieldName = Constants.BIRTHDATE,
+            placeholderText = Placeholders.BIRTHDATE_PLACEHOLDER,
             text = userRegisterInput.birthDate
         ) { newValue: Long ->
             viewModel.updateField("birthDate", newValue)
@@ -101,7 +105,7 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(60.dp))
 
         Text(
-            text = "Submit",
+            text = Buttons.SUBMIT_BTN,
             style = Typography.titleMedium.copy(color = Color.White),
             modifier = Modifier
                 .clickable {
@@ -109,7 +113,7 @@ fun RegisterScreen(
                         viewModel.onClick(navController = navController)
                     }
                     if (userRegisterState.value.success) {
-                        navController.navigate("otp_screen")
+                        navController.navigate(Paths.OTP_SCREEN)
 
                     }
                 }

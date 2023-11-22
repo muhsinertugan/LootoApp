@@ -38,6 +38,7 @@ import com.lotto.lottoapp.model.request.LoginOtpRequest
 import com.lotto.lottoapp.model.request.LoginRequest
 import com.lotto.lottoapp.model.request.RegisterOtpRequest
 import com.lotto.lottoapp.model.request.RegisterRequest
+import com.lotto.lottoapp.ui.constants.Constants
 import com.lotto.lottoapp.ui.feature.otp.components.CustomCountDownTimer
 import com.lotto.lottoapp.ui.theme.CustomGray
 import com.lotto.lottoapp.ui.theme.CustomLightGray
@@ -55,9 +56,7 @@ fun OtpScreen(
     val otpScreenViewModel: OtpScreenViewModel = hiltViewModel()
 
     var otpValue by remember { mutableStateOf("") }
-
-    val totalDuration = 180f
-    var remainingTime by remember { mutableFloatStateOf(totalDuration) }
+    var remainingTime by remember { mutableFloatStateOf(Constants.TOTAL_DURATION) }
     var isRunning by remember { mutableStateOf(true) }
 
 
@@ -170,6 +169,6 @@ fun OtpScreen(
     }
 
 
-    CustomCountDownTimer(totalDuration = totalDuration, remainingTime = remainingTime)
+    CustomCountDownTimer(totalDuration = Constants.TOTAL_DURATION, remainingTime = remainingTime)
 
 }

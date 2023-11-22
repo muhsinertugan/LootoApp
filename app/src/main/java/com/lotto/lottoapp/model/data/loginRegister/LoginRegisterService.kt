@@ -1,5 +1,6 @@
 package com.lotto.lottoapp.model.data.loginRegister
 
+import com.lotto.lottoapp.di.ENDPOINTS
 import com.lotto.lottoapp.model.request.LoginOtpRequest
 import com.lotto.lottoapp.model.request.LoginRequest
 import com.lotto.lottoapp.model.request.RegisterOtpRequest
@@ -13,12 +14,12 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface LoginRegisterService {
-    @POST("auth/login/email")
+    @POST(ENDPOINTS.AUTH_LOGIN_URL)
     suspend fun postLogin(@Body login: LoginRequest): Response<LoginResponseItem>
-    @POST("auth/login/email/otp")
+    @POST(ENDPOINTS.OTP_LOGIN_URL)
     suspend fun postLoginOtp(@Body loginOtp : LoginOtpRequest):Response<LoginOtpResponseItem>
-    @POST("auth/register/email")
+    @POST(ENDPOINTS.AUTH_REGISTER_URL)
     suspend fun postRegister(@Body register: RegisterRequest ):Response<RegisterResponseItem>
-    @POST("auth/register/email/otp")
+    @POST(ENDPOINTS.OTP_REGISTER_URL)
     suspend fun postRegisterOtp(@Body registerOtp: RegisterOtpRequest):Response<RegisterOtpResponseItem>
 }

@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lotto.lottoapp.ui.constants.Buttons
 import com.lotto.lottoapp.ui.theme.CustomPurple
 import com.lotto.lottoapp.ui.theme.Typography
 
@@ -84,7 +85,7 @@ fun ProfileScreen() {
             Row {
 
                 Text(
-                    text = "Send Code",
+                    text = Buttons.SEND_BTN,
                     style = Typography.titleMedium.copy(color = Color.White),
                     modifier = Modifier
                         .clickable {
@@ -120,14 +121,14 @@ fun ProfileScreen() {
                         .clickable {
                             //TODO
                         },
-                    text = "Edit Profile",
+                    text = Buttons.EDIT_BTN,
                     style = TextStyle(
                         fontSize = 16.sp,
                         color = Color(0xFFFFFFFF),
                     )
                 )
             }
-            Column() {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text(
                     text = "Name: John ",
                     style = TextStyle(

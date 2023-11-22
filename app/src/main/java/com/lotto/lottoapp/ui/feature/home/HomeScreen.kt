@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.lotto.lottoapp.ui.constants.Constants
 import com.lotto.lottoapp.ui.feature.home.components.FutureDraws
 import com.lotto.lottoapp.ui.feature.home.components.RecentDraws
 
@@ -65,7 +66,7 @@ fun HomeScreen(
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = "Results",
+                text = Constants.RESULTS,
                 style = TextStyle(
                     fontSize = 32.sp,
                     fontWeight = FontWeight(500),

@@ -27,7 +27,6 @@ sealed class BottomNavItem(
         BottomNavItem(
             "Profile",
             "profile_screen",
-
             Icons.Outlined.Person
         )
 

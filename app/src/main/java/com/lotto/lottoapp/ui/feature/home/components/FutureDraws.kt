@@ -29,15 +29,17 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.lotto.lottoapp.model.response.game.Game
 import com.lotto.lottoapp.ui.feature.home.HomeScreenViewModel
-import com.lotto.lottoapp.ui.utils.calculateRemainingTime
+import com.lotto.lottoapp.utils.TimeUtil
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FutureDraws(
     gameState: Game,
     navController: NavHostController,
-    viewModel: HomeScreenViewModel = hiltViewModel()
+    viewModel: HomeScreenViewModel = hiltViewModel(),
 ) {
+
+    val time = TimeUtil()
 
     Box(
         modifier = Modifier
@@ -87,7 +89,7 @@ fun FutureDraws(
             }
             Box {
                 Text(
-                    text = "remains  ${calculateRemainingTime(gameState.nextDrawDate)}",
+                    text = "remains  ${time.calculateRemainingTime(gameState.nextDrawDate)}",
                     style = TextStyle(
                         fontSize = 12.sp,
                         fontWeight = FontWeight(700),

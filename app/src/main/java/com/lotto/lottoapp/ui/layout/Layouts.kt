@@ -97,7 +97,6 @@ fun GeneralLayout(
     inputComponent: @Composable () -> Unit,
     navController: NavHostController
 ) {
-
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween,

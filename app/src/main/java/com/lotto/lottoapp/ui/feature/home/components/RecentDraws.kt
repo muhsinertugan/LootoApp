@@ -26,12 +26,12 @@ import coil.compose.AsyncImage
 import com.lotto.lottoapp.model.response.game.Game
 import com.lotto.lottoapp.model.response.home.Draw
 import com.lotto.lottoapp.ui.feature.home.HomeScreenContract
-import com.lotto.lottoapp.ui.utils.convertDateFormat
+import com.lotto.lottoapp.utils.TimeUtil
 
 @Composable
 fun RecentDraws(recentDrawsState: Draw, gamesState: HomeScreenContract.GamesListState) {
 
-
+    val time = TimeUtil()
     val gameImage = gamesState.games.find { game: Game -> game._id == recentDrawsState.game._id  }
 
     Box(
@@ -59,7 +59,7 @@ fun RecentDraws(recentDrawsState: Draw, gamesState: HomeScreenContract.GamesList
                 .padding(12.dp)
         ) {
             Text(
-                text = convertDateFormat(recentDrawsState.createdAt), style = TextStyle(
+                text = time.convertDateFormat(recentDrawsState.createdAt), style = TextStyle(
                     fontSize = 20.sp,
                     fontWeight = FontWeight(500),
                     color = Color(0xFFFFFFFF),

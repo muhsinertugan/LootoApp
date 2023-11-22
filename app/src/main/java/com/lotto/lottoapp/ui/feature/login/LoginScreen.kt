@@ -19,6 +19,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.lotto.lottoapp.core.components.CustomInputField
+import com.lotto.lottoapp.ui.constants.Buttons
+import com.lotto.lottoapp.ui.constants.Constants
+import com.lotto.lottoapp.ui.constants.Placeholders
 import com.lotto.lottoapp.ui.theme.CustomPurple
 import com.lotto.lottoapp.ui.theme.Typography
 
@@ -39,8 +42,8 @@ fun LoginScreen(
     ) {
         Spacer(modifier = Modifier.height(200.dp))
         CustomInputField(
-            fieldName = "Email",
-            placeholderText = "Enter your email",
+            fieldName = Constants.EMAIL,
+            placeholderText = Placeholders.EMAIL_PLACEHOLDER,
             text = userLoginInput.email,
             onFieldValueChange = { newValue ->
                 viewModel.updateField("email", newValue)
@@ -51,7 +54,7 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(100.dp))
         Text(
-            text = "Send Code",
+            text = Buttons.SEND_BTN,
             style = Typography.titleMedium.copy(color = Color.White),
             modifier = Modifier
                 .clickable {

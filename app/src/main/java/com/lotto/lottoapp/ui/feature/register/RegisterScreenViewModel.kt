@@ -10,6 +10,7 @@ import com.lotto.lottoapp.model.data.general.GeneralRemoteSource
 import com.lotto.lottoapp.model.data.loginRegister.LoginRegisterApi
 import com.lotto.lottoapp.model.request.RegisterRequest
 import com.lotto.lottoapp.model.response.register.RegisterData
+import com.lotto.lottoapp.navigation.Paths
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -144,7 +145,7 @@ class RegisterScreenViewModel @Inject constructor(
                                     success = registerResponse.success
                                 )
                                 updateState(newState)
-                                navController.navigate("otp_screen/${registerRequest.email}/${registerRequest.email}/${registerRequest.email}/${registerRequest.email}/${registerRequest.email}/${registerRequest.email}")
+                                navController.navigate("${Paths.OTP_SCREEN}/${registerRequest.email}/${registerRequest.email}/${registerRequest.email}/${registerRequest.email}/${registerRequest.email}/${registerRequest.email}")
                             } else {
                                 val newState = RegisterScreenContract.ErrorState(
                                     code = registerResponse.code,

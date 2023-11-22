@@ -9,10 +9,11 @@ import com.lotto.lottoapp.model.request.RegisterOtpRequest
 import com.lotto.lottoapp.model.response.login.LoginOtpData
 import com.lotto.lottoapp.model.response.register.RegisterOtpData
 import com.lotto.lottoapp.model.response.register.User
+import com.lotto.lottoapp.navigation.Paths
+import com.lotto.lottoapp.utils.SharedPreferencesUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -20,8 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class OtpScreenViewModel @Inject constructor(
     private val loginRegisterService: LoginRegisterApi,
+    private val sharedPreferencesUtil: SharedPreferencesUtil
 ) : ViewModel() {
-
 
     private val _userRegisterOtpState = MutableStateFlow(
         OtpScreenContract.RegisterUserState(
@@ -45,7 +46,6 @@ class OtpScreenViewModel @Inject constructor(
         )
     )
 
-    private var userRegisterOtpState = _userRegisterOtpState.asStateFlow()
 
     private val _userLoginOtpState = MutableStateFlow(
         OtpScreenContract.LoginUserState(
@@ -54,8 +54,6 @@ class OtpScreenViewModel @Inject constructor(
             success = false
         )
     )
-
-    private var userLoginOtpState = _userLoginOtpState.asStateFlow()
 
 
     private fun updateState(newState: OtpScreenContract.LoginUserState) {
@@ -79,6 +77,11 @@ class OtpScreenViewModel @Inject constructor(
                 if (response.isSuccessful) {
                     val registerOtpResponse = response.body()
                     if (registerOtpResponse != null) {
+
+                        sharedPreferencesUtil.saveData(key = "userToken", value = registerOtpResponse.data.token)
+
+
+
                         //TODO: Handle success false cases for register and login UI and logic both.
                         val newState = OtpScreenContract.RegisterUserState(
                             data = registerOtpResponse.data,
@@ -87,7 +90,7 @@ class OtpScreenViewModel @Inject constructor(
                         )
                         updateState(newState)
                         if (registerOtpResponse.success) {
-                            navController.navigate("home_screen")
+                            navController.navigate(Paths.HOME_SCREEN)
                         }
                     } else {
                         updateState(
@@ -126,6 +129,7 @@ class OtpScreenViewModel @Inject constructor(
                 if (response.isSuccessful) {
                     val loginOtpResponse = response.body()
                     if (loginOtpResponse != null) {
+                        sharedPreferencesUtil.saveData(key = "userToken", value = loginOtpResponse.data.token)
                         //TODO: Handle success false cases for register and login UI and logic both.
                         val newState = OtpScreenContract.LoginUserState(
                             data = loginOtpResponse.data,
@@ -134,7 +138,7 @@ class OtpScreenViewModel @Inject constructor(
                         )
                         updateState(newState)
                         if (loginOtpResponse.success) {
-                            navController.navigate("home_screen")
+                            navController.navigate(Paths.HOME_SCREEN)
                         }
                     } else {
                         updateState(
@@ -163,6 +167,5 @@ class OtpScreenViewModel @Inject constructor(
             }
         }
     }
-
 
 }

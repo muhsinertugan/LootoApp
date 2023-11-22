@@ -26,13 +26,12 @@ import com.lotto.lottoapp.ui.layout.OtpScreenLayout
 fun Index() {
     Surface(modifier = Modifier.fillMaxSize()) {
         val navController = rememberNavController()
-        NavHost(navController = navController, startDestination = "result_screen") {
+        NavHost(navController = navController, startDestination = Paths.SPLASH_SCREEN) {
 
-            //TODO: Re-do the route logic
-            composable(route = "splash_screen") {
+            composable(route = Paths.SPLASH_SCREEN) {
                 SplashScreen(navController = navController)
             }
-            composable(route = "login_screen") {
+            composable(route = Paths.LOGIN_SCREEN) {
                 LoginRegisterLayout(
                     inputComponent = {
                         LoginScreen(
@@ -42,8 +41,7 @@ fun Index() {
                     navController = navController,
                 )
             }
-            composable(route = "register_screen") {
-
+            composable(route = Paths.REGISTER_SCREEN) {
                 LoginRegisterLayout(
                     inputComponent = {
                         RegisterScreen(navController = navController)
@@ -52,22 +50,23 @@ fun Index() {
                 )
             }
             composable(
-                route = "otp_screen/{email}", arguments = listOf(
-                    navArgument("email") { nullable = true },
-                    navArgument("birthDate") { nullable = true },
-                    navArgument("cityId") { nullable = true },
-                    navArgument("lastName") { nullable = true },
-                    navArgument("name") { nullable = true },
-                    navArgument("phoneNumber") { nullable = true },
+                route = "${Paths.OTP_SCREEN}/{${ScreenArguments.EMAIL}}",
+                arguments = listOf(
+                    navArgument(ScreenArguments.EMAIL) { nullable = true },
+                    navArgument(ScreenArguments.BIRTHDATE) { nullable = true },
+                    navArgument(ScreenArguments.CITY) { nullable = true },
+                    navArgument(ScreenArguments.SURNAME) { nullable = true },
+                    navArgument(ScreenArguments.NAME) { nullable = true },
+                    navArgument(ScreenArguments.PHONE) { nullable = true },
                 )
-            ) { it ->
-                val email = it.arguments?.getString("email")?.takeIf { it != "null" }
-                val birthDate = it.arguments?.getString("birthDate")?.takeIf { it != "null" }
-                val cityId = it.arguments?.getString("cityId")?.takeIf { it != "null" }
-                val lastName = it.arguments?.getString("lastName")?.takeIf { it != "null" }
-                val name = it.arguments?.getString("name")?.takeIf { it != "null" }
-                val phoneNumber = it.arguments?.getString("phoneNumber")?.takeIf { it != "null" }
-
+            ) { navBackStackEntry ->
+                val args = navBackStackEntry.arguments
+                val email = args?.getString(ScreenArguments.EMAIL)
+                val birthDate = args?.getString(ScreenArguments.BIRTHDATE)
+                val cityId = args?.getString(ScreenArguments.CITY)
+                val lastName = args?.getString(ScreenArguments.SURNAME)
+                val name = args?.getString(ScreenArguments.NAME)
+                val phoneNumber = args?.getString(ScreenArguments.PHONE)
 
                 val registerInput = RegisterRequest(
                     birthDate = birthDate,
@@ -77,9 +76,7 @@ fun Index() {
                     name = name,
                     phoneNumber = phoneNumber
                 )
-
                 val loginInput = LoginRequest(email = email)
-
 
                 OtpScreenLayout(
                     inputComponent = {
@@ -92,24 +89,27 @@ fun Index() {
                     }, navController = navController
                 )
             }
-            composable(route = "home_screen") {
+            composable(route = Paths.HOME_SCREEN) {
                 GeneralLayout(
-                    inputComponent = { HomeScreen(navController = navController) }, navController = navController
+                    inputComponent = { HomeScreen(navController = navController) },
+                    navController = navController
                 )
             }
-            composable(route = "profile_screen") {
+            composable(route = Paths.PROFILE_SCREEN) {
                 GeneralLayout(
                     inputComponent = { ProfileScreen() }, navController = navController
                 )
             }
-            composable(route = "game_screen/{gameId}", arguments = listOf(
-                navArgument("gameId") { nullable = true },
-            )) {
+            composable(
+                route = "${Paths.GAME_SCREEN}/{${ScreenArguments.GAME}}", arguments = listOf(
+                    navArgument(ScreenArguments.GAME) { nullable = true },
+                )
+            ) {
                 GeneralLayout(
                     inputComponent = { GameScreen() }, navController = navController
                 )
             }
-            composable(route = "result_screen") {
+            composable(route = Paths.RESULT_SCREEN) {
                 GeneralLayout(
                     inputComponent = { ResultScreen() }, navController = navController
                 )
