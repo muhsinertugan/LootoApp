@@ -59,7 +59,6 @@ android {
 
 dependencies {
 
-    val roomVersion = "2.5.2"
     val hiltVersion = "2.47"
     val retrofitVersion = "2.9.0"
     val coroutinesVersion = "1.7.3"
@@ -95,6 +94,11 @@ dependencies {
     kapt ("com.google.dagger:hilt-android-compiler:$hiltVersion")
     kapt ("com.google.dagger:hilt-compiler:$hiltVersion")
     implementation ("androidx.hilt:hilt-navigation-compose:1.0.0")
+
+    // For Dagger Hilt
+    implementation ("com.google.dagger:hilt-android:2.40.5")
+    annotationProcessor ("com.google.dagger:hilt-android-compiler:2.40.5")
+
 
     // Retrofit
     implementation ("com.squareup.retrofit2:retrofit:$retrofitVersion")
