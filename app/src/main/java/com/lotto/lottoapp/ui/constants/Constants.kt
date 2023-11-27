@@ -6,6 +6,9 @@ object Constants {
     const val RESULTS = "Results"
 
     const val TOTAL_DURATION = 180f
+    const val TEN_K = "10.000 cr."
+    const val TWENTY_K = "20.000 cr."
+    const val THIRTY_K = "30.000 cr."
 
 
     const val NAME="Name"

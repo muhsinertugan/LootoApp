@@ -17,3 +17,6 @@ class SharedPreferencesUtil(private val context: Context) {
         return sharedPreferences.getString(key, defaultValue) ?: defaultValue
     }
 }
+
+
+

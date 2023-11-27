@@ -102,7 +102,6 @@ fun GeneralLayout(
         verticalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier.fillMaxSize()
     ) {
-
         Scaffold(
             bottomBar = { BottomBarNavigation(navController = navController) },
             topBar = { TopBarComponent(navController = navController) }

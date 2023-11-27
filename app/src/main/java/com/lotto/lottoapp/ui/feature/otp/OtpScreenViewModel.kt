@@ -21,7 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class OtpScreenViewModel @Inject constructor(
     private val loginRegisterService: LoginRegisterApi,
-    private val sharedPreferencesUtil: SharedPreferencesUtil
+    private val sharedPreferencesUtil: SharedPreferencesUtil,
 ) : ViewModel() {
 
     private val _userRegisterOtpState = MutableStateFlow(
@@ -78,9 +78,11 @@ class OtpScreenViewModel @Inject constructor(
                     val registerOtpResponse = response.body()
                     if (registerOtpResponse != null) {
 
-                        sharedPreferencesUtil.saveData(key = "userToken", value = registerOtpResponse.data.token)
 
-
+                        sharedPreferencesUtil.saveData(
+                            key = "userToken",
+                            value = registerOtpResponse.data.token
+                        )
 
                         //TODO: Handle success false cases for register and login UI and logic both.
                         val newState = OtpScreenContract.RegisterUserState(
@@ -129,7 +131,13 @@ class OtpScreenViewModel @Inject constructor(
                 if (response.isSuccessful) {
                     val loginOtpResponse = response.body()
                     if (loginOtpResponse != null) {
-                        sharedPreferencesUtil.saveData(key = "userToken", value = loginOtpResponse.data.token)
+
+
+                        sharedPreferencesUtil.saveData(
+                            key = "userToken",
+                            value = loginOtpResponse.data.token
+                        )
+
                         //TODO: Handle success false cases for register and login UI and logic both.
                         val newState = OtpScreenContract.LoginUserState(
                             data = loginOtpResponse.data,

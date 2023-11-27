@@ -80,7 +80,7 @@ fun HomeScreen(
                 contentPadding = PaddingValues(horizontal = 24.dp),
                 pageSpacing = 12.dp,
                 pageSize = PageSize.Fixed(360.dp)
-            ) { page -> RecentDraws(recentDrawsState = recentDrawsState.recentDraws[page], gamesState) }
+            ) { page -> RecentDraws(recentDrawsState = recentDrawsState.recentDraws[page]) }
         }
 
     }

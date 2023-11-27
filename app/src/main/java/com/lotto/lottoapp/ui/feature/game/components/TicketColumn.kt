@@ -1,6 +1,7 @@
-package com.lotto.lottoapp.ui.feature.game.components.ticketColumn
+package com.lotto.lottoapp.ui.feature.game.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
@@ -15,12 +16,14 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.lotto.lottoapp.ui.feature.game.GameScreenContract
+import com.lotto.lottoapp.ui.feature.game.GameScreenViewModel
 import com.lotto.lottoapp.ui.theme.CustomGrayV2
 import com.lotto.lottoapp.ui.theme.CustomPurple
 
 @Composable
-fun TicketColumn(column: GameScreenContract.Column){
+fun TicketColumn(column: GameScreenContract.Column, viewModel: GameScreenViewModel = hiltViewModel()){
 
     column.column.selectedNumbers.map {columnNumbers ->
         val readyButtonColors = if(columnNumbers !== null ) CustomPurple else CustomGrayV2
@@ -34,12 +37,18 @@ fun TicketColumn(column: GameScreenContract.Column){
             horizontalArrangement = Arrangement.Center
         ) {
             Text(
+                modifier=Modifier.clickable {
+                    if (columnNumbers != null) {
+                        viewModel.removeNumber(columnNumbers)
+                    }
+                },
                 text = selectedNumber,
                 style = TextStyle(
                     fontSize = 16.sp,
                     color = Color.White,
                     textAlign = TextAlign.Center,
                 )
+
             )
 
         }

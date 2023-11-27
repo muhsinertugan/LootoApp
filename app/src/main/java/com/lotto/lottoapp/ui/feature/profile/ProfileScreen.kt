@@ -26,10 +26,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lotto.lottoapp.ui.constants.Buttons
+import com.lotto.lottoapp.ui.constants.Constants
 import com.lotto.lottoapp.ui.theme.CustomPurple
 import com.lotto.lottoapp.ui.theme.Typography
 
-@OptIn(ExperimentalFoundationApi::class)
 
 @Composable
 fun ProfileScreen() {
@@ -45,7 +45,7 @@ fun ProfileScreen() {
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 Text(
-                    text = "10.000 cr",
+                    text = Constants.TEN_K,
                     style = Typography.titleMedium.copy(color = Color.White),
                     modifier = Modifier
                         .clickable {
@@ -57,7 +57,7 @@ fun ProfileScreen() {
                 )
 
                 Text(
-                    text = "20.000 cr",
+                    text = Constants.TWENTY_K,
                     style = Typography.titleMedium.copy(color = Color.White),
                     modifier = Modifier
                         .clickable {
@@ -69,7 +69,7 @@ fun ProfileScreen() {
 
                 )
                 Text(
-                    text = "30.000 cr",
+                    text = Constants.THIRTY_K,
                     style = Typography.titleMedium.copy(color = Color.White),
                     modifier = Modifier
                         .clickable {

@@ -20,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,11 +32,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.lotto.lottoapp.ui.constants.Buttons
-import com.lotto.lottoapp.ui.feature.game.components.ticketColumn.TicketColumn
+import com.lotto.lottoapp.ui.feature.game.components.TicketColumn
+import com.lotto.lottoapp.ui.theme.CustomGray
 import com.lotto.lottoapp.ui.theme.CustomGrayV2
 import com.lotto.lottoapp.ui.theme.CustomPurple
 import com.lotto.lottoapp.ui.theme.Typography
-
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -43,9 +47,9 @@ fun GameScreen(
     viewModel: GameScreenViewModel = hiltViewModel()
 ) {
 
-    val game = viewModel.gameState.collectAsState()
-    val columns = viewModel.columns.collectAsState()
-
+    val game by viewModel.gameState.collectAsState()
+    val columns by viewModel.columns.collectAsState()
+    val selectedNumbers by viewModel.selectedNumbersState.collectAsState()
 
     Column(
         modifier = Modifier
@@ -60,14 +64,17 @@ fun GameScreen(
             contentPadding = PaddingValues(12.dp),
             content = {
                 items(game.value.game.maximumNumber) {
+                    val selectedNumber =
+                        if (!selectedNumbers.selectedNumbers.contains(it+1)) CustomPurple else CustomGray
+
                     Row(
                         modifier = Modifier
                             .size(32.dp)
                             .clip(CircleShape)
-                            .background(CustomPurple)
-                            .clickable { viewModel.selectNumber(it + 1) },
+                            .background(selectedNumber)
+                            .clickable { if (!selectedNumbers.selectedNumbers.contains(it+1)) viewModel.selectNumber(it + 1) },
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
+                        horizontalArrangement = Arrangement.Center,
                     ) {
                         Text(
                             text = (it + 1).toString(),
@@ -88,8 +95,9 @@ fun GameScreen(
                 .background(CustomGrayV2)
                 .verticalScroll(rememberScrollState())
         ) {
-            columns.value.columns.map { column ->
-                val readyButtonColors = if(!column.column.selectedNumbers.contains(null) ) CustomPurple else CustomGrayV2
+            columns.columns.map { column ->
+                val readyButtonColors =
+                    if (!column.column.selectedNumbers.contains(null)) CustomPurple else CustomGrayV2
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -98,7 +106,7 @@ fun GameScreen(
                         .padding(start = 30.dp, top = 20.dp, bottom = 10.dp)
                 ) {
 
-                        TicketColumn(column)
+                    TicketColumn(column)
 
                     Box(
                         modifier = Modifier
@@ -108,7 +116,10 @@ fun GameScreen(
                             .clickable { if (!column.column.selectedNumbers.contains(null)) viewModel.addColumnToTicket() }
 
                     ) {
-                        Text(text = Buttons.READY_BTN, color = Color.White)
+                        if (!column.column.selectedNumbers.contains(null)) Text(
+                            text = Buttons.READY_BTN,
+                            color = Color.White
+                        )
                     }
 
                 }
@@ -126,7 +137,9 @@ fun GameScreen(
                     style = Typography.titleMedium.copy(color = Color.White),
                     modifier = Modifier
                         .clickable {
-                            //TODO: add submit ticket
+                            CoroutineScope(Dispatchers.Main).launch {
+                                viewModel.buyTicket()
+                            }
                         }
                         .clip(RoundedCornerShape(8.dp))
                         .background(color = CustomPurple)

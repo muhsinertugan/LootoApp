@@ -19,11 +19,11 @@ import javax.inject.Inject
 class HomeScreenViewModel @Inject constructor(
     private val gamesListApi: GamesListApi,
     private val recentDrawsApi: RecentDrawsApi,
-    private val sharedPreferencesUtil: SharedPreferencesUtil
+    sharedPreferencesUtil: SharedPreferencesUtil
 ) :
     ViewModel() {
     init {
-        val anan = sharedPreferencesUtil.loadData(key = "userToken")
+        val userToken = sharedPreferencesUtil.loadData(key = "userToken")
 
         viewModelScope.launch(Dispatchers.IO) { initHomeScreen() }
     }

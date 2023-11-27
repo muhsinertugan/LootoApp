@@ -23,16 +23,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.lotto.lottoapp.model.response.game.Game
 import com.lotto.lottoapp.model.response.home.Draw
-import com.lotto.lottoapp.ui.feature.home.HomeScreenContract
 import com.lotto.lottoapp.utils.TimeUtil
 
 @Composable
-fun RecentDraws(recentDrawsState: Draw, gamesState: HomeScreenContract.GamesListState) {
+fun RecentDraws(recentDrawsState: Draw) {
 
     val time = TimeUtil()
-    val gameImage = gamesState.games.find { game: Game -> game._id == recentDrawsState.game._id  }
 
     Box(
         modifier = Modifier
@@ -44,14 +41,13 @@ fun RecentDraws(recentDrawsState: Draw, gamesState: HomeScreenContract.GamesList
         //.background(Color.Black)
     ) {
 
-        if (gameImage != null) {
-            AsyncImage(
-                model = gameImage.image,
-                contentDescription = gameImage.description,
-                contentScale = ContentScale.FillBounds,
-                modifier = Modifier.fillMaxSize()
-            )
-        }
+        AsyncImage(
+            model = recentDrawsState.game.image,
+            contentDescription = recentDrawsState.game.name,
+            contentScale = ContentScale.FillBounds,
+            modifier = Modifier.fillMaxSize()
+        )
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()

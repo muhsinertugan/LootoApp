@@ -6,6 +6,7 @@ import com.lotto.lottoapp.model.data.games.GameService
 import com.lotto.lottoapp.model.data.games.GamesListService
 import com.lotto.lottoapp.model.data.general.GeneralService
 import com.lotto.lottoapp.model.data.loginRegister.LoginRegisterService
+import com.lotto.lottoapp.model.data.tickets.TicketService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -101,5 +102,16 @@ object GameServiceModule {
     @Singleton
     fun provideGameService(retrofit: Retrofit): GameService {
         return retrofit.create(GameService::class.java)
+    }
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object TicketServiceModule {
+
+    @Provides
+    @Singleton
+    fun provideGameService(retrofit: Retrofit): TicketService {
+        return retrofit.create(TicketService::class.java)
     }
 }
