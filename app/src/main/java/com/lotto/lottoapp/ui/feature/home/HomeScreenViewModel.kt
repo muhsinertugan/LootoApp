@@ -22,12 +22,16 @@ class HomeScreenViewModel @Inject constructor(
     sharedPreferencesUtil: SharedPreferencesUtil
 ) :
     ViewModel() {
+
     init {
         val userToken = sharedPreferencesUtil.loadData(key = "userToken")
 
-        viewModelScope.launch(Dispatchers.IO) { initHomeScreen() }
-    }
+        viewModelScope.launch(Dispatchers.IO) {
 
+            initHomeScreen()
+
+        }
+    }
 
 
     private var _gamesState = MutableStateFlow(
@@ -110,12 +114,13 @@ class HomeScreenViewModel @Inject constructor(
 
     }
 
+
     private suspend fun initHomeScreen() {
         getGames()
         getRecentDraws()
     }
 
-    fun navigateToGame(navController: NavController, gameId: String){
+    fun navigateToGame(navController: NavController, gameId: String) {
         navController.navigate("${Paths.GAME_SCREEN}/${gameId}")
     }
 
