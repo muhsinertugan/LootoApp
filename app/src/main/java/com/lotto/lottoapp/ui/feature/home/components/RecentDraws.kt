@@ -23,7 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.lotto.lottoapp.model.response.home.Draw
+import com.lotto.lottoapp.model.response.draw.Draw
 import com.lotto.lottoapp.utils.TimeUtil
 
 @Composable

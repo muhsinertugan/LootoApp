@@ -7,8 +7,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class RegisterScreenContract {
-
-
     data class CityState(
         val cities: List<CityItem>? = listOf(),
         val isLoading : Boolean = true

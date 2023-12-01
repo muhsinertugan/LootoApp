@@ -1,6 +1,6 @@
 package com.lotto.lottoapp.model.response.profile
 
-data class Data(
+data class User(
     val __v: Int,
     val _id: String,
     val activated: Boolean,

@@ -37,6 +37,7 @@ fun HomeScreen(
 
 
 
+
     val gamesState = viewModel.gamesState.collectAsState().value
     val recentDrawsState = viewModel.recentDrawsState.collectAsState().value
 
@@ -47,7 +48,6 @@ fun HomeScreen(
     val recentDrawsPagerState = rememberPagerState(pageCount = {
         recentDrawsState.count
     })
-
 
     Column(
         modifier = Modifier.fillMaxSize(),

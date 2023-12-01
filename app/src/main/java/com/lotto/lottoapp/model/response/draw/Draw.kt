@@ -1,4 +1,4 @@
-package com.lotto.lottoapp.model.response.home
+package com.lotto.lottoapp.model.response.draw
 
 data class Draw(
     val __v: Int,
