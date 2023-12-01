@@ -1,11 +1,13 @@
 package com.lotto.lottoapp.di
 
 
+import com.lotto.lottoapp.model.data.balance.BalanceService
 import com.lotto.lottoapp.model.data.draws.RecentDrawsService
 import com.lotto.lottoapp.model.data.games.GameService
 import com.lotto.lottoapp.model.data.games.GamesListService
 import com.lotto.lottoapp.model.data.general.GeneralService
 import com.lotto.lottoapp.model.data.loginRegister.LoginRegisterService
+import com.lotto.lottoapp.model.data.profile.ProfileService
 import com.lotto.lottoapp.model.data.tickets.TicketService
 import dagger.Module
 import dagger.Provides
@@ -113,5 +115,25 @@ object TicketServiceModule {
     @Singleton
     fun provideGameService(retrofit: Retrofit): TicketService {
         return retrofit.create(TicketService::class.java)
+    }
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object ProfileServiceModule {
+    @Provides
+    @Singleton
+    fun provideProfileService(retrofit: Retrofit): ProfileService {
+        return retrofit.create(ProfileService::class.java)
+    }
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object BalanceServiceModule {
+    @Provides
+    @Singleton
+    fun provideProfileService(retrofit: Retrofit): BalanceService {
+        return retrofit.create(BalanceService::class.java)
     }
 }
