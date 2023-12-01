@@ -1,6 +1,5 @@
 package com.lotto.lottoapp.ui.feature.profile
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +17,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,14 +25,33 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.lotto.lottoapp.ui.constants.Buttons
 import com.lotto.lottoapp.ui.constants.Constants
+import com.lotto.lottoapp.ui.theme.CustomGray
 import com.lotto.lottoapp.ui.theme.CustomPurple
+import com.lotto.lottoapp.ui.theme.CustomPurpleV2
 import com.lotto.lottoapp.ui.theme.Typography
 
 
 @Composable
 fun ProfileScreen() {
+
+    val profileViewModel: ProfileScreenViewModel = hiltViewModel()
+
+    val selectableAmounts = profileViewModel.selectableAmounts.collectAsState()
+    val selectedAmount = profileViewModel.selectedAmount.collectAsState()
+
+    val profileTitles = arrayOf(
+        Constants.NAME,
+        Constants.SURNAME,
+        Constants.EMAIL,
+        Constants.PHONE,
+        Constants.CITY,
+        Constants.BIRTHDATE
+    )
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -44,52 +63,36 @@ fun ProfileScreen() {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Text(
-                    text = Constants.TEN_K,
-                    style = Typography.titleMedium.copy(color = Color.White),
-                    modifier = Modifier
-                        .clickable {
-                            //TODO
-                        }
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(color = CustomPurple)
-                        .padding(12.dp)
-                )
 
-                Text(
-                    text = Constants.TWENTY_K,
-                    style = Typography.titleMedium.copy(color = Color.White),
-                    modifier = Modifier
-                        .clickable {
-                            //TODO
-                        }
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(color = CustomPurple)
-                        .padding(12.dp)
 
-                )
-                Text(
-                    text = Constants.THIRTY_K,
-                    style = Typography.titleMedium.copy(color = Color.White),
-                    modifier = Modifier
-                        .clickable {
-                            //TODO
-                        }
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(color = CustomPurple)
-                        .padding(12.dp)
+                selectableAmounts.value.map { selectableAmountState ->
+                    val selectedAmountColor =
+                        if (selectableAmountState.title === selectedAmount.value.title) CustomPurpleV2 else CustomGray
 
-                )
+                    Text(
+                        text = selectableAmountState.title,
+                        style = Typography.titleMedium.copy(color = Color.White),
+                        modifier = Modifier
+                            .clickable {
+                                profileViewModel.updateBalance(
+                                    state = selectableAmountState
+                                )
+                            }
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(color = selectedAmountColor)
+                            .padding(12.dp)
+                    )
+                }
             }
             Spacer(modifier = Modifier.height(48.dp))
             Row {
 
                 Text(
-                    text = Buttons.SEND_BTN,
+                    text = Buttons.SUBMIT_BTN,
                     style = Typography.titleMedium.copy(color = Color.White),
                     modifier = Modifier
                         .clickable {
-                            //TODO
+                            profileViewModel.addBalance(selectedAmount.value.amount)
                         }
                         .clip(RoundedCornerShape(8.dp))
                         .background(color = CustomPurple)
@@ -129,48 +132,26 @@ fun ProfileScreen() {
                 )
             }
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text(
-                    text = "Name: John ",
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        color = Color(0xFFFFFFFF),
-                    )
-                )
-                Text(
-                    text = "Surname:  Doe ",
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        color = Color(0xFFFFFFFF),
-                    )
-                )
-                Text(
-                    text = "E-mail: example@gmail.com",
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        color = Color(0xFFFFFFFF),
-                    )
-                )
-                Text(
-                    text = "Phone number: 905555555555555",
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        color = Color(0xFFFFFFFF),
-                    )
-                )
-                Text(
-                    text = "City: Zonguldak",
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        color = Color(0xFFFFFFFF),
-                    )
-                )
-                Text(
-                    text = "Birthday: 15/03/1994",
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        color = Color(0xFFFFFFFF),
-                    )
-                )
+
+                profileTitles.map {
+                    Row {
+                        Text(
+                            text = "$it: ",
+                            style = TextStyle(
+                                fontSize = 16.sp,
+                                color = Color(0xFFFFFFFF),
+                            )
+                        )
+                        Text(
+                            text = "John",
+                            style = TextStyle(
+                                fontSize = 16.sp,
+                                color = Color(0xFFFFFFFF),
+                            )
+                        )
+                    }
+                }
+
             }
         }
     }
