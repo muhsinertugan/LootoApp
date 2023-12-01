@@ -9,7 +9,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -26,30 +29,38 @@ fun LoginRegisterLayout(
     inputComponent: @Composable (navController: NavHostController) -> Unit,
     navController: NavHostController,
 ) {
-    BackgroundImage()
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        inputComponent(navController = navController)
-        Box(modifier = Modifier.height(125.dp)) {
-            Box(
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(bottom = 75.dp)
+    val snackbarHostState = remember { SnackbarHostState() }
+    Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+
+    ) { innerPadding ->
+        BackgroundImage()
+        Column(modifier = Modifier.padding(innerPadding)) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxSize()
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.lotto_logo),
-                    contentDescription = "logo",
-                    contentScale = ContentScale.FillBounds,
-                    modifier = Modifier
-                        .width(160.dp)
-                        .height(50.dp)
-                        .align(Alignment.BottomCenter)
+                inputComponent(navController = navController)
+                Box(modifier = Modifier.height(125.dp)) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(bottom = 75.dp)
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.lotto_logo),
+                            contentDescription = "logo",
+                            contentScale = ContentScale.FillBounds,
+                            modifier = Modifier
+                                .width(160.dp)
+                                .height(50.dp)
+                                .align(Alignment.BottomCenter)
 
 
-                )
+                        )
+                    }
+                }
             }
         }
     }
@@ -63,52 +74,70 @@ fun OtpScreenLayout(
     inputComponent: @Composable (navController: NavHostController) -> Unit,
     navController: NavHostController,
 ) {
-    BackgroundImage()
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        inputComponent(navController = navController)
-        Box(modifier = Modifier.height(125.dp)) {
-            Box(
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(bottom = 75.dp)
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+
+    ) { innerPadding ->
+        BackgroundImage()
+        Column(modifier = Modifier.padding(innerPadding)) {
+
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxSize()
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.lotto_logo),
-                    contentDescription = "logo",
-                    contentScale = ContentScale.FillBounds,
-                    modifier = Modifier
-                        .width(160.dp)
-                        .height(50.dp)
-                        .align(Alignment.BottomCenter)
+
+                inputComponent(navController = navController)
+                Box(modifier = Modifier.height(125.dp)) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(bottom = 75.dp)
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.lotto_logo),
+                            contentDescription = "logo",
+                            contentScale = ContentScale.FillBounds,
+                            modifier = Modifier
+                                .width(160.dp)
+                                .height(50.dp)
+                                .align(Alignment.BottomCenter)
 
 
-                )
+                        )
+                    }
+                }
             }
         }
+
     }
+
+
 }
 
 @Composable
 fun GeneralLayout(
     inputComponent: @Composable () -> Unit,
-    navController: NavHostController
+    navController: NavHostController,
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier.fillMaxSize()
     ) {
+
         Scaffold(
             bottomBar = { BottomBarNavigation(navController = navController) },
-            topBar = { TopBarComponent(navController = navController) }
+            topBar = { TopBarComponent(navController = navController) },
+            snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
         ) { innerPadding ->
             BackgroundImage()
             Column(modifier = Modifier.padding(innerPadding)) {
                 inputComponent()
+
             }
 
         }
