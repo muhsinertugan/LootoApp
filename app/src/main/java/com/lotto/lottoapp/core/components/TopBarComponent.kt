@@ -13,6 +13,8 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,13 +25,33 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.lotto.lottoapp.R
 import com.lotto.lottoapp.navigation.Paths
+import com.lotto.lottoapp.ui.feature.profile.ProfileScreenViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 
-fun TopBarComponent(navController: NavHostController) {
+fun TopBarComponent(
+    navController: NavHostController,
+) {
+
+    val profileScreenViewModel: ProfileScreenViewModel = hiltViewModel()
+    val balance = profileScreenViewModel.balanceState.collectAsState()
+
+
+
+    SideEffect {
+        CoroutineScope(Dispatchers.Main).launch {
+            profileScreenViewModel.getBalance()
+        }
+    }
+
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -59,7 +81,7 @@ fun TopBarComponent(navController: NavHostController) {
                 contentDescription = "profile-logo"
             )
             Text(
-                text = "9000000 cr.",
+                text = "${balance.value.amount} cr.",
                 style = TextStyle(
                     fontSize = 24.sp,
                     fontWeight = FontWeight(700),
