@@ -27,11 +27,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.lotto.lottoapp.ui.constants.Buttons
-import com.lotto.lottoapp.ui.constants.Constants
 import com.lotto.lottoapp.ui.theme.CustomGray
 import com.lotto.lottoapp.ui.theme.CustomPurple
 import com.lotto.lottoapp.ui.theme.CustomPurpleV2
 import com.lotto.lottoapp.ui.theme.Typography
+import com.lotto.lottoapp.utils.TimeUtil
 
 
 @Composable
@@ -41,16 +41,9 @@ fun ProfileScreen() {
 
     val selectableAmounts = profileViewModel.selectableAmounts.collectAsState()
     val selectedAmount = profileViewModel.selectedAmount.collectAsState()
+    val profileState = profileViewModel.profileState.collectAsState()
 
-    val profileTitles = arrayOf(
-        Constants.NAME,
-        Constants.SURNAME,
-        Constants.EMAIL,
-        Constants.PHONE,
-        Constants.CITY,
-        Constants.BIRTHDATE
-    )
-
+    val time = TimeUtil()
 
     Column(
         modifier = Modifier
@@ -133,26 +126,108 @@ fun ProfileScreen() {
             }
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
 
-                profileTitles.map {
-                    Row {
-                        Text(
-                            text = "$it: ",
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                color = Color(0xFFFFFFFF),
-                            )
+
+                Row {
+                    Text(
+                        text = "${profileState.value.title.name}: ",
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            color = Color(0xFFFFFFFF),
                         )
-                        Text(
-                            text = "John",
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                color = Color(0xFFFFFFFF),
-                            )
+                    )
+                    Text(
+                        text = profileState.value.data.name,
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            color = Color(0xFFFFFFFF),
                         )
-                    }
+                    )
                 }
+                Row {
+                    Text(
+                        text = "${profileState.value.title.lastName}: ",
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            color = Color(0xFFFFFFFF),
+                        )
+                    )
+                    Text(
+                        text = profileState.value.data.lastName,
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            color = Color(0xFFFFFFFF),
+                        )
+                    )
+                }
+                Row {
+                    Text(
+                        text = "${profileState.value.title.email}: ",
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            color = Color(0xFFFFFFFF),
+                        )
+                    )
+                    Text(
+                        text = profileState.value.data.email,
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            color = Color(0xFFFFFFFF),
+                        )
+                    )
+                }
+                Row {
+                    Text(
+                        text = "${profileState.value.title.phoneNumber}: ",
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            color = Color(0xFFFFFFFF),
+                        )
+                    )
+                    Text(
+                        text = profileState.value.data.phoneNumber,
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            color = Color(0xFFFFFFFF),
+                        )
+                    )
+                }
+                Row {
+                    Text(
+                        text = "${profileState.value.title.city}: ",
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            color = Color(0xFFFFFFFF),
+                        )
+                    )
+                    Text(
+                        text = profileState.value.data.city.name,
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            color = Color(0xFFFFFFFF),
+                        )
+                    )
+                }
+                Row {
+                    Text(
+                        text = "${profileState.value.title.birthDate}: ",
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            color = Color(0xFFFFFFFF),
+                        )
+                    )
+                    Text(
+                        text =  if(profileState.value.data.birthDate !== "") time.convertDateFormat(profileState.value.data.birthDate) else "",
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            color = Color(0xFFFFFFFF),
+                        )
+                    )
+                }
+
 
             }
         }
     }
 }
+
+

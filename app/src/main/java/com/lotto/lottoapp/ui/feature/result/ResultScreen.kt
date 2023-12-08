@@ -17,6 +17,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,22 +31,37 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.lotto.lottoapp.core.components.CustomInputField
 import com.lotto.lottoapp.ui.constants.Buttons
 import com.lotto.lottoapp.ui.theme.CustomPurple
 import com.lotto.lottoapp.ui.theme.Typography
+import com.lotto.lottoapp.utils.TimeUtil
 
 @Composable
 fun ResultScreen() {
 
-
+    val resultScreenViewModel: ResultScreenViewModel = hiltViewModel()
     val resultsTitle = arrayOf("Date", "Numbers", "Result")
     val isTicketSearched by remember { mutableStateOf(false) }
+    val userTicketState = resultScreenViewModel.userTicketsState.collectAsState()
+    val userTickets = userTicketState.value.ticketsResponse.data.tickets.flatMap { ticket ->
+        ticket.blocks.map { ticketNumbers ->
 
+            ResultScreenContract.ScreenTicketsList(
+                ticketNumbers.createdAt,
+                ticketNumbers.numbers.joinToString("-"),
+                ticketNumbers.isWinner,
+
+                )
+
+        }
+    }.reversed()
+
+    val time = TimeUtil()
 
     Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (isTicketSearched) {
             Spacer(modifier = Modifier.padding(vertical = 12.dp))
@@ -172,621 +188,67 @@ fun ResultScreen() {
                     .verticalScroll(rememberScrollState())
             ) {
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                userTickets.map {
 
-                ) {
-                    Box(
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
+                            .padding(top = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = "25/10/2023", style = MaterialTheme.typography.titleSmall,
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = if (it.createdAt !== "") time.convertDateFormat(it.createdAt) else "",
+                                style = MaterialTheme.typography.titleSmall,
 
-                            color = Color.White, textAlign = TextAlign.Center
+                                color = Color.White,
+                                textAlign = TextAlign.Center
 
-                        )
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = it.numbers, style = MaterialTheme.typography.titleSmall,
+
+                                color = Color.White, textAlign = TextAlign.Center
+
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                                .background(if (it.isWinner) Color.Green else Color.Red)
+                                .padding(vertical = 4.dp), contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+
+                                text = if (it.isWinner) "Win" else "Lost",
+                                style = MaterialTheme.typography.titleSmall,
+                                color = Color.White,
+                                textAlign = TextAlign.Center
+
+                            )
+                        }
                     }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "123456", style = MaterialTheme.typography.titleSmall,
 
-                            color = Color.White, textAlign = TextAlign.Center
 
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                            .background(Color.Transparent)
-                            .padding(vertical = 4.dp), contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Remains: 6d 2w 1h",
-                            style = MaterialTheme.typography.titleSmall,
-                            color = Color.White,
-                            textAlign = TextAlign.Center
-
-                        )
-                    }
                 }
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "25/10/2023", style = MaterialTheme.typography.titleSmall,
-
-                            color = Color.White, textAlign = TextAlign.Center
-
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "123456", style = MaterialTheme.typography.titleSmall,
-
-                            color = Color.White, textAlign = TextAlign.Center
-
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                            .background(Color.Red)
-                            .padding(vertical = 4.dp), contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-
-                            text = "Lost",
-                            style = MaterialTheme.typography.titleSmall,
-                            color = Color.White,
-                            textAlign = TextAlign.Center
-
-                        )
-                    }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "25/10/2023", style = MaterialTheme.typography.titleSmall,
-
-                            color = Color.White, textAlign = TextAlign.Center
-
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "123456", style = MaterialTheme.typography.titleSmall,
-
-                            color = Color.White, textAlign = TextAlign.Center
-
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                            .background(Color(0xFF169F00))
-                            .padding(vertical = 4.dp), contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-
-                            text = "Prize 100.000 \$",
-                            style = MaterialTheme.typography.titleSmall,
-                            color = Color.White,
-                            textAlign = TextAlign.Center
-
-                        )
-                    }
-                }
-
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "25/10/2023", style = MaterialTheme.typography.titleSmall,
-
-                            color = Color.White, textAlign = TextAlign.Center
-
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "123456", style = MaterialTheme.typography.titleSmall,
-
-                            color = Color.White, textAlign = TextAlign.Center
-
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                            .background(Color(0xFF169F00))
-                            .padding(vertical = 4.dp), contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-
-                            text = "Prize 100.000 \$",
-                            style = MaterialTheme.typography.titleSmall,
-                            color = Color.White,
-                            textAlign = TextAlign.Center
-
-                        )
-                    }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "25/10/2023", style = MaterialTheme.typography.titleSmall,
-
-                            color = Color.White, textAlign = TextAlign.Center
-
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "123456", style = MaterialTheme.typography.titleSmall,
-
-                            color = Color.White, textAlign = TextAlign.Center
-
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                            .background(Color(0xFF169F00))
-                            .padding(vertical = 4.dp), contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-
-                            text = "Prize 100.000 \$",
-                            style = MaterialTheme.typography.titleSmall,
-                            color = Color.White,
-                            textAlign = TextAlign.Center
-
-                        )
-                    }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "25/10/2023", style = MaterialTheme.typography.titleSmall,
-
-                            color = Color.White, textAlign = TextAlign.Center
-
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "123456", style = MaterialTheme.typography.titleSmall,
-
-                            color = Color.White, textAlign = TextAlign.Center
-
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                            .background(Color(0xFF169F00))
-                            .padding(vertical = 4.dp), contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-
-                            text = "Prize 100.000 \$",
-                            style = MaterialTheme.typography.titleSmall,
-                            color = Color.White,
-                            textAlign = TextAlign.Center
-
-                        )
-                    }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "25/10/2023", style = MaterialTheme.typography.titleSmall,
-
-                            color = Color.White, textAlign = TextAlign.Center
-
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "123456", style = MaterialTheme.typography.titleSmall,
-
-                            color = Color.White, textAlign = TextAlign.Center
-
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                            .background(Color(0xFF169F00))
-                            .padding(vertical = 4.dp), contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-
-                            text = "Prize 100.000 \$",
-                            style = MaterialTheme.typography.titleSmall,
-                            color = Color.White,
-                            textAlign = TextAlign.Center
-
-                        )
-                    }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "25/10/2023", style = MaterialTheme.typography.titleSmall,
-
-                            color = Color.White, textAlign = TextAlign.Center
-
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "123456", style = MaterialTheme.typography.titleSmall,
-
-                            color = Color.White, textAlign = TextAlign.Center
-
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                            .background(Color(0xFF169F00))
-                            .padding(vertical = 4.dp), contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-
-                            text = "Prize 100.000 \$",
-                            style = MaterialTheme.typography.titleSmall,
-                            color = Color.White,
-                            textAlign = TextAlign.Center
-
-                        )
-                    }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "25/10/2023", style = MaterialTheme.typography.titleSmall,
-
-                            color = Color.White, textAlign = TextAlign.Center
-
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "123456", style = MaterialTheme.typography.titleSmall,
-
-                            color = Color.White, textAlign = TextAlign.Center
-
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                            .background(Color(0xFF169F00))
-                            .padding(vertical = 4.dp), contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-
-                            text = "Prize 100.000 \$",
-                            style = MaterialTheme.typography.titleSmall,
-                            color = Color.White,
-                            textAlign = TextAlign.Center
-
-                        )
-                    }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "25/10/2023", style = MaterialTheme.typography.titleSmall,
-
-                            color = Color.White, textAlign = TextAlign.Center
-
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "123456", style = MaterialTheme.typography.titleSmall,
-
-                            color = Color.White, textAlign = TextAlign.Center
-
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                            .background(Color(0xFF169F00))
-                            .padding(vertical = 4.dp), contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-
-                            text = "Prize 100.000 \$",
-                            style = MaterialTheme.typography.titleSmall,
-                            color = Color.White,
-                            textAlign = TextAlign.Center
-
-                        )
-                    }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "25/10/2023", style = MaterialTheme.typography.titleSmall,
-
-                            color = Color.White, textAlign = TextAlign.Center
-
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "123456", style = MaterialTheme.typography.titleSmall,
-
-                            color = Color.White, textAlign = TextAlign.Center
-
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                            .background(Color(0xFF169F00))
-                            .padding(vertical = 4.dp), contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-
-                            text = "Prize 100.000 \$",
-                            style = MaterialTheme.typography.titleSmall,
-                            color = Color.White,
-                            textAlign = TextAlign.Center
-
-                        )
-                    }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "25/10/2023", style = MaterialTheme.typography.titleSmall,
-
-                            color = Color.White, textAlign = TextAlign.Center
-
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "123456", style = MaterialTheme.typography.titleSmall,
-
-                            color = Color.White, textAlign = TextAlign.Center
-
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                            .background(Color(0xFF169F00))
-                            .padding(vertical = 4.dp), contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-
-                            text = "Prize 100.000 \$",
-                            style = MaterialTheme.typography.titleSmall,
-                            color = Color.White,
-                            textAlign = TextAlign.Center
-
-                        )
-                    }
-                }
             }
         }
     }
-
 }
+
 

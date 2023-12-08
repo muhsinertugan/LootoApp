@@ -39,8 +39,9 @@ fun RegisterScreen(
 ) {
 
 
-    val userRegisterInput by viewModel.userInput.collectAsState()
-    val userRegisterState by viewModel.userState.collectAsState()
+    val userRegisterInput = viewModel.userInput.collectAsState()
+    val userRegisterState = viewModel.userState.collectAsState()
+    val cityState = viewModel.cityState.collectAsState()
     val errorState by viewModel.errorState.collectAsState()
 
 
@@ -54,7 +55,7 @@ fun RegisterScreen(
         CustomInputField(
             fieldName = Constants.EMAIL,
             placeholderText = Placeholders.EMAIL_PLACEHOLDER,
-            text = userRegisterInput.email,
+            text = userRegisterInput.value.email,
             onFieldValueChange = { newValue ->
                 viewModel.updateField("email", newValue)
             },
@@ -63,7 +64,7 @@ fun RegisterScreen(
         CustomInputField(
             fieldName = Constants.NAME,
             placeholderText = Placeholders.NAME_PLACEHOLDER,
-            text = userRegisterInput.name,
+            text = userRegisterInput.value.name,
             onFieldValueChange = { newValue ->
                 viewModel.updateField("name", newValue)
             },
@@ -72,7 +73,7 @@ fun RegisterScreen(
         CustomInputField(
             fieldName = Constants.SURNAME,
             placeholderText = Placeholders.SURNAME_PLACEHOLDER,
-            text = userRegisterInput.lastName,
+            text = userRegisterInput.value.lastName,
             onFieldValueChange = { newValue ->
                 viewModel.updateField("lastName", newValue)
             },
@@ -81,22 +82,21 @@ fun RegisterScreen(
         CustomInputField(
             fieldName = Constants.PHONE,
             placeholderText = Placeholders.PHONE_PLACEHOLDER,
-            text = userRegisterInput.phoneNumber,
+            text = userRegisterInput.value.phoneNumber,
             onFieldValueChange = { newValue ->
                 viewModel.updateField("phoneNumber", newValue)
             },
             isError = false
         )
         CustomDropdownMenu(
-            fieldName = Constants.CITY, state = viewModel.cityState,
-            onFieldValueChange = { newValue ->
-                viewModel.updateField("cityId", newValue)
-            }
-        )
+            fieldName = Constants.CITY, state = cityState
+        ) { newValue ->
+            viewModel.updateField("cityId", newValue)
+        }
         CustomDatePicker(
             fieldName = Constants.BIRTHDATE,
             placeholderText = Placeholders.BIRTHDATE_PLACEHOLDER,
-            text = userRegisterInput.birthDate
+            text = userRegisterInput.value.birthDate
         ) { newValue: Long ->
             viewModel.updateField("birthDate", newValue)
         }

@@ -1,16 +1,14 @@
 package com.lotto.lottoapp.ui.feature.register
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import com.lotto.lottoapp.model.data.general.GeneralRemoteSource
+import com.lotto.lottoapp.model.data.general.GeneralApi
 import com.lotto.lottoapp.model.data.loginRegister.LoginRegisterApi
 import com.lotto.lottoapp.model.request.RegisterRequest
 import com.lotto.lottoapp.model.response.register.RegisterData
 import com.lotto.lottoapp.navigation.Paths
+import com.lotto.lottoapp.utils.SharedPreferencesUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,13 +21,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegisterScreenViewModel @Inject constructor(
-    private val remoteSource: GeneralRemoteSource,
+    private val cityApi: GeneralApi,
     private val loginRegisterService: LoginRegisterApi,
-
-    ) : ViewModel() {
+    private val sharedPreferencesUtil: SharedPreferencesUtil
+) : ViewModel() {
 
     init {
-        // viewModelScope.launch { getCities() }
+        viewModelScope.launch {
+            getCities()
+        }
     }
 
     private var _errorState = MutableStateFlow(
@@ -49,12 +49,13 @@ class RegisterScreenViewModel @Inject constructor(
 
     }
 
-    var cityState by mutableStateOf(
-        RegisterScreenContract.CityState(
-            cities = listOf(), isLoading = true
-        )
+
+    private var _cityState = MutableStateFlow(
+        RegisterScreenContract.CityState(cities = listOf(), isLoading = true)
     )
-    //TODO: fix cityState
+
+    val cityState = _cityState.asStateFlow()
+
 
     private var _userInput = MutableStateFlow(
         RegisterRequest(
@@ -121,9 +122,30 @@ class RegisterScreenViewModel @Inject constructor(
 
 
     private suspend fun getCities() {
-        viewModelScope.launch {
-            val cities = remoteSource.getCities()
-            cityState = cityState.copy(cities = cities, isLoading = false)
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = cityApi.getCities()
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        val citiesResponse = response.body()
+                        if (citiesResponse != null) {
+                            if (citiesResponse.success) {
+                                val newState = RegisterScreenContract.CityState(
+                                    cities = citiesResponse.data,
+                                    isLoading = false
+                                )
+
+                                _cityState.value = newState
+                                sharedPreferencesUtil.saveData("cities", newState.cities.toString())
+                            }
+                        }
+                    }
+
+                }
+            } catch (e: Exception) {
+                //TODO: handle error
+            }
+
         }
     }
 

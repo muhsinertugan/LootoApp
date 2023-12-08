@@ -1,16 +1,21 @@
 package com.lotto.lottoapp.ui.feature.profile
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lotto.lottoapp.model.data.balance.BalanceApi
+import com.lotto.lottoapp.model.data.general.GeneralApi
 import com.lotto.lottoapp.model.data.profile.ProfileApi
 import com.lotto.lottoapp.model.request.BalanceRequest
+import com.lotto.lottoapp.model.response.general.CityResponseItem
 import com.lotto.lottoapp.model.response.profile.User
 import com.lotto.lottoapp.ui.constants.Constants
+import com.lotto.lottoapp.ui.feature.register.RegisterScreenContract
 import com.lotto.lottoapp.utils.SharedPreferencesUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -18,15 +23,28 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileScreenViewModel @Inject constructor(
+    private val cityApi: GeneralApi,
     private val profileApi: ProfileApi,
     private val balanceApi: BalanceApi,
-    private val sharedPreferencesUtil: SharedPreferencesUtil
+    private val sharedPreferencesUtil: SharedPreferencesUtil,
 ) : ViewModel() {
 
+    init {
+        viewModelScope.launch(Dispatchers.Main) {
+            initProfile()
+        }
+
+    }
+
+    private var _cityState = MutableStateFlow(
+        RegisterScreenContract.CityState(cities = listOf(), isLoading = true)
+    )
+
+    val cityState = _cityState.asStateFlow()
 
 
     private var _userState = MutableStateFlow(
-        ProfileScreenContract.ProfileState(
+        ProfileScreenContract.UserState(
             user = User(
                 __v = 0,
                 _id = "",
@@ -45,7 +63,85 @@ class ProfileScreenViewModel @Inject constructor(
         )
     )
 
-    var userState = _userState.asStateFlow()
+    private var userState = _userState.asStateFlow()
+
+
+    private var _profileState = MutableStateFlow(
+        ProfileScreenContract.ProfileState(
+            title = ProfileScreenContract.ProfileTitles(),
+            data = ProfileScreenContract.UserData(
+                birthDate = "",
+                city = CityResponseItem(
+                    __v = 0,
+                    _id = "",
+                    code = 0,
+                    latitude = "",
+                    longitude = "",
+                    name = "",
+                    population = 0,
+                    region = ""
+                ),
+                email = "",
+                lastName = "",
+                name = "",
+                phoneNumber = ""
+            )
+        )
+    )
+
+    var profileState = _profileState.asStateFlow()
+
+
+    private fun updateProfileState(
+        userState: StateFlow<ProfileScreenContract.UserState>,
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = cityApi.getCities()
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        val citiesResponse = response.body()
+                        if (citiesResponse != null) {
+                            if (citiesResponse.success) {
+                                val newState = RegisterScreenContract.CityState(
+                                    cities = citiesResponse.data,
+                                    isLoading = false
+                                )
+
+                                _cityState.value = newState
+
+
+                                val userCity = newState.cities.filter {
+                                    it._id == userState.value.user.cityId
+                                }
+
+                                val newProfileState = ProfileScreenContract.ProfileState(
+                                    title = ProfileScreenContract.ProfileTitles(),
+                                    data = ProfileScreenContract.UserData(
+                                        birthDate = userState.value.user.birthDate,
+                                        city = userCity[0],
+                                        email = userState.value.user.email,
+                                        lastName = userState.value.user.lastName,
+                                        name = userState.value.user.name,
+                                        phoneNumber = userState.value.user.phoneNumber
+                                    )
+                                )
+                                Log.d("newProfileState", newProfileState.data.toString())
+                                _profileState.value = newProfileState
+
+
+                            }
+                        }
+                    }
+
+                }
+            } catch (e: Exception) {
+                //TODO: handle error
+            }
+
+        }
+
+    }
 
 
     private val _balanceState = MutableStateFlow(
@@ -53,7 +149,7 @@ class ProfileScreenViewModel @Inject constructor(
     )
 
     var balanceState = _balanceState.asStateFlow()
-    private fun updateProfileState(newState: ProfileScreenContract.ProfileState) {
+    private fun updateUserState(newState: ProfileScreenContract.UserState) {
         viewModelScope.launch(Dispatchers.Main) {
             _userState.value = newState
         }
@@ -93,7 +189,7 @@ class ProfileScreenViewModel @Inject constructor(
         }
     }
 
-    fun getProfile() {
+    private fun getProfile() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val userToken = sharedPreferencesUtil.loadData("userToken")
@@ -103,7 +199,7 @@ class ProfileScreenViewModel @Inject constructor(
                         val profileResponse = response.body()
 
                         if (profileResponse != null) {
-                            val newState = ProfileScreenContract.ProfileState(
+                            val newState = ProfileScreenContract.UserState(
                                 user = User(
                                     __v = profileResponse.data.__v,
                                     _id = profileResponse.data._id,
@@ -120,7 +216,11 @@ class ProfileScreenViewModel @Inject constructor(
                                     privacyPolicy = profileResponse.data.privacyPolicy
                                 )
                             )
+
+                            updateUserState(newState)
                             updateProfileState(newState)
+                            Log.d("profileState", profileState.value.toString())
+
                         }
                     }
                 }
@@ -187,6 +287,14 @@ class ProfileScreenViewModel @Inject constructor(
             _selectedAmount.value = state
         }
 
+    }
+
+
+    private fun initProfile() {
+
+        viewModelScope.launch(Dispatchers.Main) {
+            getProfile()
+        }
     }
 
 

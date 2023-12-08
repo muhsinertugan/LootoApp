@@ -16,6 +16,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,7 +32,7 @@ import com.lotto.lottoapp.ui.theme.Inter
 
 @Composable
 fun CustomDropdownMenu(
-    state: RegisterScreenContract.CityState,
+    state: State<RegisterScreenContract.CityState>,
     fieldName: String,
     onFieldValueChange: (String) -> Unit
 ) {
@@ -80,11 +81,11 @@ fun CustomDropdownMenu(
                 .height(640.dp)
         ) {
 
-            state.cities?.forEach {
+            state.value.cities?.forEach {
                 DropdownMenuItem(onClick = {
                     expanded = false
                     cityNameText = it.name
-                    onFieldValueChange(it.id)
+                    onFieldValueChange(it._id)
                 },
                     text = { Text(text = it.name) }
 

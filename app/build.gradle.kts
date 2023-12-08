@@ -79,6 +79,8 @@ dependencies {
     debugImplementation ("androidx.compose.ui:ui-tooling")
     debugImplementation ("androidx.compose.ui:ui-test-manifest")
 
+    implementation ("org.jetbrains.kotlin:kotlin-reflect:1.8.10")
+
     // Lifecycle
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
     implementation ("androidx.lifecycle:lifecycle-extensions:2.2.0")
