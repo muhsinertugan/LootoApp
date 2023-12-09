@@ -26,16 +26,23 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import com.lotto.lottoapp.navigation.Paths
 import com.lotto.lottoapp.ui.constants.Buttons
 import com.lotto.lottoapp.ui.theme.CustomGray
 import com.lotto.lottoapp.ui.theme.CustomPurple
 import com.lotto.lottoapp.ui.theme.CustomPurpleV2
 import com.lotto.lottoapp.ui.theme.Typography
 import com.lotto.lottoapp.utils.TimeUtil
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(
+    navController: NavHostController,
+) {
 
     val profileViewModel: ProfileScreenViewModel = hiltViewModel()
 
@@ -115,7 +122,10 @@ fun ProfileScreen() {
                     modifier = Modifier
                         .padding(start = 4.dp)
                         .clickable {
-                            //TODO
+                            CoroutineScope(Dispatchers.Main).launch {
+                                navController.navigate(Paths.EDIT_PROFILE_SCREEN)
+                            }
+
                         },
                     text = Buttons.EDIT_BTN,
                     style = TextStyle(
@@ -216,7 +226,9 @@ fun ProfileScreen() {
                         )
                     )
                     Text(
-                        text =  if(profileState.value.data.birthDate !== "") time.convertDateFormat(profileState.value.data.birthDate) else "",
+                        text = if (profileState.value.data.birthDate !== "") time.convertDateFormat(
+                            profileState.value.data.birthDate
+                        ) else "",
                         style = TextStyle(
                             fontSize = 16.sp,
                             color = Color(0xFFFFFFFF),
