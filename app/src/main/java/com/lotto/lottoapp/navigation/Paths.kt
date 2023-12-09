@@ -9,5 +9,10 @@ object Paths {
     const val PROFILE_SCREEN = "profile_screen"
     const val GAME_SCREEN = "game_screen"
     const val RESULT_SCREEN = "result_screen"
+    const val EDIT_PROFILE_SCREEN = "edit_profile_screen"
+    const val LOGIN_REGISTER = "login_register"
+    const val APP = "app"
+    const val PROFILE = "profile"
 }
+
 

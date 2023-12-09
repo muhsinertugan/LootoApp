@@ -1,10 +1,11 @@
 package com.lotto.lottoapp.ui
 
+import Index
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.lotto.lottoapp.navigation.Index
 import com.lotto.lottoapp.ui.theme.LottoAppTheme
+import com.lotto.lottoapp.utils.SharedPreferencesUtil
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -13,7 +14,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             LottoAppTheme {
-                Index()
+                Index(sharedPreferencesUtil = SharedPreferencesUtil(context = this))
             }
         }
     }

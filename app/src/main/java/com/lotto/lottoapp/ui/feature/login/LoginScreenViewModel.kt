@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import com.lotto.lottoapp.model.data.loginRegister.LoginRegisterApi
 import com.lotto.lottoapp.model.request.LoginRequest
 import com.lotto.lottoapp.model.response.login.LoginData
+import com.lotto.lottoapp.navigation.NavigationItems
 import com.lotto.lottoapp.navigation.Paths
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -91,7 +92,7 @@ class LoginScreenViewModel @Inject constructor(private val loginRegisterService:
                                 )
                                 updateState(newState)
 
-                                navController.navigate("${Paths.OTP_SCREEN}/${loginRequest.email}")
+                                navController.navigate("${NavigationItems.Auth.Otp.route}/${loginRequest.email}")
                             } else{
                                 val newState = LoginScreenContract.ErrorState(
                                     code = loginResponse.code,

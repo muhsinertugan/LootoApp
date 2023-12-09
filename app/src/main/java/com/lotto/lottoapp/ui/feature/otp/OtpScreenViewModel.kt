@@ -1,5 +1,6 @@
 package com.lotto.lottoapp.ui.feature.otp
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -9,7 +10,7 @@ import com.lotto.lottoapp.model.request.RegisterOtpRequest
 import com.lotto.lottoapp.model.response.login.LoginOtpData
 import com.lotto.lottoapp.model.response.register.RegisterOtpData
 import com.lotto.lottoapp.model.response.register.User
-import com.lotto.lottoapp.navigation.Paths
+import com.lotto.lottoapp.navigation.NavigationItems
 import com.lotto.lottoapp.utils.SharedPreferencesUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -92,7 +93,13 @@ class OtpScreenViewModel @Inject constructor(
                         )
                         updateState(newState)
                         if (registerOtpResponse.success) {
-                            navController.navigate(Paths.HOME_SCREEN)
+                            withContext(Dispatchers.Main) {
+                                navController.navigate(NavigationItems.App.route) {
+                                    popUpTo(NavigationItems.Auth.route) {
+                                        inclusive = true
+                                    }
+                                }
+                            }
                         }
                     } else {
                         updateState(
@@ -146,7 +153,15 @@ class OtpScreenViewModel @Inject constructor(
                         )
                         updateState(newState)
                         if (loginOtpResponse.success) {
-                            navController.navigate(Paths.HOME_SCREEN)
+                            withContext(Dispatchers.Main) {
+                                navController.navigate(NavigationItems.App.route) {
+                                    popUpTo(NavigationItems.Auth.route) {
+                                        inclusive = true
+                                    }
+                                }
+                            }
+
+
                         }
                     } else {
                         updateState(
@@ -167,6 +182,7 @@ class OtpScreenViewModel @Inject constructor(
                     )
                 }
             } catch (e: Exception) {
+                Log.d("error", e.message.toString())
                 updateState(
                     OtpScreenContract.LoginUserState(
                         message = "Error: ${e.message}", success = false, data = null
