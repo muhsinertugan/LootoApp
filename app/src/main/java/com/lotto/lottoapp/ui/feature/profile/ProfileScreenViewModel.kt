@@ -4,13 +4,12 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lotto.lottoapp.model.data.balance.BalanceApi
-import com.lotto.lottoapp.model.data.general.GeneralApi
 import com.lotto.lottoapp.model.data.profile.ProfileApi
 import com.lotto.lottoapp.model.request.BalanceRequest
 import com.lotto.lottoapp.model.response.general.CityResponseItem
+import com.lotto.lottoapp.model.response.general.SerializableCityState
 import com.lotto.lottoapp.model.response.profile.User
 import com.lotto.lottoapp.ui.constants.Constants
-import com.lotto.lottoapp.ui.feature.register.RegisterScreenContract
 import com.lotto.lottoapp.utils.SharedPreferencesUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +22,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileScreenViewModel @Inject constructor(
-    private val cityApi: GeneralApi,
     private val profileApi: ProfileApi,
     private val balanceApi: BalanceApi,
     private val sharedPreferencesUtil: SharedPreferencesUtil,
@@ -31,16 +29,12 @@ class ProfileScreenViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(Dispatchers.Main) {
+
             initProfile()
+
         }
 
     }
-
-    private var _cityState = MutableStateFlow(
-        RegisterScreenContract.CityState(cities = listOf(), isLoading = true)
-    )
-
-    val cityState = _cityState.asStateFlow()
 
 
     private var _userState = MutableStateFlow(
@@ -95,51 +89,26 @@ class ProfileScreenViewModel @Inject constructor(
     private fun updateProfileState(
         userState: StateFlow<ProfileScreenContract.UserState>,
     ) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val response = cityApi.getCities()
-                withContext(Dispatchers.Main) {
-                    if (response.isSuccessful) {
-                        val citiesResponse = response.body()
-                        if (citiesResponse != null) {
-                            if (citiesResponse.success) {
-                                val newState = RegisterScreenContract.CityState(
-                                    cities = citiesResponse.data,
-                                    isLoading = false
-                                )
+        val cities: SerializableCityState = sharedPreferencesUtil.loadData("cities")
 
-                                _cityState.value = newState
-
-
-                                val userCity = newState.cities.filter {
-                                    it._id == userState.value.user.cityId
-                                }
-
-                                val newProfileState = ProfileScreenContract.ProfileState(
-                                    title = ProfileScreenContract.ProfileTitles(),
-                                    data = ProfileScreenContract.UserData(
-                                        birthDate = userState.value.user.birthDate,
-                                        city = userCity[0],
-                                        email = userState.value.user.email,
-                                        lastName = userState.value.user.lastName,
-                                        name = userState.value.user.name,
-                                        phoneNumber = userState.value.user.phoneNumber
-                                    )
-                                )
-                                Log.d("newProfileState", newProfileState.data.toString())
-                                _profileState.value = newProfileState
-
-
-                            }
-                        }
-                    }
-
-                }
-            } catch (e: Exception) {
-                //TODO: handle error
-            }
-
+        val userCity = cities.cities.filter {
+            it._id == userState.value.user.cityId
         }
+
+        val newProfileState = ProfileScreenContract.ProfileState(
+            title = ProfileScreenContract.ProfileTitles(),
+            data = ProfileScreenContract.UserData(
+                birthDate = userState.value.user.birthDate,
+                city = userCity[0],
+                email = userState.value.user.email,
+                lastName = userState.value.user.lastName,
+                name = userState.value.user.name,
+                phoneNumber = userState.value.user.phoneNumber
+            )
+        )
+
+        Log.d("newProfileState", userState.value.user.name)
+        _profileState.value = newProfileState
 
     }
 
@@ -192,7 +161,7 @@ class ProfileScreenViewModel @Inject constructor(
     private fun getProfile() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val userToken = sharedPreferencesUtil.loadData("userToken")
+                val userToken = sharedPreferencesUtil.loadData<String>("userToken")
                 val response = profileApi.getProfile(token = userToken)
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
@@ -219,7 +188,7 @@ class ProfileScreenViewModel @Inject constructor(
 
                             updateUserState(newState)
                             updateProfileState(newState)
-                            Log.d("profileState", profileState.value.toString())
+
 
                         }
                     }
@@ -237,7 +206,7 @@ class ProfileScreenViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
 
             try {
-                val userToken = sharedPreferencesUtil.loadData("userToken")
+                val userToken = sharedPreferencesUtil.loadData<String>("userToken")
                 val response = balanceApi.addBalance(
                     balanceAmount = BalanceRequest(amount = addedBalance), token = userToken
                 )
@@ -263,7 +232,7 @@ class ProfileScreenViewModel @Inject constructor(
     fun getBalance() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val userToken = sharedPreferencesUtil.loadData("userToken")
+                val userToken = sharedPreferencesUtil.loadData<String>("userToken")
                 val response = balanceApi.getBalance(userToken)
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
@@ -291,8 +260,8 @@ class ProfileScreenViewModel @Inject constructor(
 
 
     private fun initProfile() {
-
         viewModelScope.launch(Dispatchers.Main) {
+
             getProfile()
         }
     }

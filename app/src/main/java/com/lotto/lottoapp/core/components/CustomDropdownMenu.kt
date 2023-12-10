@@ -27,12 +27,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import com.lotto.lottoapp.ui.feature.register.RegisterScreenContract
+import com.lotto.lottoapp.ui.feature.splash.SplashScreenContract
 import com.lotto.lottoapp.ui.theme.Inter
 
 @Composable
 fun CustomDropdownMenu(
-    state: State<RegisterScreenContract.CityState>,
+    state: State<SplashScreenContract.CityState>,
     fieldName: String,
     onFieldValueChange: (String) -> Unit
 ) {

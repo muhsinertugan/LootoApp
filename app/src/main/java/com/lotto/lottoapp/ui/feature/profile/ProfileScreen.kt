@@ -33,6 +33,7 @@ import com.lotto.lottoapp.ui.theme.CustomGray
 import com.lotto.lottoapp.ui.theme.CustomPurple
 import com.lotto.lottoapp.ui.theme.CustomPurpleV2
 import com.lotto.lottoapp.ui.theme.Typography
+import com.lotto.lottoapp.utils.SharedPreferencesUtil
 import com.lotto.lottoapp.utils.TimeUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -42,6 +43,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ProfileScreen(
     navController: NavHostController,
+    sharedPreferencesUtil: SharedPreferencesUtil
 ) {
 
     val profileViewModel: ProfileScreenViewModel = hiltViewModel()
@@ -49,8 +51,8 @@ fun ProfileScreen(
     val selectableAmounts = profileViewModel.selectableAmounts.collectAsState()
     val selectedAmount = profileViewModel.selectedAmount.collectAsState()
     val profileState = profileViewModel.profileState.collectAsState()
-
     val time = TimeUtil()
+
 
     Column(
         modifier = Modifier

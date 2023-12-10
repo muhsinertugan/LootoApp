@@ -265,7 +265,7 @@ class GameScreenViewModel @Inject constructor(
             it.column.selectedNumbers
         }
 
-        val userToken = sharedPreferencesUtil.loadData("userToken")
+        val userToken = sharedPreferencesUtil.loadData<String>("userToken")
 
         ticketApi.postBuyTicket(
             ticket = BuyTicketRequest(

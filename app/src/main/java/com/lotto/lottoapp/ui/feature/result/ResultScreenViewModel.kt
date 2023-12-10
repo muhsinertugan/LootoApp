@@ -47,7 +47,7 @@ class ResultScreenViewModel @Inject constructor(
     private fun getUserTickets() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val userToken = sharedPreferencesUtil.loadData("userToken")
+                val userToken = sharedPreferencesUtil.loadData<String>("userToken")
                 val response = ticketApi.getUserTickets(userToken)
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {

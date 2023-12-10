@@ -24,10 +24,7 @@ class HomeScreenViewModel @Inject constructor(
     ViewModel() {
 
     init {
-        val userToken = sharedPreferencesUtil.loadData(key = "userToken")
-
         viewModelScope.launch(Dispatchers.IO) {
-
             initHomeScreen()
 
         }

@@ -82,7 +82,7 @@ class OtpScreenViewModel @Inject constructor(
 
                         sharedPreferencesUtil.saveData(
                             key = "userToken",
-                            value = registerOtpResponse.data.token
+                            data = registerOtpResponse.data.token
                         )
 
                         //TODO: Handle success false cases for register and login UI and logic both.
@@ -142,7 +142,7 @@ class OtpScreenViewModel @Inject constructor(
 
                         sharedPreferencesUtil.saveData(
                             key = "userToken",
-                            value = loginOtpResponse.data.token
+                            data = loginOtpResponse.data.token
                         )
 
                         //TODO: Handle success false cases for register and login UI and logic both.

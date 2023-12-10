@@ -41,7 +41,7 @@ fun Index(
         if (isUserSignedIn) {
             loginRegisterFlow(navController)
         }
-            mainAppFlow(navController)
+            mainAppFlow(navController, sharedPreferencesUtil)
 
     }
 }
@@ -112,7 +112,7 @@ private fun NavGraphBuilder.loginRegisterFlow(navController: NavHostController) 
     }
 }
 
-private fun NavGraphBuilder.mainAppFlow(navController: NavHostController) {
+private fun NavGraphBuilder.mainAppFlow(navController: NavHostController, sharedPreferencesUtil: SharedPreferencesUtil) {
     navigation(
         route = NavigationItems.App.route,
         startDestination = NavigationItems.App.Home.route,
@@ -149,7 +149,7 @@ private fun NavGraphBuilder.mainAppFlow(navController: NavHostController) {
         ) {
             composable(NavigationItems.App.Profile.Profile.route) {
                 GeneralLayout(
-                    inputComponent = { ProfileScreen(navController = navController) },
+                    inputComponent = { ProfileScreen(navController = navController, sharedPreferencesUtil = sharedPreferencesUtil) },
                     navController = navController
                 )
             }
@@ -165,6 +165,6 @@ private fun NavGraphBuilder.mainAppFlow(navController: NavHostController) {
 }
 
 fun checkUserAuthenticationState(sharedPreferencesUtil: SharedPreferencesUtil): Boolean {
-    val userToken = sharedPreferencesUtil.loadData("userToken")
+    val userToken = sharedPreferencesUtil.loadData<String>("userToken")
     return userToken == ""
 }

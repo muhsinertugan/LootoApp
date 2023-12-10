@@ -3,11 +3,11 @@ package com.lotto.lottoapp.ui.feature.register
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import com.lotto.lottoapp.model.data.general.GeneralApi
 import com.lotto.lottoapp.model.data.loginRegister.LoginRegisterApi
 import com.lotto.lottoapp.model.request.RegisterRequest
 import com.lotto.lottoapp.model.response.register.RegisterData
 import com.lotto.lottoapp.navigation.NavigationItems
+import com.lotto.lottoapp.ui.feature.splash.SplashScreenContract
 import com.lotto.lottoapp.utils.SharedPreferencesUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -21,16 +21,21 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegisterScreenViewModel @Inject constructor(
-    private val cityApi: GeneralApi,
     private val loginRegisterService: LoginRegisterApi,
     private val sharedPreferencesUtil: SharedPreferencesUtil
 ) : ViewModel() {
 
-    init {
-        viewModelScope.launch {
-            getCities()
-        }
-    }
+
+
+    private var _cityState = MutableStateFlow(
+        SplashScreenContract.CityState(
+            cities = listOf(),
+            isLoading = false
+        )
+    )
+    val cityState = _cityState.asStateFlow()
+
+
 
     private var _errorState = MutableStateFlow(
         RegisterScreenContract.ErrorState(
@@ -48,13 +53,6 @@ class RegisterScreenViewModel @Inject constructor(
         }
 
     }
-
-
-    private var _cityState = MutableStateFlow(
-        RegisterScreenContract.CityState(cities = listOf(), isLoading = true)
-    )
-
-    val cityState = _cityState.asStateFlow()
 
 
     private var _userInput = MutableStateFlow(
@@ -120,34 +118,6 @@ class RegisterScreenViewModel @Inject constructor(
 
     }
 
-
-    private suspend fun getCities() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val response = cityApi.getCities()
-                withContext(Dispatchers.Main) {
-                    if (response.isSuccessful) {
-                        val citiesResponse = response.body()
-                        if (citiesResponse != null) {
-                            if (citiesResponse.success) {
-                                val newState = RegisterScreenContract.CityState(
-                                    cities = citiesResponse.data,
-                                    isLoading = false
-                                )
-
-                                _cityState.value = newState
-                                sharedPreferencesUtil.saveData("cities", newState.cities.toString())
-                            }
-                        }
-                    }
-
-                }
-            } catch (e: Exception) {
-                //TODO: handle error
-            }
-
-        }
-    }
 
     private fun postRegister(registerRequest: RegisterRequest, navController: NavHostController) {
         viewModelScope.launch(Dispatchers.IO) {

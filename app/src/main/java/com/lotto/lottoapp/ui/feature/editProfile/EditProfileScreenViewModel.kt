@@ -54,7 +54,7 @@ class EditProfileScreenViewModel @Inject constructor(
     private fun patchProfile(editedInputs: EditProfileRequest) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val userToken = sharedPreferencesUtil.loadData("userToken")
+                val userToken = sharedPreferencesUtil.loadData<String>("userToken")
                 val response = profileApi.patchProfile(
                     token = userToken, patchProfileBody = editedInputs
                 )
