@@ -11,21 +11,32 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.lotto.lottoapp.core.components.CustomDatePicker
+import com.lotto.lottoapp.core.components.CustomDropdownMenu
 import com.lotto.lottoapp.core.components.CustomInputField
 import com.lotto.lottoapp.ui.constants.Buttons
 import com.lotto.lottoapp.ui.constants.Constants
-import com.lotto.lottoapp.ui.constants.Placeholders
 import com.lotto.lottoapp.ui.theme.CustomPurple
 import com.lotto.lottoapp.ui.theme.Typography
+import kotlinx.coroutines.launch
 
 @Composable
-fun EditProfileScreen() {
+fun EditProfileScreen(
+    navController: NavHostController,
+) {
+    val scope = rememberCoroutineScope()
+    val editProfileScreenViewModel: EditProfileScreenViewModel = hiltViewModel()
+    val profileData = editProfileScreenViewModel.editProfileState.collectAsState()
+    val cityState = editProfileScreenViewModel.cityState.collectAsState()
 
 
     Column(
@@ -37,44 +48,48 @@ fun EditProfileScreen() {
             .padding(top = 10.dp)
     ) {
 
-        CustomInputField(
-            fieldName = Constants.EMAIL,
-            placeholderText = Placeholders.EMAIL_PLACEHOLDER,
-            text = "",
-            onFieldValueChange = {},
-            isError = false
-        )
+
         CustomInputField(
             fieldName = Constants.NAME,
-            placeholderText = Placeholders.NAME_PLACEHOLDER,
-            text = "",
-            onFieldValueChange = {
+            placeholderText = profileData.value.name,
+            text = profileData.value.name,
+            onFieldValueChange = { newValue ->
+                editProfileScreenViewModel.updateField("name", newValue)
             },
             isError = false
         )
         CustomInputField(
             fieldName = Constants.SURNAME,
-            placeholderText = Placeholders.SURNAME_PLACEHOLDER,
-            text = "",
-            onFieldValueChange = {
-
+            placeholderText = profileData.value.lastName,
+            text = profileData.value.lastName,
+            onFieldValueChange = { newValue ->
+                editProfileScreenViewModel.updateField("lastName", newValue)
             },
             isError = false
         )
         CustomInputField(
             fieldName = Constants.PHONE,
-            placeholderText = Placeholders.PHONE_PLACEHOLDER,
-            text = "",
-            onFieldValueChange = {
+            placeholderText = profileData.value.phoneNumber,
+            text = profileData.value.phoneNumber,
+            onFieldValueChange = { newValue ->
+                editProfileScreenViewModel.updateField("phoneNumber", newValue)
             },
             isError = false
         )
 
+        CustomDropdownMenu(
+            fieldName = Constants.CITY, state = cityState
+        ) { newValue ->
+            editProfileScreenViewModel.updateField("cityId", newValue)
+        }
+
         CustomDatePicker(
             fieldName = Constants.BIRTHDATE,
-            placeholderText = Placeholders.BIRTHDATE_PLACEHOLDER,
-            text = ""
-        ) {
+            placeholderText = profileData.value.birthDate,
+            text = profileData.value.birthDate
+
+        ) { newValue: Long ->
+            editProfileScreenViewModel.updateField("birthDate", newValue)
         }
 
 
@@ -85,7 +100,9 @@ fun EditProfileScreen() {
             style = Typography.titleMedium.copy(color = Color.White),
             modifier = Modifier
                 .clickable {
-
+                    scope.launch {
+                        editProfileScreenViewModel.editProfile(navController)
+                    }
                 }
                 .clip(RoundedCornerShape(8.dp))
                 .background(color = CustomPurple)

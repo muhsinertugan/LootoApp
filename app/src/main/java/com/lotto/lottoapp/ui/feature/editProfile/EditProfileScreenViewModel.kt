@@ -2,56 +2,108 @@ package com.lotto.lottoapp.ui.feature.editProfile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavHostController
 import com.lotto.lottoapp.model.data.profile.ProfileApi
 import com.lotto.lottoapp.model.request.EditProfileRequest
-import com.lotto.lottoapp.model.response.profile.User
+import com.lotto.lottoapp.model.response.general.CityResponseItem
+import com.lotto.lottoapp.model.response.general.SerializableCityState
+import com.lotto.lottoapp.navigation.NavigationItems
+import com.lotto.lottoapp.ui.feature.profile.ProfileScreenContract
+import com.lotto.lottoapp.ui.feature.splash.SplashScreenContract
 import com.lotto.lottoapp.utils.SharedPreferencesUtil
+import com.lotto.lottoapp.utils.TimeUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class EditProfileScreenViewModel @Inject constructor(
     private val profileApi: ProfileApi,
     private val sharedPreferencesUtil: SharedPreferencesUtil,
-
-    ) : ViewModel() {
-
-
-    private var _userState = MutableStateFlow(
-        EditProfileScreenContract.UserState(
-            user = User(
-                __v = 0,
-                _id = "",
-                activated = false,
-                balance = 0,
-                birthDate = "",
-                cityId = "",
-                createdAt = "",
-                email = "",
-                expireAt = "",
-                lastName = "",
-                name = "",
-                phoneNumber = "",
-                privacyPolicy = false
-            )
-        )
-    )
-
-    private var userState = _userState.asStateFlow()
-
-
-    private fun updateUserState(newState: EditProfileScreenContract.UserState) {
+    private val timeUtil: TimeUtil
+) : ViewModel() {
+    init {
         viewModelScope.launch(Dispatchers.Main) {
-            _userState.value = newState
+            val editProfileData: ProfileScreenContract.UserData =
+                sharedPreferencesUtil.loadData("userData")
+            updateEditProfileState(
+                newState = ProfileScreenContract.UserData(
+                    birthDate = timeUtil.convertDateFormat(editProfileData.birthDate),
+                    city = editProfileData.city,
+                    email = editProfileData.email,
+                    lastName = editProfileData.lastName,
+                    name = editProfileData.name,
+                    phoneNumber = editProfileData.phoneNumber
+                )
+            )
+            val cities: SerializableCityState =
+                sharedPreferencesUtil.loadData("cities")
+            updateCityState(cities)
         }
     }
 
-    private fun patchProfile(editedInputs: EditProfileRequest) {
+    private var _cityState = MutableStateFlow(
+        SplashScreenContract.CityState(
+            cities = listOf(
+                CityResponseItem(
+                    __v = 0,
+                    _id = "",
+                    code = 0,
+                    latitude = "",
+                    longitude = "",
+                    name = "",
+                    population = 0,
+                    region = ""
+                )
+            ),
+            isLoading = false
+        )
+    )
+
+    val cityState = _cityState.asStateFlow()
+
+    private fun updateCityState(newState: SerializableCityState) {
+        viewModelScope.launch(Dispatchers.Main) {
+            _cityState.value =
+                SplashScreenContract.CityState(cities = newState.cities, isLoading = false)
+        }
+    }
+
+
+    private var _editProfileState = MutableStateFlow(
+        ProfileScreenContract.UserData(
+            birthDate = "", city = CityResponseItem(
+                __v = 0,
+                _id = "",
+                code = 0,
+                latitude = "",
+                longitude = "",
+                name = "",
+                population = 0,
+                region = ""
+            ), email = "", lastName = "", name = "", phoneNumber = ""
+        )
+
+    )
+
+    val editProfileState = _editProfileState.asStateFlow()
+
+    private fun updateEditProfileState(newState: ProfileScreenContract.UserData) {
+        viewModelScope.launch(Dispatchers.Main) {
+            _editProfileState.value = newState
+        }
+    }
+
+
+    private fun patchProfile(editedInputs: EditProfileRequest, navController: NavHostController) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val userToken = sharedPreferencesUtil.loadData<String>("userToken")
@@ -63,32 +115,95 @@ class EditProfileScreenViewModel @Inject constructor(
                         val editProfileResponse = response.body()
 
                         if (editProfileResponse != null) {
-                            val newState = EditProfileScreenContract.UserState(
-                                user = User(
-                                    __v = editProfileResponse.data.__v,
-                                    _id = editProfileResponse.data._id,
-                                    activated = editProfileResponse.data.activated,
-                                    balance = editProfileResponse.data.balance,
-                                    birthDate = editProfileResponse.data.birthDate,
-                                    cityId = editProfileResponse.data.cityId,
-                                    createdAt = editProfileResponse.data.createdAt,
-                                    email = editProfileResponse.data.email,
-                                    expireAt = editProfileResponse.data.expireAt,
-                                    lastName = editProfileResponse.data.lastName,
-                                    name = editProfileResponse.data.name,
-                                    phoneNumber = editProfileResponse.data.phoneNumber,
-                                    privacyPolicy = editProfileResponse.data.privacyPolicy
-                                )
+
+
+                            val userCity: CityResponseItem = cityState.value.cities.find {
+                                return@find editProfileResponse.user.cityId == it._id
+                            }!!
+                            val newState = ProfileScreenContract.UserData(
+                                birthDate = timeUtil.convertDateFormat(editProfileResponse.user.birthDate),
+                                city = userCity,
+                                email = editProfileResponse.user.email,
+                                lastName = editProfileResponse.user.lastName,
+                                name = editProfileResponse.user.name,
+                                phoneNumber = editProfileResponse.user.phoneNumber
                             )
-                            updateUserState(newState)
+                            viewModelScope.launch(Dispatchers.Main) {
+                                updateEditProfileState(newState)
+                                navController.navigate(NavigationItems.App.Profile.route)
+                            }
                         }
                     }
                 }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
 
             }
 
         }
     }
 
+
+    private fun getDateTime(date: Long): String {
+        val simpleDate = SimpleDateFormat("dd/M/yyyy", Locale.getDefault())
+        val formatted = Date(date)
+        return simpleDate.format(formatted)
+    }
+
+    private fun getTimestamp(dateTimeString: String): Long? {
+        val simpleDate = SimpleDateFormat("dd/M/yyyy", Locale.getDefault())
+        return try {
+            val date = simpleDate.parse(dateTimeString)
+            date?.time
+        } catch (e: ParseException) {
+            null
+        }
+    }
+
+
+    fun updateField(fieldName: String, value: String) {
+        val currentInput = _editProfileState.value
+        val updatedInput = when (fieldName) {
+            "name" -> currentInput.copy(name = value)
+            "lastName" -> currentInput.copy(lastName = value)
+            "phoneNumber" -> currentInput.copy(phoneNumber = value)
+            "cityId" -> currentInput.copy(
+                city = CityResponseItem(
+                    __v = editProfileState.value.city.__v,
+                    _id = value,
+                    code = editProfileState.value.city.code,
+                    latitude = editProfileState.value.city.latitude,
+                    longitude = editProfileState.value.city.longitude,
+                    name = editProfileState.value.city.name,
+                    population = editProfileState.value.city.population,
+                    region = editProfileState.value.city.region
+                )
+            )
+
+            else -> currentInput
+        }
+        _editProfileState.value = updatedInput
+    }
+
+    fun updateField(fieldName: String, value: Long) {
+
+        val currentInput = _editProfileState.value
+        val updatedInput = when (fieldName) {
+            "birthDate" -> currentInput.copy(birthDate = getDateTime(value))
+            else -> currentInput
+        }
+        _editProfileState.value = updatedInput
+    }
+
+    fun editProfile(navController: NavHostController) {
+        patchProfile(
+            editedInputs = EditProfileRequest(
+                birthDate = "${getTimestamp(editProfileState.value.birthDate)}",
+                cityId = editProfileState.value.city._id,
+                lastName = editProfileState.value.lastName,
+                name = editProfileState.value.name,
+                phoneNumber = editProfileState.value.phoneNumber
+            ),
+            navController = navController
+        )
+    }
 }
