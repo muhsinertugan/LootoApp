@@ -5,4 +5,6 @@ object Buttons {
     const val SUBMIT_BTN = "Submit"
     const val SEND_BTN = "Send Code"
     const val EDIT_BTN = "Edit Profile"
+    const val LOGOUT_BTN = "Logout"
+
 }

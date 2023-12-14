@@ -58,9 +58,7 @@ fun LoginScreen(
             style = Typography.titleMedium.copy(color = Color.White),
             modifier = Modifier
                 .clickable {
-
                     viewModel.onClick(navController = navController)
-
                 }
                 .clip(RoundedCornerShape(8.dp))
                 .background(color = CustomPurple)

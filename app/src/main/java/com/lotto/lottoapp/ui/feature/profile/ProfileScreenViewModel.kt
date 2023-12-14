@@ -1,14 +1,15 @@
 package com.lotto.lottoapp.ui.feature.profile
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavHostController
 import com.lotto.lottoapp.model.data.balance.BalanceApi
 import com.lotto.lottoapp.model.data.profile.ProfileApi
 import com.lotto.lottoapp.model.request.BalanceRequest
 import com.lotto.lottoapp.model.response.general.CityResponseItem
 import com.lotto.lottoapp.model.response.general.SerializableCityState
 import com.lotto.lottoapp.model.response.profile.User
+import com.lotto.lottoapp.navigation.NavigationItems
 import com.lotto.lottoapp.ui.constants.Constants
 import com.lotto.lottoapp.utils.SharedPreferencesUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,11 +30,8 @@ class ProfileScreenViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(Dispatchers.Main) {
-
             initProfile()
-
         }
-
     }
 
 
@@ -107,8 +105,10 @@ class ProfileScreenViewModel @Inject constructor(
             )
         )
 
-        Log.d("newProfileState", userState.value.user.name)
-        _profileState.value = newProfileState
+        viewModelScope.launch(Dispatchers.Main) {
+            sharedPreferencesUtil.saveData("userData", newProfileState.data)
+            _profileState.value = newProfileState
+        }
 
     }
 
@@ -185,10 +185,8 @@ class ProfileScreenViewModel @Inject constructor(
                                     privacyPolicy = profileResponse.data.privacyPolicy
                                 )
                             )
-
                             updateUserState(newState)
                             updateProfileState(newState)
-
 
                         }
                     }
@@ -258,10 +256,17 @@ class ProfileScreenViewModel @Inject constructor(
 
     }
 
+    fun handleLogout(navController: NavHostController) {
+        sharedPreferencesUtil.deleteData("userToken")
+        navController.navigate(NavigationItems.Auth.Login.route) {
+            popUpTo(NavigationItems.Auth.route) {
+                inclusive = true
+            }
+        }
+    }
 
     private fun initProfile() {
         viewModelScope.launch(Dispatchers.Main) {
-
             getProfile()
         }
     }

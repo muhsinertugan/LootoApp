@@ -1,6 +1,5 @@
 package com.lotto.lottoapp.ui.feature.home.components
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -31,7 +30,6 @@ import com.lotto.lottoapp.model.response.game.Game
 import com.lotto.lottoapp.ui.feature.home.HomeScreenViewModel
 import com.lotto.lottoapp.utils.TimeUtil
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FutureDraws(
     gameState: Game,

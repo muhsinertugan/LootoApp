@@ -81,7 +81,7 @@ fun CustomDropdownMenu(
                 .height(640.dp)
         ) {
 
-            state.value.cities?.forEach {
+            state.value.cities.forEach {
                 DropdownMenuItem(onClick = {
                     expanded = false
                     cityNameText = it.name

@@ -1,3 +1,4 @@
+package com.lotto.lottoapp.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavGraphBuilder
@@ -9,8 +10,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.lotto.lottoapp.model.request.LoginRequest
 import com.lotto.lottoapp.model.request.RegisterRequest
-import com.lotto.lottoapp.navigation.NavigationItems
-import com.lotto.lottoapp.navigation.ScreenArguments
 import com.lotto.lottoapp.ui.feature.editProfile.EditProfileScreen
 import com.lotto.lottoapp.ui.feature.game.GameScreen
 import com.lotto.lottoapp.ui.feature.home.HomeScreen
@@ -30,19 +29,18 @@ fun Index(
     sharedPreferencesUtil: SharedPreferencesUtil
 ) {
     val navController = rememberNavController()
+    val isUserSignedIn = checkUserAuthenticationState(sharedPreferencesUtil)
 
     NavHost(navController = navController, startDestination = NavigationItems.Splash.route) {
-        val isUserSignedIn = checkUserAuthenticationState(sharedPreferencesUtil)
-
         composable(NavigationItems.Splash.route) {
             SplashScreen(navController = navController, isUserSignedIn = isUserSignedIn)
         }
 
-        if (isUserSignedIn) {
+        if (!isUserSignedIn) {
             loginRegisterFlow(navController)
         }
-            mainAppFlow(navController, sharedPreferencesUtil)
 
+        mainAppFlow(navController)
     }
 }
 
@@ -112,7 +110,7 @@ private fun NavGraphBuilder.loginRegisterFlow(navController: NavHostController) 
     }
 }
 
-private fun NavGraphBuilder.mainAppFlow(navController: NavHostController, sharedPreferencesUtil: SharedPreferencesUtil) {
+private fun NavGraphBuilder.mainAppFlow(navController: NavHostController) {
     navigation(
         route = NavigationItems.App.route,
         startDestination = NavigationItems.App.Home.route,
@@ -149,14 +147,14 @@ private fun NavGraphBuilder.mainAppFlow(navController: NavHostController, shared
         ) {
             composable(NavigationItems.App.Profile.Profile.route) {
                 GeneralLayout(
-                    inputComponent = { ProfileScreen(navController = navController, sharedPreferencesUtil = sharedPreferencesUtil) },
+                    inputComponent = { ProfileScreen(navController = navController) },
                     navController = navController
                 )
             }
 
             composable(NavigationItems.App.Profile.EditProfile.route) {
                 GeneralLayout(
-                    inputComponent = { EditProfileScreen() },
+                    inputComponent = { EditProfileScreen(navController = navController) },
                     navController = navController
                 )
             }
@@ -165,6 +163,9 @@ private fun NavGraphBuilder.mainAppFlow(navController: NavHostController, shared
 }
 
 fun checkUserAuthenticationState(sharedPreferencesUtil: SharedPreferencesUtil): Boolean {
-    val userToken = sharedPreferencesUtil.loadData<String>("userToken")
-    return userToken == ""
+    val userToken: String = sharedPreferencesUtil.loadData<String>("userToken", "")
+
+    return userToken.isNotBlank()
+
 }
+

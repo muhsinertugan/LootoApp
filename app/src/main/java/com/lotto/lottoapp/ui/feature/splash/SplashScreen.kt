@@ -24,18 +24,18 @@ fun SplashScreen(
     isUserSignedIn: Boolean,
     splashScreenViewModel: SplashScreenViewModel = hiltViewModel()
 ) {
-
     val cityState = splashScreenViewModel.cityState.collectAsState()
     Log.d("cityState", cityState.value.isLoading.toString())
     LaunchedEffect(key1 = cityState.value.isLoading) {
         this.launch {
 
-            if (isUserSignedIn) navController.navigate(NavigationItems.Auth.route) {
-                popUpTo(NavigationItems.Splash.route) {
-                    inclusive = true
+            if (!isUserSignedIn) {
+                navController.navigate(NavigationItems.Auth.route) {
+                    popUpTo(NavigationItems.Splash.route) {
+                        inclusive = true
+                    }
                 }
             } else {
-
                 navController.navigate(
                     NavigationItems.App.route
                 ) {

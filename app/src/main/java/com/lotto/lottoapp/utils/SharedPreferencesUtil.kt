@@ -34,4 +34,11 @@ class SharedPreferencesUtil(context: Context) {
         }
     }
 
+    fun deleteData(key: String) {
+        with(sharedPreferences.edit()) {
+            remove(key)
+            apply()
+        }
+    }
+
 }
