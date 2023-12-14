@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,8 +28,6 @@ import com.lotto.lottoapp.ui.constants.Constants
 import com.lotto.lottoapp.ui.constants.Placeholders
 import com.lotto.lottoapp.ui.theme.CustomPurple
 import com.lotto.lottoapp.ui.theme.Typography
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
@@ -37,7 +36,7 @@ fun RegisterScreen(
     navController: NavHostController,
     viewModel: RegisterScreenViewModel = hiltViewModel()
 ) {
-
+    val scope = rememberCoroutineScope()
 
     val userRegisterInput = viewModel.userInput.collectAsState()
     val userRegisterState = viewModel.userState.collectAsState()
@@ -109,7 +108,7 @@ fun RegisterScreen(
             style = Typography.titleMedium.copy(color = Color.White),
             modifier = Modifier
                 .clickable {
-                    CoroutineScope(Dispatchers.Default).launch {
+                    scope.launch {
                         viewModel.onClick(navController = navController)
                     }
                     if (userRegisterState.value.success) {

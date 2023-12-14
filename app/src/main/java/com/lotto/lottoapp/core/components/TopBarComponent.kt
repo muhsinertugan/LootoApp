@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,8 +31,6 @@ import androidx.navigation.NavHostController
 import com.lotto.lottoapp.R
 import com.lotto.lottoapp.navigation.Paths
 import com.lotto.lottoapp.ui.feature.profile.ProfileScreenViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
@@ -39,14 +38,14 @@ import kotlinx.coroutines.launch
 fun TopBarComponent(
     navController: NavHostController,
 ) {
-
+    val scope = rememberCoroutineScope()
     val profileScreenViewModel: ProfileScreenViewModel = hiltViewModel()
     val balance = profileScreenViewModel.balanceState.collectAsState()
 
 
 
     SideEffect {
-        CoroutineScope(Dispatchers.Main).launch {
+        scope.launch {
             profileScreenViewModel.getBalance()
         }
     }

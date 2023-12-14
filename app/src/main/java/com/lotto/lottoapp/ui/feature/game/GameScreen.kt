@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,8 +38,6 @@ import com.lotto.lottoapp.ui.theme.CustomGray
 import com.lotto.lottoapp.ui.theme.CustomGrayV2
 import com.lotto.lottoapp.ui.theme.CustomPurple
 import com.lotto.lottoapp.ui.theme.Typography
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
@@ -46,7 +45,7 @@ import kotlinx.coroutines.launch
 fun GameScreen(
     viewModel: GameScreenViewModel = hiltViewModel()
 ) {
-
+    val scope = rememberCoroutineScope()
     val game by viewModel.gameState.collectAsState()
     val columns by viewModel.columns.collectAsState()
     val selectedNumbers by viewModel.selectedNumbersState.collectAsState()
@@ -72,7 +71,11 @@ fun GameScreen(
                             .size(32.dp)
                             .clip(CircleShape)
                             .background(selectedNumber)
-                            .clickable { if (!selectedNumbers.selectedNumbers.contains(it+1)) viewModel.selectNumber(it + 1) },
+                            .clickable {
+                                if (!selectedNumbers.selectedNumbers.contains(it + 1)) viewModel.selectNumber(
+                                    it + 1
+                                )
+                            },
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center,
                     ) {
@@ -137,7 +140,7 @@ fun GameScreen(
                     style = Typography.titleMedium.copy(color = Color.White),
                     modifier = Modifier
                         .clickable {
-                            CoroutineScope(Dispatchers.Main).launch {
+                            scope.launch {
                                 viewModel.buyTicket()
                             }
                         }
