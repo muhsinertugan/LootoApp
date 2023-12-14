@@ -18,7 +18,6 @@ class TimeUtil {
         val days = remainingTime.toDays()
         val hours = remainingTime.toHours() % 24
         val minutes = remainingTime.toMinutes() % 60
-        //val seconds = remainingTime.seconds % 60
 
         return "${days}d ${hours}h ${minutes}m"
     }
@@ -28,4 +27,7 @@ class TimeUtil {
         val localDateTime = LocalDateTime.parse(dateString, inputFormatter)
         return localDateTime.format(outputFormatter)
     }
+
+
+
 }
