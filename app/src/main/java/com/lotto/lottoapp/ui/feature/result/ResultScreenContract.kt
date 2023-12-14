@@ -1,5 +1,6 @@
 package com.lotto.lottoapp.ui.feature.result
 
+import com.lotto.lottoapp.model.response.tickets.SingleTicketResponse
 import com.lotto.lottoapp.model.response.tickets.UserTicketsResponse
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,6 +38,22 @@ class ResultScreenContract {
         }
 
         override val value: ScreenTicketsList
+            get() = _state.value
+    }
+
+    data class SingleTicket(
+        val ticket: SingleTicketResponse,
+    ) : StateFlow<SingleTicket> {
+
+        private val _state = MutableStateFlow(this)
+        override val replayCache: List<SingleTicket>
+            get() = _state.replayCache
+
+        override suspend fun collect(collector: FlowCollector<SingleTicket>): Nothing {
+            _state.collect(collector)
+        }
+
+        override val value: SingleTicket
             get() = _state.value
     }
 

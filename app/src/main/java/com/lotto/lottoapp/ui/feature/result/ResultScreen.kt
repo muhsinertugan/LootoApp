@@ -11,9 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,7 +43,8 @@ fun ResultScreen() {
 
     val resultScreenViewModel: ResultScreenViewModel = hiltViewModel()
     val resultsTitle = arrayOf("Date", "Numbers", "Result")
-    val isTicketSearched by remember { mutableStateOf(false) }
+    val isTicketSearched by remember { mutableStateOf(true) }
+    val singleTicketSearch = resultScreenViewModel.singleTicket.collectAsState()
     val userTicketState = resultScreenViewModel.userTicketsState.collectAsState()
     val userTickets = userTicketState.value.ticketsResponse.data.tickets.flatMap { ticket ->
         ticket.blocks.map { ticketNumbers ->
@@ -52,13 +53,13 @@ fun ResultScreen() {
                 ticketNumbers.createdAt,
                 ticketNumbers.numbers.joinToString("-"),
                 ticketNumbers.isWinner,
-
-                )
-
+            )
         }
     }.reversed()
 
     val time = TimeUtil()
+
+    //TODO add colors based on singleTicketSearch.value.ticket.isWinner
 
     Column(
         modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
@@ -71,14 +72,13 @@ fun ResultScreen() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "123456",
+                    text = singleTicketSearch.value.ticket.ticketCode,
                     style = MaterialTheme.typography.displayMedium,
                     color = Color.White,
                     textAlign = TextAlign.Center,
                 )
-
                 Text(
-                    text = "Hit 6 number",
+                    text = "Hit ${singleTicketSearch.value.ticket.guessedNumbers} number",
                     style = MaterialTheme.typography.labelLarge,
                     color = Color.White,
                     textAlign = TextAlign.Center,
@@ -91,7 +91,7 @@ fun ResultScreen() {
                     textAlign = TextAlign.Center,
                 )
                 Text(
-                    text = " 1.000.000 \$",
+                    text = "${singleTicketSearch.value.ticket.prize} \$",
                     style = MaterialTheme.typography.displaySmall,
                     color = Color.White,
                     textAlign = TextAlign.Center,
@@ -182,14 +182,9 @@ fun ResultScreen() {
                 }
 
             }
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
-            ) {
 
-                userTickets.map {
-
+            LazyColumn {
+                items(userTickets) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -219,9 +214,11 @@ fun ResultScreen() {
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = it.numbers, style = MaterialTheme.typography.titleSmall,
+                                text = it.numbers,
+                                style = MaterialTheme.typography.titleSmall,
 
-                                color = Color.White, textAlign = TextAlign.Center
+                                color = Color.White,
+                                textAlign = TextAlign.Center
 
                             )
                         }
@@ -230,7 +227,8 @@ fun ResultScreen() {
                                 .fillMaxWidth()
                                 .weight(1f)
                                 .background(if (it.isWinner) Color.Green else Color.Red)
-                                .padding(vertical = 4.dp), contentAlignment = Alignment.Center
+                                .padding(vertical = 4.dp),
+                            contentAlignment = Alignment.Center
                         ) {
                             Text(
 
@@ -242,8 +240,6 @@ fun ResultScreen() {
                             )
                         }
                     }
-
-
                 }
 
             }

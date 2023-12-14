@@ -3,6 +3,7 @@ package com.lotto.lottoapp.model.data.tickets
 import com.lotto.lottoapp.di.ENDPOINTS
 import com.lotto.lottoapp.model.request.BuyTicketRequest
 import com.lotto.lottoapp.model.response.tickets.BuyTicketResponse
+import com.lotto.lottoapp.model.response.tickets.SingleTicketResponse
 import com.lotto.lottoapp.model.response.tickets.UserTicketsResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -25,6 +26,6 @@ interface TicketService {
     suspend fun getTicketResult(
         @Header("Authorization") token: String,
         @Path("ticketNumber") ticketNumber: String
-    ): Response<UserTicketsResponse>
+    ): Response<SingleTicketResponse>
 
 }

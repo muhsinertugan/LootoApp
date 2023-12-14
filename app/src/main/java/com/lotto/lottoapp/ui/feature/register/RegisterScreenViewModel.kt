@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.lotto.lottoapp.model.data.loginRegister.LoginRegisterApi
 import com.lotto.lottoapp.model.request.RegisterRequest
+import com.lotto.lottoapp.model.response.general.CityResponseItem
+import com.lotto.lottoapp.model.response.general.SerializableCityState
 import com.lotto.lottoapp.model.response.register.RegisterData
 import com.lotto.lottoapp.navigation.NavigationItems
 import com.lotto.lottoapp.ui.feature.splash.SplashScreenContract
@@ -17,6 +19,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,16 +28,41 @@ class RegisterScreenViewModel @Inject constructor(
     private val sharedPreferencesUtil: SharedPreferencesUtil
 ) : ViewModel() {
 
+    init {
+        viewModelScope.launch(Dispatchers.Main) {
+            val cities: SerializableCityState =
+                sharedPreferencesUtil.loadData("cities")
+            updateCityState(cities)
+        }
+    }
 
 
     private var _cityState = MutableStateFlow(
         SplashScreenContract.CityState(
-            cities = listOf(),
+            cities = listOf(
+                CityResponseItem(
+                    __v = 0,
+                    _id = "",
+                    code = 0,
+                    latitude = "",
+                    longitude = "",
+                    name = "",
+                    population = 0,
+                    region = ""
+                )
+            ),
             isLoading = false
         )
     )
+
     val cityState = _cityState.asStateFlow()
 
+    private fun updateCityState(newState: SerializableCityState) {
+        viewModelScope.launch(Dispatchers.Main) {
+            _cityState.value =
+                SplashScreenContract.CityState(cities = newState.cities, isLoading = false)
+        }
+    }
 
 
     private var _errorState = MutableStateFlow(
@@ -82,7 +110,7 @@ class RegisterScreenViewModel @Inject constructor(
     }
 
     private fun getDateTime(date: Long): String {
-        val simpleDate = SimpleDateFormat("dd/M/yyyy")
+        val simpleDate = SimpleDateFormat("dd/M/yyyy", Locale.getDefault())
         val formatted = Date(date)
         return simpleDate.format(formatted)
     }
@@ -144,6 +172,7 @@ class RegisterScreenViewModel @Inject constructor(
                                     message = registerResponse.message,
                                     success = registerResponse.success
                                 )
+
                                 updateErrorState(newState)
                                 TODO("Handle Error Cases")
 
