@@ -1,6 +1,5 @@
 package com.lotto.lottoapp.ui.feature.splash
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,7 +24,6 @@ fun SplashScreen(
     splashScreenViewModel: SplashScreenViewModel = hiltViewModel()
 ) {
     val cityState = splashScreenViewModel.cityState.collectAsState()
-    Log.d("cityState", cityState.value.isLoading.toString())
     LaunchedEffect(key1 = cityState.value.isLoading) {
         this.launch {
 
