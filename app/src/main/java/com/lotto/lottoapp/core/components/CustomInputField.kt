@@ -33,11 +33,7 @@ fun CustomInputField(
     isError: Boolean
 ) {
 
-    var errorBorderColor = if (isError){
-        Color.Red
-    } else{
-        Color.White
-    }
+    val errorBorderColor = if (isError) Color.Red else Color.White
 
     Column(
         verticalArrangement = Arrangement.Center, modifier = Modifier.zIndex(1000F)
