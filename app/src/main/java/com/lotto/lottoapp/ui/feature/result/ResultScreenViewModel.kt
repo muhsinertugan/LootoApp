@@ -1,5 +1,6 @@
 package com.lotto.lottoapp.ui.feature.result
 
+import androidx.compose.runtime.State
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lotto.lottoapp.model.data.tickets.TicketApi
@@ -46,6 +47,21 @@ class ResultScreenViewModel @Inject constructor(
     }
 
 
+    private var _userSingleTicketSearch = MutableStateFlow(
+        ResultScreenContract.UserSingleTicketSearch(
+            search = ""
+        )
+    )
+
+    var userSingleTicketSearch = _userSingleTicketSearch.asStateFlow()
+
+    fun updateUserSingleTicketSearch(newState: ResultScreenContract.UserSingleTicketSearch) {
+        viewModelScope.launch(Dispatchers.Main) {
+            _userSingleTicketSearch.value = newState
+        }
+    }
+
+
     private var _singleTicket = MutableStateFlow(
         ResultScreenContract.SingleTicket(
             ticket = SingleTicketResponse(
@@ -69,11 +85,12 @@ class ResultScreenViewModel @Inject constructor(
         }
     }
 
-    fun getSingleTicketResult(ticketNumber: String) {
+    fun getSingleTicketResult(ticketNumber: State<ResultScreenContract.UserSingleTicketSearch>) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val userToken = sharedPreferencesUtil.loadData<String>("userToken")
-                val response = ticketApi.getTicketResult(userToken, ticketNumber = ticketNumber)
+                val response =
+                    ticketApi.getTicketResult(userToken, ticketNumber = ticketNumber.value.search)
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         val ticketsResponse = response.body()
@@ -81,17 +98,16 @@ class ResultScreenViewModel @Inject constructor(
                             if (ticketsResponse.success) {
                                 val newState = ResultScreenContract.SingleTicket(
                                     ticket = SingleTicketResponse(
-                                        currency = "",
-                                        game = "",
-                                        guessedNumbers = 0,
-                                        isWinner = false,
-                                        prize = 0,
-                                        success = false,
-                                        ticketCode = ""
+                                        currency = ticketsResponse.currency,
+                                        game = ticketsResponse.game,
+                                        guessedNumbers = ticketsResponse.guessedNumbers,
+                                        isWinner = ticketsResponse.isWinner,
+                                        prize = ticketsResponse.prize,
+                                        success = ticketsResponse.success,
+                                        ticketCode = ticketsResponse.ticketCode
                                     )
                                 )
                                 updateSingleTicketsState(newState)
-
                             }
                         }
                     }

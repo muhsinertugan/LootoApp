@@ -28,5 +28,4 @@ class TicketApi @Inject constructor(private val service: TicketService) {
         token = "token $token",
         ticketNumber = ticketNumber
     )
-
 }
