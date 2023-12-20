@@ -1,6 +1,5 @@
 package com.lotto.lottoapp.core.components
 
-import PhoneMaskVisualTransformation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -17,11 +16,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.lotto.lottoapp.ui.constants.Constants
 import com.lotto.lottoapp.ui.theme.Inter
+import com.lotto.lottoapp.utils.PhoneMaskVisualTransformation
 
 
 @Composable
@@ -30,8 +32,9 @@ fun CustomInputField(
     placeholderText: String,
     text: String?,
     onFieldValueChange: (String) -> Unit,
-    isError: Boolean
-) {
+    isError: Boolean,
+
+    ) {
 
     val errorBorderColor = if (isError) Color.Red else Color.White
 
@@ -67,16 +70,42 @@ fun CustomInputField(
                 textStyle = TextStyle(color = Color(92, 92, 92), fontWeight = FontWeight(600)),
                 singleLine = true,
 
-                keyboardOptions = if (fieldName == "Birthday" || fieldName == "Phone") {
-                    KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.NumberPassword
-                    )
-                } else {
-                    KeyboardOptions.Default
+                keyboardOptions = when (fieldName) {
+                    Constants.BIRTHDATE -> {
+                        KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.NumberPassword,
+                            autoCorrect = false,
+                            imeAction = ImeAction.Done
+                        )
+                    }
+
+                    Constants.PHONE -> {
+                        KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Phone,
+                            autoCorrect = false,
+                            imeAction = ImeAction.Done
+                        )
+                    }
+
+                    "" -> {
+                        KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Number,
+                            autoCorrect = false,
+                            imeAction = ImeAction.Done
+                        )
+                    }
+
+                    else -> {
+                        KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Text,
+                            autoCorrect = false,
+                            imeAction = ImeAction.Done
+                        )
+                    }
                 },
                 visualTransformation = when (fieldName) {
 
-                    "Phone" -> {
+                    Constants.PHONE -> {
                         PhoneMaskVisualTransformation()
                     }
 

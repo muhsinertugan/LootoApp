@@ -21,9 +21,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -31,6 +35,7 @@ import androidx.navigation.NavHostController
 import com.lotto.lottoapp.R
 import com.lotto.lottoapp.navigation.Paths
 import com.lotto.lottoapp.ui.feature.profile.ProfileScreenViewModel
+import com.lotto.lottoapp.utils.CurrencyFormatVisualTransformation
 import kotlinx.coroutines.launch
 
 @Composable
@@ -41,6 +46,7 @@ fun TopBarComponent(
     val scope = rememberCoroutineScope()
     val profileScreenViewModel: ProfileScreenViewModel = hiltViewModel()
     val balance = profileScreenViewModel.balanceState.collectAsState()
+    val moneyFormatTransformation = CurrencyFormatVisualTransformation()
 
 
 
@@ -80,16 +86,24 @@ fun TopBarComponent(
                 contentDescription = "profile-logo"
             )
             Text(
-                text = "${balance.value.amount} cr.",
+                text = "${
+                    buildAnnotatedString {
+                        withStyle(style = SpanStyle(fontSize = 24.sp)) {
+                            append(moneyFormatTransformation.filter(AnnotatedString(balance.value.amount.toString())).text)
+                        }
+                    }
+                } cr.",
                 style = TextStyle(
                     fontSize = 24.sp,
                     fontWeight = FontWeight(700),
                     color = Color(0xFFFFFFFF),
                     textAlign = TextAlign.Center,
                 )
+
             )
         }
 
 
     }
 }
+

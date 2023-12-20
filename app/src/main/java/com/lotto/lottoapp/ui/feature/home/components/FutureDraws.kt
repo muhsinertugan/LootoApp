@@ -18,9 +18,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -28,6 +32,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.lotto.lottoapp.model.response.game.Game
 import com.lotto.lottoapp.ui.feature.home.HomeScreenViewModel
+import com.lotto.lottoapp.utils.CurrencyFormatVisualTransformation
 import com.lotto.lottoapp.utils.TimeUtil
 
 @Composable
@@ -38,6 +43,7 @@ fun FutureDraws(
 ) {
 
     val time = TimeUtil()
+    val currencyFormatVisualTransformation = CurrencyFormatVisualTransformation()
 
     Box(
         modifier = Modifier
@@ -76,7 +82,19 @@ fun FutureDraws(
                     .padding(12.dp)
             ) {
                 Text(
-                    text = "${gameState.prize} $",
+                    text = "${
+                        buildAnnotatedString {
+                            withStyle(style = SpanStyle(fontSize = 24.sp)) {
+                                append(
+                                    currencyFormatVisualTransformation.filter(
+                                        AnnotatedString(
+                                            gameState.prize.toString()
+                                        )
+                                    ).text
+                                )
+                            }
+                        }
+                    } cr.",
                     style = TextStyle(
                         fontSize = 24.sp,
                         fontWeight = FontWeight(700),

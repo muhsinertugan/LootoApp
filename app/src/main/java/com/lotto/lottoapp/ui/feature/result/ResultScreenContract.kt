@@ -57,4 +57,20 @@ class ResultScreenContract {
             get() = _state.value
     }
 
+    data class UserSingleTicketSearch(
+        val search: String,
+    ) : StateFlow<UserSingleTicketSearch> {
+
+        private val _state = MutableStateFlow(this)
+        override val replayCache: List<UserSingleTicketSearch>
+            get() = _state.replayCache
+
+        override suspend fun collect(collector: FlowCollector<UserSingleTicketSearch>): Nothing {
+            _state.collect(collector)
+        }
+
+        override val value: UserSingleTicketSearch
+            get() = _state.value
+    }
+
 }

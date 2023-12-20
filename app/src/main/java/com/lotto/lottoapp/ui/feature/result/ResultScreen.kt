@@ -1,6 +1,7 @@
 package com.lotto.lottoapp.ui.feature.result
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,34 +19,43 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.lotto.lottoapp.core.components.CustomInputField
 import com.lotto.lottoapp.ui.constants.Buttons
+import com.lotto.lottoapp.ui.theme.CustomGreen
 import com.lotto.lottoapp.ui.theme.CustomPurple
 import com.lotto.lottoapp.ui.theme.Typography
+import com.lotto.lottoapp.utils.CurrencyFormatVisualTransformation
 import com.lotto.lottoapp.utils.TimeUtil
+import kotlinx.coroutines.launch
 
 @Composable
 fun ResultScreen() {
 
+    val scope = rememberCoroutineScope()
+
     val resultScreenViewModel: ResultScreenViewModel = hiltViewModel()
     val resultsTitle = arrayOf("Date", "Numbers", "Result")
-    val isTicketSearched by remember { mutableStateOf(true) }
     val singleTicketSearch = resultScreenViewModel.singleTicket.collectAsState()
     val userTicketState = resultScreenViewModel.userTicketsState.collectAsState()
+    val searchedTicket = resultScreenViewModel.userSingleTicketSearch.collectAsState()
+
+
     val userTickets = userTicketState.value.ticketsResponse.data.tickets.flatMap { ticket ->
         ticket.blocks.map { ticketNumbers ->
 
@@ -57,14 +67,32 @@ fun ResultScreen() {
         }
     }.reversed()
 
+
     val time = TimeUtil()
+    val currencyFormatVisualTransformation = CurrencyFormatVisualTransformation()
 
     //TODO add colors based on singleTicketSearch.value.ticket.isWinner
+
+    val winnerColor = if (singleTicketSearch.value.ticket.isWinner) CustomGreen else Color.Red
+    val winnerText =
+        if (singleTicketSearch.value.ticket.isWinner) "${
+            buildAnnotatedString {
+                withStyle(style = SpanStyle(fontSize = 24.sp)) {
+                    append(
+                        currencyFormatVisualTransformation.filter(
+                            AnnotatedString(
+                                singleTicketSearch.value.ticket.prize.toString()
+                            )
+                        ).text
+                    )
+                }
+            }
+        } cr." else "You Lose!"
 
     Column(
         modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if (isTicketSearched) {
+        if (singleTicketSearch.value.ticket.success) {
             Spacer(modifier = Modifier.padding(vertical = 12.dp))
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -76,6 +104,7 @@ fun ResultScreen() {
                     style = MaterialTheme.typography.displayMedium,
                     color = Color.White,
                     textAlign = TextAlign.Center,
+                    letterSpacing = 13.44.sp
                 )
                 Text(
                     text = "Hit ${singleTicketSearch.value.ticket.guessedNumbers} number",
@@ -91,9 +120,9 @@ fun ResultScreen() {
                     textAlign = TextAlign.Center,
                 )
                 Text(
-                    text = "${singleTicketSearch.value.ticket.prize} \$",
+                    text = winnerText,
                     style = MaterialTheme.typography.displaySmall,
-                    color = Color.White,
+                    color = winnerColor,
                     textAlign = TextAlign.Center,
                 )
 
@@ -112,8 +141,14 @@ fun ResultScreen() {
             CustomInputField(
                 fieldName = "",
                 placeholderText = "XX-XX-XX-XX-XXXXX",
-                text = "",
-                onFieldValueChange = {},
+                text = searchedTicket.value.search,
+                onFieldValueChange = {
+                    resultScreenViewModel.updateUserSingleTicketSearch(
+                        newState = ResultScreenContract.UserSingleTicketSearch(
+                            search = it
+                        )
+                    )
+                },
                 isError = false
             )
             Spacer(modifier = Modifier.padding(vertical = 40.dp))
@@ -124,11 +159,18 @@ fun ResultScreen() {
                     .clip(RoundedCornerShape(8.dp))
                     .background(color = CustomPurple)
                     .padding(vertical = 16.dp, horizontal = 36.dp)
+                    .clickable {
+                        scope.launch {
+                            if (searchedTicket.value.search !== "") resultScreenViewModel.getSingleTicketResult(
+                                ticketNumber = searchedTicket
+                            )
+                        }
+                    }
             )
         }
         Spacer(modifier = Modifier.padding(vertical = 20.dp))
 
-        if (!isTicketSearched) {
+        if (!singleTicketSearch.value.ticket.success) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
