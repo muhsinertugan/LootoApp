@@ -1,6 +1,11 @@
+@file:Suppress("SameParameterValue")
+
 package com.lotto.lottoapp.navigation
 
+import android.util.Log
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -26,9 +31,10 @@ import com.lotto.lottoapp.utils.SharedPreferencesUtil
 
 @Composable
 fun Index(
-    sharedPreferencesUtil: SharedPreferencesUtil
+    sharedPreferencesUtil: SharedPreferencesUtil,
 ) {
     val navController = rememberNavController()
+    val snackbarHostState = remember { SnackbarHostState() }
     val isUserSignedIn = checkUserAuthenticationState(sharedPreferencesUtil)
 
     NavHost(navController = navController, startDestination = NavigationItems.Splash.route) {
@@ -37,14 +43,17 @@ fun Index(
         }
 
         if (!isUserSignedIn) {
-            loginRegisterFlow(navController)
+            loginRegisterFlow(navController, snackbarHostState)
         }
 
         mainAppFlow(navController)
     }
 }
 
-private fun NavGraphBuilder.loginRegisterFlow(navController: NavHostController) {
+private fun NavGraphBuilder.loginRegisterFlow(
+    navController: NavHostController,
+    snackbarHostState: SnackbarHostState,
+) {
     navigation(
         route = NavigationItems.Auth.route,
         startDestination = NavigationItems.Auth.Login.route,
@@ -52,40 +61,47 @@ private fun NavGraphBuilder.loginRegisterFlow(navController: NavHostController) 
         composable(NavigationItems.Auth.Login.route) {
             LoginRegisterLayout(
                 inputComponent = {
-                    LoginScreen(navController = navController)
+                    LoginScreen(
+                        navController = navController,
+                        snackbarHostState = snackbarHostState
+                    )
                 },
-                navController = navController,
+                navController = navController, snackbarHostState = snackbarHostState,
             )
         }
 
         composable(NavigationItems.Auth.Register.route) {
             LoginRegisterLayout(
                 inputComponent = {
-                    RegisterScreen(navController = navController)
+                    RegisterScreen(
+                        navController = navController,
+                        snackbarHostState = snackbarHostState
+                    )
                 },
-                navController = navController
+                navController = navController, snackbarHostState = snackbarHostState
             )
         }
 
         composable(
-            route = "${NavigationItems.Auth.Otp.route}/{${ScreenArguments.EMAIL}}",
+            route = "${NavigationItems.Auth.Otp.route}/{${ScreenArguments.EMAIL}}/{${ScreenArguments.NAME}}/{${ScreenArguments.SURNAME}}/{${ScreenArguments.PHONE}}/{${ScreenArguments.CITY}}/{${ScreenArguments.BIRTHDATE}}",
             arguments = listOf(
-                navArgument(ScreenArguments.EMAIL) { nullable = true },
-                navArgument(ScreenArguments.BIRTHDATE) { nullable = true },
-                navArgument(ScreenArguments.CITY) { nullable = true },
-                navArgument(ScreenArguments.SURNAME) { nullable = true },
-                navArgument(ScreenArguments.NAME) { nullable = true },
-                navArgument(ScreenArguments.PHONE) { nullable = true },
+                navArgument("{${ScreenArguments.EMAIL}}") { nullable = true },
+                navArgument("{${ScreenArguments.NAME}}") { nullable = true },
+                navArgument("{${ScreenArguments.SURNAME}}") { nullable = true },
+                navArgument("{${ScreenArguments.PHONE}}") { nullable = true },
+                navArgument("{${ScreenArguments.CITY}}") { nullable = true },
+                navArgument("{${ScreenArguments.BIRTHDATE}}") { nullable = true },
             )
         ) { navBackStackEntry ->
             val args = navBackStackEntry.arguments
-            val email = args?.getString(ScreenArguments.EMAIL)
-            val birthDate = args?.getString(ScreenArguments.BIRTHDATE)
-            val cityId = args?.getString(ScreenArguments.CITY)
-            val lastName = args?.getString(ScreenArguments.SURNAME)
-            val name = args?.getString(ScreenArguments.NAME)
-            val phoneNumber = args?.getString(ScreenArguments.PHONE)
+            val email = args?.getString(ScreenArguments.EMAIL)?.takeIf { it != "null" }
+            val birthDate = args?.getString(ScreenArguments.BIRTHDATE)?.takeIf { it != "null" }
+            val cityId = args?.getString(ScreenArguments.CITY)?.takeIf { it != "null" }
+            val lastName = args?.getString(ScreenArguments.SURNAME)?.takeIf { it != "null" }
+            val name = args?.getString(ScreenArguments.NAME)?.takeIf { it != "null" }
+            val phoneNumber = args?.getString(ScreenArguments.PHONE)?.takeIf { it != "null" }
 
+            Log.d("birthDate", birthDate.toString())
             val registerInput = RegisterRequest(
                 birthDate = birthDate,
                 cityId = cityId,

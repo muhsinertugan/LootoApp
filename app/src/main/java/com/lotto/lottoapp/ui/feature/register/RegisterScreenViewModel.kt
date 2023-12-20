@@ -1,31 +1,34 @@
 package com.lotto.lottoapp.ui.feature.register
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.lotto.lottoapp.model.data.loginRegister.LoginRegisterApi
 import com.lotto.lottoapp.model.request.RegisterRequest
+import com.lotto.lottoapp.model.response.ApiResponse
 import com.lotto.lottoapp.model.response.general.CityResponseItem
 import com.lotto.lottoapp.model.response.general.SerializableCityState
 import com.lotto.lottoapp.model.response.register.RegisterData
 import com.lotto.lottoapp.navigation.NavigationItems
 import com.lotto.lottoapp.ui.feature.splash.SplashScreenContract
 import com.lotto.lottoapp.utils.SharedPreferencesUtil
+import com.lotto.lottoapp.utils.handleResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class RegisterScreenViewModel @Inject constructor(
     private val loginRegisterService: LoginRegisterApi,
-    private val sharedPreferencesUtil: SharedPreferencesUtil
+    private val sharedPreferencesUtil: SharedPreferencesUtil,
 ) : ViewModel() {
 
     init {
@@ -67,7 +70,7 @@ class RegisterScreenViewModel @Inject constructor(
 
     private var _errorState = MutableStateFlow(
         RegisterScreenContract.ErrorState(
-            code = "",
+            code = 0,
             message = "",
             success = false,
         )
@@ -81,7 +84,6 @@ class RegisterScreenViewModel @Inject constructor(
         }
 
     }
-
 
     private var _userInput = MutableStateFlow(
         RegisterRequest(
@@ -109,8 +111,9 @@ class RegisterScreenViewModel @Inject constructor(
         _userInput.value = updatedInput
     }
 
+    @SuppressLint("SimpleDateFormat")
     private fun getDateTime(date: Long): String {
-        val simpleDate = SimpleDateFormat("dd/M/yyyy", Locale.getDefault())
+        val simpleDate = SimpleDateFormat("dd/M/yyyy")
         val formatted = Date(date)
         return simpleDate.format(formatted)
     }
@@ -150,51 +153,44 @@ class RegisterScreenViewModel @Inject constructor(
     private fun postRegister(registerRequest: RegisterRequest, navController: NavHostController) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val response = loginRegisterService.postRegister(registerRequest = registerRequest)
+                val response =
+                    handleResponse(loginRegisterService.postRegister(registerRequest = registerRequest))
 
                 withContext(Dispatchers.Main) {
-                    if (response.isSuccessful) {
-                        val registerResponse = response.body()
-                        if (registerResponse != null) {
-                            //TODO: Handle success false cases for register and login UI and logic both.
+                    when (response) {
+                        is ApiResponse.Success -> {
+                            val registerResponse = response.data
 
-                            if (registerResponse.success) {
-                                val newState = RegisterScreenContract.UserState(
-                                    data = registerResponse.data,
-                                    message = registerResponse.message,
-                                    success = registerResponse.success
-                                )
-                                updateState(newState)
-                                navController.navigate("${NavigationItems.Auth.Otp.route}/${registerRequest.email}/${registerRequest.email}/${registerRequest.email}/${registerRequest.email}/${registerRequest.email}/${registerRequest.email}")
-                            } else {
-                                val newState = RegisterScreenContract.ErrorState(
-                                    code = registerResponse.code,
-                                    message = registerResponse.message,
-                                    success = registerResponse.success
-                                )
-
-                                updateErrorState(newState)
-                                TODO("Handle Error Cases")
-
-                            }
-
-                        } else {
-                            updateState(
-                                RegisterScreenContract.UserState(
-                                    message = "Null response body", success = false, data = null
-                                )
+                            val newState = RegisterScreenContract.UserState(
+                                data = registerResponse.data,
+                                message = registerResponse.message,
+                                success = registerResponse.success
                             )
+                            updateState(newState)
+
+                            navController.navigate(
+                                "${NavigationItems.Auth.Otp.route}/${registerRequest.email}/${registerRequest.name}/${registerRequest.lastName}/${registerRequest.phoneNumber}/${registerRequest.cityId}/${
+                                    URLEncoder.encode(
+                                        registerRequest.birthDate,
+                                        "UTF-8"
+                                    )
+                                }"
+                            )
+
+
                         }
 
-                    } else {
-                        updateState(
-                            RegisterScreenContract.UserState(
-                                message = "Unsuccessful response: ${response.code()}",
-                                success = false,
-                                data = null
-                            )
-                        )
+                        is ApiResponse.Error -> {
+                            response.response?.let {
+                                RegisterScreenContract.ErrorState(
+                                    code = it.code, message = it.message, success = false
+                                )
+
+                            }?.let { updateErrorState(it) }
+
+                        }
                     }
+
                 }
             } catch (e: Exception) {
                 updateState(
@@ -204,6 +200,8 @@ class RegisterScreenViewModel @Inject constructor(
                 )
             }
         }
+
+
     }
 
     fun onClick(navController: NavHostController) {
