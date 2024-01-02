@@ -23,6 +23,7 @@ import kotlinx.coroutines.withContext
 import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -73,6 +74,7 @@ class RegisterScreenViewModel @Inject constructor(
             code = 0,
             message = "",
             success = false,
+            id = ""
         )
     )
 
@@ -183,7 +185,10 @@ class RegisterScreenViewModel @Inject constructor(
                         is ApiResponse.Error -> {
                             response.response?.let {
                                 RegisterScreenContract.ErrorState(
-                                    code = it.code, message = it.message, success = false
+                                    code = it.code,
+                                    message = it.message,
+                                    success = it.success,
+                                    id = UUID.randomUUID().toString()
                                 )
 
                             }?.let { updateErrorState(it) }
@@ -193,10 +198,11 @@ class RegisterScreenViewModel @Inject constructor(
 
                 }
             } catch (e: Exception) {
-                updateState(
-                    RegisterScreenContract.UserState(
-                        message = "Error: ${e.message}", success = false, data = null
-                    )
+                RegisterScreenContract.ErrorState(
+                    code = 500,
+                    message = e.message.toString(),
+                    success = false,
+                    id = UUID.randomUUID().toString()
                 )
             }
         }

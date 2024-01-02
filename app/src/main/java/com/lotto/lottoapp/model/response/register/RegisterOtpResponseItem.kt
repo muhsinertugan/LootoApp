@@ -3,14 +3,15 @@ package com.lotto.lottoapp.model.response.register
 data class RegisterOtpResponseItem(
     val `data`: RegisterOtpData,
     val message: String,
-    val success: Boolean
+    val success: Boolean,
 )
 
 
 data class RegisterOtpData(
     val token: String,
-    val user: User
+    val user: User,
 )
+
 data class User(
     val __v: Int,
     val _id: String,
@@ -24,5 +25,5 @@ data class User(
     val lastName: String,
     val name: String,
     val phoneNumber: String,
-    val privacyPolicy: Boolean
+    val privacyPolicy: Boolean,
 )

@@ -8,13 +8,17 @@ import javax.inject.Singleton
 
 @Singleton
 class BalanceApi @Inject constructor(private val service: BalanceService) {
-    suspend fun addBalance(balanceAmount: BalanceRequest, token: String): Response<BalanceResponse> =
+    suspend fun addBalance(
+        balanceAmount: BalanceRequest,
+        token: String,
+    ): Response<BalanceResponse> =
         service.addBalance(
             token = "token $token", balanceAmount = balanceAmount,
 
-        )
+            )
 
-    suspend fun getBalance(token: String): Response<BalanceResponse> = service.getBalance(token = "token $token")
+    suspend fun getBalance(token: String): Response<BalanceResponse> =
+        service.getBalance(token = "token $token")
 }
 
 

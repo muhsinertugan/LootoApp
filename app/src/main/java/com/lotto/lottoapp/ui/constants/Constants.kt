@@ -11,11 +11,11 @@ object Constants {
     const val THIRTY_K = "30.000 cr."
 
 
-    const val NAME="Name"
-    const val SURNAME="Surname"
-    const val PHONE="Phone"
-    const val EMAIL="Email"
-    const val BIRTHDATE="Birthdate"
-    const val CITY="City"
+    const val NAME = "Name"
+    const val SURNAME = "Surname"
+    const val PHONE = "Phone"
+    const val EMAIL = "Email"
+    const val BIRTHDATE = "Birthdate"
+    const val CITY = "City"
 
 }

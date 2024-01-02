@@ -1,4 +1,5 @@
 package com.lotto.lottoapp.model.data.games
+
 import com.lotto.lottoapp.di.ENDPOINTS
 import com.lotto.lottoapp.model.response.home.GamesListResponse
 import retrofit2.Response

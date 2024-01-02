@@ -6,5 +6,5 @@ data class TicketNumbers(
     val createdAt: String,
     val isWinner: Boolean,
     val numbers: List<Int>,
-    val ticket: String
+    val ticket: String,
 )

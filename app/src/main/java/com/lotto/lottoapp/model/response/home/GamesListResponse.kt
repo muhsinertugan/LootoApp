@@ -4,5 +4,5 @@ import com.lotto.lottoapp.model.response.game.Game
 
 data class GamesListResponse(
     val gameList: List<Game>,
-    val success: Boolean
+    val success: Boolean,
 )

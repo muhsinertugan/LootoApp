@@ -11,15 +11,18 @@ import com.lotto.lottoapp.ui.theme.CustomBlack
 import com.lotto.lottoapp.ui.theme.CustomPurple
 
 @Composable
-fun BackgroundImage(){
+fun BackgroundImage() {
 
     val horizontalGradient = Brush.verticalGradient(
         colors = listOf(CustomPurple, CustomBlack, CustomBlack, CustomBlack),
-        )
+    )
 
-    Box( contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize().background(brush = horizontalGradient)
-    ){
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .fillMaxSize()
+            .background(brush = horizontalGradient)
+    ) {
 
     }
 }

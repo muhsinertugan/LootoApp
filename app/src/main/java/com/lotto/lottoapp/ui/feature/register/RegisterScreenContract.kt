@@ -11,7 +11,7 @@ class RegisterScreenContract {
     data class UserState(
         val data: RegisterData?,
         val message: String,
-        val success: Boolean
+        val success: Boolean,
     ) : StateFlow<UserState> {
 
         private val _state = MutableStateFlow(this)
@@ -29,7 +29,8 @@ class RegisterScreenContract {
     data class ErrorState(
         val code: Int,
         val message: String,
-        val success: Boolean
+        val success: Boolean,
+        val id: String,
     ) : StateFlow<ErrorState> {
 
         private val _state = MutableStateFlow(this)

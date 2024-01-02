@@ -5,5 +5,5 @@ data class BalanceResponse(
     val date: Long,
     val email: String,
     val success: Boolean,
-    val userId: String
+    val userId: String,
 )

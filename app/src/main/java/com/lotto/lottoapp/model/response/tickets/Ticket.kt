@@ -8,5 +8,5 @@ data class Ticket(
     val game: String,
     val hasDrawn: Boolean,
     val ticketCode: String,
-    val user: String
+    val user: String,
 )

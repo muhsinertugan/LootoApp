@@ -6,10 +6,12 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class TimeUtil {
-    private companion object{
-        val inputFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+    private companion object {
+        val inputFormatter: DateTimeFormatter =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
         val outputFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     }
+
     fun calculateRemainingTime(targetDate: String): String {
         val targetInstant = Instant.parse(targetDate)
         val currentInstant = Instant.now()
@@ -27,7 +29,6 @@ class TimeUtil {
         val localDateTime = LocalDateTime.parse(dateString, inputFormatter)
         return localDateTime.format(outputFormatter)
     }
-
 
 
 }

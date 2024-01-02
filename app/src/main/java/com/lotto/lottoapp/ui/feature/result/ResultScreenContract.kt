@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.StateFlow
 
 class ResultScreenContract {
     data class UserTicketsList(
-        val ticketsResponse: UserTicketsResponse
-    ): StateFlow<UserTicketsList> {
+        val ticketsResponse: UserTicketsResponse,
+    ) : StateFlow<UserTicketsList> {
 
         private val _state = MutableStateFlow(this)
         override val replayCache: List<UserTicketsList>
@@ -26,8 +26,8 @@ class ResultScreenContract {
     data class ScreenTicketsList(
         val createdAt: String,
         val numbers: String,
-        val isWinner: Boolean
-    ): StateFlow<ScreenTicketsList> {
+        val isWinner: Boolean,
+    ) : StateFlow<ScreenTicketsList> {
 
         private val _state = MutableStateFlow(this)
         override val replayCache: List<ScreenTicketsList>
@@ -71,6 +71,26 @@ class ResultScreenContract {
 
         override val value: UserSingleTicketSearch
             get() = _state.value
+    }
+
+    data class ErrorState(
+        val code: Int,
+        val message: String,
+        val success: Boolean,
+        val id: String,
+    ) : StateFlow<ErrorState> {
+
+        private val _state = MutableStateFlow(this)
+        override val replayCache: List<ErrorState>
+            get() = _state.replayCache
+
+        override suspend fun collect(collector: FlowCollector<ErrorState>): Nothing {
+            _state.collect(collector)
+        }
+
+        override val value: ErrorState
+            get() = _state.value
+
     }
 
 }

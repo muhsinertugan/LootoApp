@@ -13,14 +13,18 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class LoginRegisterApi @Inject constructor(private val service: LoginRegisterService){
+class LoginRegisterApi @Inject constructor(private val service: LoginRegisterService) {
 
-    suspend fun postLogin(loginRequest: LoginRequest): Response<LoginResponseItem> = service.postLogin(login = loginRequest)
+    suspend fun postLogin(loginRequest: LoginRequest): Response<LoginResponseItem> =
+        service.postLogin(login = loginRequest)
 
-    suspend fun postLoginOtp(loginOtpRequest: LoginOtpRequest): Response<LoginOtpResponseItem> = service.postLoginOtp(loginOtp = loginOtpRequest)
+    suspend fun postLoginOtp(loginOtpRequest: LoginOtpRequest): Response<LoginOtpResponseItem> =
+        service.postLoginOtp(loginOtp = loginOtpRequest)
 
-    suspend fun postRegister(registerRequest: RegisterRequest): Response<RegisterResponseItem> = service.postRegister(register = registerRequest)
+    suspend fun postRegister(registerRequest: RegisterRequest): Response<RegisterResponseItem> =
+        service.postRegister(register = registerRequest)
 
-    suspend fun postRegisterOtp(registerOtpRequest: RegisterOtpRequest): Response<RegisterOtpResponseItem> = service.postRegisterOtp(registerOtp = registerOtpRequest)
+    suspend fun postRegisterOtp(registerOtpRequest: RegisterOtpRequest): Response<RegisterOtpResponseItem> =
+        service.postRegisterOtp(registerOtp = registerOtpRequest)
 
 }

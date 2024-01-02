@@ -10,12 +10,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class SplashScreenViewModel @Inject constructor(
     private val cityApi: GeneralApi,
-    private val sharedPreferencesUtil: SharedPreferencesUtil
+    private val sharedPreferencesUtil: SharedPreferencesUtil,
 ) : ViewModel() {
 
 
@@ -59,7 +60,12 @@ class SplashScreenViewModel @Inject constructor(
 
                 }
             } catch (e: Exception) {
-                //TODO: handle error
+                SplashScreenContract.ErrorState(
+                    code = 500,
+                    message = e.message.toString(),
+                    success = false,
+                    id = UUID.randomUUID().toString()
+                )
             }
 
         }

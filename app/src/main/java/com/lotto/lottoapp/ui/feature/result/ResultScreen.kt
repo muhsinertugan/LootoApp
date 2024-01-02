@@ -16,14 +16,18 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -44,8 +48,12 @@ import com.lotto.lottoapp.utils.CurrencyFormatVisualTransformation
 import com.lotto.lottoapp.utils.TimeUtil
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun ResultScreen() {
+fun ResultScreen(
+    snackbarHostState: SnackbarHostState,
+    keyboardController: SoftwareKeyboardController?,
+) {
 
     val scope = rememberCoroutineScope()
 
@@ -55,6 +63,18 @@ fun ResultScreen() {
     val userTicketState = resultScreenViewModel.userTicketsState.collectAsState()
     val searchedTicket = resultScreenViewModel.userSingleTicketSearch.collectAsState()
 
+    val errorState = resultScreenViewModel.errorState.collectAsState()
+
+
+    LaunchedEffect(errorState.value.id) {
+        if (!errorState.value.success && errorState.value.code != 0) {
+            keyboardController?.hide()
+            snackbarHostState.showSnackbar(
+                message = errorState.value.message,
+                withDismissAction = true,
+            )
+        }
+    }
 
     val userTickets = userTicketState.value.ticketsResponse.data.tickets.flatMap { ticket ->
         ticket.blocks.map { ticketNumbers ->
@@ -70,8 +90,6 @@ fun ResultScreen() {
 
     val time = TimeUtil()
     val currencyFormatVisualTransformation = CurrencyFormatVisualTransformation()
-
-    //TODO add colors based on singleTicketSearch.value.ticket.isWinner
 
     val winnerColor = if (singleTicketSearch.value.ticket.isWinner) CustomGreen else Color.Red
     val winnerText =
@@ -161,9 +179,12 @@ fun ResultScreen() {
                     .padding(vertical = 16.dp, horizontal = 36.dp)
                     .clickable {
                         scope.launch {
-                            if (searchedTicket.value.search !== "") resultScreenViewModel.getSingleTicketResult(
-                                ticketNumber = searchedTicket
-                            )
+                            if (searchedTicket.value.search !== "") {
+                                resultScreenViewModel.getSingleTicketResult(
+                                    ticketNumber = searchedTicket
+                                )
+                                keyboardController?.hide()
+                            }
                         }
                     }
             )

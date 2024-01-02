@@ -10,7 +10,7 @@ class LoginScreenContract {
     data class UserState(
         val data: LoginData?,
         val message: String,
-        val success: Boolean
+        val success: Boolean,
     ) : StateFlow<UserState> {
 
         private val _state = MutableStateFlow(this)
@@ -29,11 +29,12 @@ class LoginScreenContract {
     data class ErrorState(
         val code: Int,
         val message: String,
-        val success: Boolean
-    ): StateFlow<ErrorState> {
+        val success: Boolean,
+        val id: String,
+    ) : StateFlow<ErrorState> {
 
         private val _state = MutableStateFlow(this)
-        override val replayCache : List<ErrorState>
+        override val replayCache: List<ErrorState>
             get() = _state.replayCache
 
         override suspend fun collect(collector: FlowCollector<ErrorState>): Nothing {

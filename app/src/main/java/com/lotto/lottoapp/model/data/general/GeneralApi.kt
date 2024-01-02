@@ -6,6 +6,6 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class GeneralApi @Inject constructor(private val service: GeneralService){
+class GeneralApi @Inject constructor(private val service: GeneralService) {
     suspend fun getCities(): Response<CityResponseList> = service.getCities()
 }

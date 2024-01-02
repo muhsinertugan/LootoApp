@@ -2,16 +2,16 @@ package com.lotto.lottoapp.ui.feature.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavHostController
 import com.lotto.lottoapp.model.data.balance.BalanceApi
 import com.lotto.lottoapp.model.data.profile.ProfileApi
 import com.lotto.lottoapp.model.request.BalanceRequest
+import com.lotto.lottoapp.model.response.ApiResponse
 import com.lotto.lottoapp.model.response.general.CityResponseItem
 import com.lotto.lottoapp.model.response.general.SerializableCityState
 import com.lotto.lottoapp.model.response.profile.User
-import com.lotto.lottoapp.navigation.NavigationItems
 import com.lotto.lottoapp.ui.constants.Constants
 import com.lotto.lottoapp.utils.SharedPreferencesUtil
+import com.lotto.lottoapp.utils.handleResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,6 +35,23 @@ class ProfileScreenViewModel @Inject constructor(
         }
     }
 
+    private var _errorState = MutableStateFlow(
+        ProfileScreenContract.ErrorState(
+            code = 0,
+            message = "",
+            success = false,
+            id = ""
+        )
+    )
+
+    var errorState = _errorState.asStateFlow()
+
+    private fun updateErrorState(newState: ProfileScreenContract.ErrorState) {
+        viewModelScope.launch(Dispatchers.Main) {
+            _errorState.value = newState
+        }
+
+    }
 
     private var _userState = MutableStateFlow(
         ProfileScreenContract.UserState(
@@ -158,14 +176,16 @@ class ProfileScreenViewModel @Inject constructor(
 
     private fun getProfile() {
         viewModelScope.launch(Dispatchers.IO) {
+
+
             try {
                 val userToken = sharedPreferencesUtil.loadData<String>("userToken")
-                val response = profileApi.getProfile(token = userToken)
+                val response = handleResponse(profileApi.getProfile(token = userToken))
                 withContext(Dispatchers.Main) {
-                    if (response.isSuccessful) {
-                        val profileResponse = response.body()
+                    when (response) {
+                        is ApiResponse.Success -> {
+                            val profileResponse = response.data
 
-                        if (profileResponse != null) {
                             val newState = ProfileScreenContract.UserState(
                                 user = User(
                                     __v = profileResponse.data.__v,
@@ -185,12 +205,28 @@ class ProfileScreenViewModel @Inject constructor(
                             )
                             updateUserState(newState)
                             updateProfileState(newState)
+                        }
 
+                        is ApiResponse.Error -> {
+                            response.response?.let {
+                                ProfileScreenContract.ErrorState(
+                                    code = it.code,
+                                    message = it.message,
+                                    success = it.success,
+                                    id = UUID.randomUUID().toString()
+                                )
+
+                            }?.let { updateErrorState(it) }
                         }
                     }
                 }
             } catch (e: Exception) {
-
+                ProfileScreenContract.ErrorState(
+                    code = 500,
+                    message = e.message.toString(),
+                    success = false,
+                    id = UUID.randomUUID().toString()
+                )
             }
 
         }
@@ -203,46 +239,80 @@ class ProfileScreenViewModel @Inject constructor(
 
             try {
                 val userToken = sharedPreferencesUtil.loadData<String>("userToken")
-                val response = balanceApi.addBalance(
-                    balanceAmount = BalanceRequest(amount = addedBalance), token = userToken
+                val response = handleResponse(
+                    balanceApi.addBalance(
+                        balanceAmount = BalanceRequest(amount = addedBalance), token = userToken
+                    )
                 )
                 withContext(Dispatchers.Main) {
-                    if (response.isSuccessful) {
-                        val addBalanceResponse = response.body()
+                    when (response) {
+                        is ApiResponse.Success -> {
+                            val addBalanceResponse = response.data
 
-                        if (addBalanceResponse != null) {
                             val newState =
                                 ProfileScreenContract.BalanceState(amount = addBalanceResponse.balance)
                             updateBalanceState(newState)
                         }
+
+                        is ApiResponse.Error -> {
+                            response.response?.let {
+                                ProfileScreenContract.ErrorState(
+                                    code = it.code,
+                                    message = it.message,
+                                    success = it.success,
+                                    id = UUID.randomUUID().toString()
+                                )
+
+                            }
+                        }
                     }
                 }
-
-
             } catch (e: Exception) {
-
+                ProfileScreenContract.ErrorState(
+                    code = 500,
+                    message = e.message.toString(),
+                    success = false,
+                    id = UUID.randomUUID().toString()
+                )
             }
         }
     }
 
     fun getBalance() {
         viewModelScope.launch(Dispatchers.IO) {
+
             try {
                 val userToken = sharedPreferencesUtil.loadData<String>("userToken")
-                val response = balanceApi.getBalance(userToken)
+                val response = handleResponse(balanceApi.getBalance(userToken))
                 withContext(Dispatchers.Main) {
-                    if (response.isSuccessful) {
-                        val balanceResponse = response.body()
-
-                        if (balanceResponse != null) {
+                    when (response) {
+                        is ApiResponse.Success -> {
+                            val balanceResponse = response.data
                             val newState =
                                 ProfileScreenContract.BalanceState(amount = balanceResponse.balance)
                             updateBalanceState(newState)
                         }
+
+                        is ApiResponse.Error -> {
+                            response.response?.let {
+                                ProfileScreenContract.ErrorState(
+                                    code = it.code,
+                                    message = it.message,
+                                    success = it.success,
+                                    id = UUID.randomUUID().toString()
+                                )
+
+                            }
+                        }
                     }
                 }
             } catch (e: Exception) {
-
+                ProfileScreenContract.ErrorState(
+                    code = 500,
+                    message = e.message.toString(),
+                    success = false,
+                    id = UUID.randomUUID().toString()
+                )
             }
         }
     }
@@ -254,7 +324,7 @@ class ProfileScreenViewModel @Inject constructor(
 
     }
 
-    fun handleLogout(navController: NavHostController) {
+    fun handleLogout() {
         sharedPreferencesUtil.deleteData("userToken")
     }
 

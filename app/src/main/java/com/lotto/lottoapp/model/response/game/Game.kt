@@ -20,5 +20,5 @@ data class Game(
     val prize: Int,
     val requriedNumbers: Int,
     val status: String,
-    val lastDrawDate: String
+    val lastDrawDate: String,
 )

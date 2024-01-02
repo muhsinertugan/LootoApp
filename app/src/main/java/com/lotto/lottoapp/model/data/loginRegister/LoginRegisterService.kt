@@ -16,10 +16,13 @@ import retrofit2.http.POST
 interface LoginRegisterService {
     @POST(ENDPOINTS.AUTH_LOGIN_URL)
     suspend fun postLogin(@Body login: LoginRequest): Response<LoginResponseItem>
+
     @POST(ENDPOINTS.OTP_LOGIN_URL)
-    suspend fun postLoginOtp(@Body loginOtp : LoginOtpRequest):Response<LoginOtpResponseItem>
+    suspend fun postLoginOtp(@Body loginOtp: LoginOtpRequest): Response<LoginOtpResponseItem>
+
     @POST(ENDPOINTS.AUTH_REGISTER_URL)
-    suspend fun postRegister(@Body register: RegisterRequest ):Response<RegisterResponseItem>
+    suspend fun postRegister(@Body register: RegisterRequest): Response<RegisterResponseItem>
+
     @POST(ENDPOINTS.OTP_REGISTER_URL)
-    suspend fun postRegisterOtp(@Body registerOtp: RegisterOtpRequest):Response<RegisterOtpResponseItem>
+    suspend fun postRegisterOtp(@Body registerOtp: RegisterOtpRequest): Response<RegisterOtpResponseItem>
 }

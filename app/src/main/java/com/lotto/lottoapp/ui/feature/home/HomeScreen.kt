@@ -10,12 +10,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -28,14 +32,14 @@ import com.lotto.lottoapp.ui.feature.home.components.FutureDraws
 import com.lotto.lottoapp.ui.feature.home.components.RecentDraws
 
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun HomeScreen(
     viewModel: HomeScreenViewModel = hiltViewModel(),
     navController: NavHostController,
+    snackbarHostState: SnackbarHostState,
+    keyboardController: SoftwareKeyboardController?,
 ) {
-
-
 
 
     val gamesState = viewModel.gamesState.collectAsState().value
@@ -48,6 +52,18 @@ fun HomeScreen(
     val recentDrawsPagerState = rememberPagerState(pageCount = {
         recentDrawsState.count
     })
+    val errorState = viewModel.errorState.collectAsState()
+
+
+    LaunchedEffect(errorState.value.id) {
+        if (!errorState.value.success && errorState.value.code != 0) {
+            keyboardController?.hide()
+            snackbarHostState.showSnackbar(
+                message = errorState.value.message,
+                withDismissAction = true,
+            )
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -62,7 +78,7 @@ fun HomeScreen(
             pageSpacing = 12.dp,
             pageSize = PageSize.Fixed(360.dp)
         ) { page ->
-            FutureDraws(gameState = gamesState.games[page], navController= navController )
+            FutureDraws(gameState = gamesState.games[page], navController = navController)
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(

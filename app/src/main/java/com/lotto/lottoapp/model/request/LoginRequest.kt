@@ -1,10 +1,10 @@
 package com.lotto.lottoapp.model.request
 
 data class LoginRequest(
-    val email: String?
+    val email: String?,
 )
 
 data class LoginOtpRequest(
     val email: String?,
-    val otp: String
+    val otp: String,
 )

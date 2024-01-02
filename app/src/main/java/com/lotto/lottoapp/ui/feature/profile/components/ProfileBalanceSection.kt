@@ -31,7 +31,7 @@ fun ProfileBalanceSection(
     selectableAmounts: State<List<ProfileScreenContract.SelectableAmountState>>,
     selectedAmount: State<ProfileScreenContract.SelectableAmountState>,
     handleAddBalance: (Int) -> Unit,
-    handleUpdateBalance: (ProfileScreenContract.SelectableAmountState) -> Unit
+    handleUpdateBalance: (ProfileScreenContract.SelectableAmountState) -> Unit,
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Row(
@@ -61,7 +61,7 @@ fun ProfileBalanceSection(
         Row {
 
             Text(
-                text = Buttons.SUBMIT_BTN,
+                text = Buttons.INSTALL_CREDIT_BTN,
                 style = Typography.titleMedium.copy(color = Color.White),
                 modifier = Modifier
                     .clickable {

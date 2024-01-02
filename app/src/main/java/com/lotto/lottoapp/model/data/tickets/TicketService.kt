@@ -16,7 +16,7 @@ interface TicketService {
     @POST(ENDPOINTS.TICKETS_URL)
     suspend fun postTicket(
         @Body ticketRequest: BuyTicketRequest,
-        @Header("Authorization") token: String
+        @Header("Authorization") token: String,
     ): Response<BuyTicketResponse>
 
     @GET(ENDPOINTS.TICKETS_URL)
@@ -25,7 +25,7 @@ interface TicketService {
     @GET("${ENDPOINTS.TICKETS_URL}/{ticketNumber}")
     suspend fun getTicketResult(
         @Header("Authorization") token: String,
-        @Path("ticketNumber") ticketNumber: String
+        @Path("ticketNumber") ticketNumber: String,
     ): Response<SingleTicketResponse>
 
 }

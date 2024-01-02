@@ -23,11 +23,15 @@ import com.lotto.lottoapp.ui.theme.CustomGrayV2
 import com.lotto.lottoapp.ui.theme.CustomPurple
 
 @Composable
-fun TicketColumn(column: GameScreenContract.Column, viewModel: GameScreenViewModel = hiltViewModel()){
+fun TicketColumn(
+    column: GameScreenContract.Column,
+    viewModel: GameScreenViewModel = hiltViewModel(),
+) {
 
-    column.column.selectedNumbers.map {columnNumbers ->
-        val readyButtonColors = if(columnNumbers !== null ) CustomPurple else CustomGrayV2
+    column.column.selectedNumbers.map { columnNumbers ->
+        val readyButtonColors = if (columnNumbers !== null) CustomPurple else CustomGrayV2
         val selectedNumber = if (columnNumbers !== null) columnNumbers.toString() else ""
+
         Row(
             modifier = Modifier
                 .size(48.dp)
@@ -37,8 +41,8 @@ fun TicketColumn(column: GameScreenContract.Column, viewModel: GameScreenViewMod
             horizontalArrangement = Arrangement.Center
         ) {
             Text(
-                modifier=Modifier.clickable {
-                    if (columnNumbers != null) {
+                modifier = Modifier.clickable {
+                    if (columnNumbers != null && !column.isReady) {
                         viewModel.removeNumber(columnNumbers)
                     }
                 },

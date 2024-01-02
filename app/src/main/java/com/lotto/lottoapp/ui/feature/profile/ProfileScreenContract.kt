@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 class ProfileScreenContract {
 
     data class UserState(
-        val user: User
+        val user: User,
     ) : StateFlow<UserState> {
         private val _state = MutableStateFlow(this)
         override val replayCache: List<UserState>
@@ -41,14 +41,14 @@ class ProfileScreenContract {
         val email: String = Constants.EMAIL,
         val phoneNumber: String = Constants.PHONE,
         val city: String = Constants.CITY,
-        val birthDate: String = Constants.BIRTHDATE
+        val birthDate: String = Constants.BIRTHDATE,
     )
 
     data class ProfileState(
         val title: ProfileTitles,
-        val data: UserData
+        val data: UserData,
 
-    ) : StateFlow<ProfileState> {
+        ) : StateFlow<ProfileState> {
         private val _state = MutableStateFlow(this)
         override val replayCache: List<ProfileState>
             get() = _state.replayCache
@@ -65,7 +65,7 @@ class ProfileScreenContract {
 
 
     data class BalanceState(
-        val amount: Int
+        val amount: Int,
     ) : StateFlow<BalanceState> {
         private val _state = MutableStateFlow(this)
         override val replayCache: List<BalanceState>
@@ -83,7 +83,7 @@ class ProfileScreenContract {
     data class SelectableAmountState(
         val title: String,
         val isSelected: Boolean,
-        val amount: Int
+        val amount: Int,
     ) : StateFlow<SelectableAmountState> {
         private val _state = MutableStateFlow(this)
         override val replayCache: List<SelectableAmountState>
@@ -94,6 +94,26 @@ class ProfileScreenContract {
         }
 
         override val value: SelectableAmountState
+            get() = _state.value
+
+    }
+
+    data class ErrorState(
+        val code: Int,
+        val message: String,
+        val success: Boolean,
+        val id: String,
+    ) : StateFlow<ErrorState> {
+
+        private val _state = MutableStateFlow(this)
+        override val replayCache: List<ErrorState>
+            get() = _state.replayCache
+
+        override suspend fun collect(collector: FlowCollector<ErrorState>): Nothing {
+            _state.collect(collector)
+        }
+
+        override val value: ErrorState
             get() = _state.value
 
     }

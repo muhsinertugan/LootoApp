@@ -6,5 +6,5 @@ data class Draw(
     val createdAt: String,
     val extraNumbers: List<Any>,
     val game: DrawnGame,
-    val numbers: List<Int>
+    val numbers: List<Int>,
 )

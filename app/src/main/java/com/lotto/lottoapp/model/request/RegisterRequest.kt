@@ -16,5 +16,5 @@ data class RegisterOtpRequest(
     val lastName: String?,
     val name: String?,
     val phoneNumber: String?,
-    val otp: String
+    val otp: String,
 )

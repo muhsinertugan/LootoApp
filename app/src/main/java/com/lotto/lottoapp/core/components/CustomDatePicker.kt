@@ -39,7 +39,7 @@ fun CustomDatePicker(
     fieldName: String,
     placeholderText: String,
     text: String?,
-    onFieldValueChange: (Long) -> Unit
+    onFieldValueChange: (Long) -> Unit,
 ) {
     val datePickerState = rememberDatePickerState()
     var showDialog by remember { mutableStateOf(false) }

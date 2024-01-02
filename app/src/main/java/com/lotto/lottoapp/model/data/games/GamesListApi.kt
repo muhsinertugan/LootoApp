@@ -6,6 +6,6 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class GamesListApi @Inject constructor(private val service: GamesListService){
+class GamesListApi @Inject constructor(private val service: GamesListService) {
     suspend fun getGamesList(): Response<GamesListResponse> = service.getGamesList()
 }

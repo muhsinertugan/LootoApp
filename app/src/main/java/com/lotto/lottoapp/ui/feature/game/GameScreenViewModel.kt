@@ -6,14 +6,17 @@ import androidx.lifecycle.viewModelScope
 import com.lotto.lottoapp.model.data.games.GameApi
 import com.lotto.lottoapp.model.data.tickets.TicketApi
 import com.lotto.lottoapp.model.request.BuyTicketRequest
+import com.lotto.lottoapp.model.response.ApiResponse
 import com.lotto.lottoapp.model.response.game.Game
 import com.lotto.lottoapp.utils.SharedPreferencesUtil
+import com.lotto.lottoapp.utils.handleResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,6 +31,38 @@ class GameScreenViewModel @Inject constructor(
         viewModelScope.launch {
             getGames(gameId = savedStateHandle["gameId"]!!)
         }
+    }
+
+    private var _errorState = MutableStateFlow(
+        GameScreenContract.ErrorState(
+            code = 0,
+            message = "",
+            success = false,
+            id = ""
+        )
+    )
+
+
+    var errorState = _errorState.asStateFlow()
+
+    private fun updateErrorState(newState: GameScreenContract.ErrorState) {
+        viewModelScope.launch(Dispatchers.Main) {
+            _errorState.value = newState
+        }
+
+    }
+
+
+    private var _alertDialogState =
+        MutableStateFlow(GameScreenContract.AlertDialogState(open = false))
+
+    var alertDialogState = _alertDialogState.asStateFlow()
+
+    fun updateAlertDialogState(value: Boolean) {
+        viewModelScope.launch(Dispatchers.Main) {
+            _alertDialogState.value = GameScreenContract.AlertDialogState(open = value)
+        }
+
     }
 
 
@@ -105,8 +140,11 @@ class GameScreenViewModel @Inject constructor(
             )
 
             val currentColumns = _columns.value.columns.toMutableList()
+            val existingNullColumn = columns.value.columns.lastOrNull {
+                it.column.selectedNumbers.contains(null)
+            }
             currentColumns.set(index = currentColumns.lastIndex, element = newState)
-            if (isReady) {
+            if (isReady && existingNullColumn == null) {
                 currentColumns.add(nullColumn)
             }
             val newColumnsState = GameScreenContract.Columns(columns = currentColumns)
@@ -171,19 +209,26 @@ class GameScreenViewModel @Inject constructor(
 
     fun addColumnToTicket() {
         viewModelScope.launch(Dispatchers.Main) {
-            updateColumn(column.value.column, true)
-            updateColumns(newState = column.value, isReady = true)
+            val existingNullColumn = columns.value.columns.lastOrNull {
+                it.column.selectedNumbers.contains(null)
+            }
+            if (existingNullColumn == null) {
+                val updatedColumn = column.value.copy(isReady = true)
+                updateColumn(column.value.column, true)
+                updateColumns(newState = updatedColumn, isReady = true)
 
-            updateSelectedNumbersState(
-                newState = GameScreenContract.SelectedNumbers(
-                    selectedNumbers = arrayOfNulls(gameState.value.game.requriedNumbers)
+                updateSelectedNumbersState(
+                    newState = GameScreenContract.SelectedNumbers(
+                        selectedNumbers = arrayOfNulls(gameState.value.game.requriedNumbers)
+                    )
                 )
-            )
-            updateColumn(
-                newState = GameScreenContract.SelectedNumbers(
-                    selectedNumbers = arrayOfNulls(gameState.value.game.requriedNumbers)
-                ), isReady = false
-            )
+
+                updateColumn(
+                    newState = GameScreenContract.SelectedNumbers(
+                        selectedNumbers = arrayOfNulls(gameState.value.game.requriedNumbers)
+                    ), isReady = false
+                )
+            }
         }
     }
 
@@ -198,13 +243,13 @@ class GameScreenViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val response = gameApi.getGame(gameId)
+                val response = handleResponse(gameApi.getGame(gameId))
 
                 withContext(Dispatchers.Main) {
-                    if (response.isSuccessful) {
-                        val gameResponse = response.body()
 
-                        if (gameResponse != null) {
+                    when (response) {
+                        is ApiResponse.Success -> {
+                            val gameResponse = response.data
                             val newState = GameScreenContract.GameState(
                                 game = Game(
                                     __v = gameResponse.game.__v,
@@ -248,50 +293,101 @@ class GameScreenViewModel @Inject constructor(
                                     ), false
                                 )
                             }
-
                         }
 
+                        is ApiResponse.Error -> {
+                            response.response?.let {
+                                GameScreenContract.ErrorState(
+                                    code = it.code,
+                                    message = it.message,
+                                    success = it.success,
+                                    id = UUID.randomUUID().toString()
+                                )
+                            }?.let { updateErrorState(it) }
+
+                        }
                     }
+
                 }
             } catch (e: Exception) {
+                GameScreenContract.ErrorState(
+                    code = 500,
+                    message = e.message.toString(),
+                    success = false,
+                    id = UUID.randomUUID().toString()
+                )
             }
         }
     }
 
 
     suspend fun buyTicket() {
+        viewModelScope.launch(Dispatchers.IO) {
 
-        val columnNumbers = columns.value.columns.map {
-            it.column.selectedNumbers
-        }
+            try {
+                val columnNumbers = columns.value.columns.map {
+                    it.column.selectedNumbers
+                }
 
-        val userToken = sharedPreferencesUtil.loadData<String>("userToken")
+                val userToken = sharedPreferencesUtil.loadData<String>("userToken")
 
-        ticketApi.postBuyTicket(
-            ticket = BuyTicketRequest(
-                game = gameState.value.game._id,
-                numbers = columnNumbers
-            ), token = userToken
-        )
-        viewModelScope.launch(Dispatchers.Main) {
-            _selectedNumbersState.value = GameScreenContract.SelectedNumbers(
-                selectedNumbers = arrayOfNulls(gameState.value.game.requriedNumbers)
-            )
-            _column.value = GameScreenContract.Column(
-                GameScreenContract.SelectedNumbers(
-                    selectedNumbers = arrayOfNulls(gameState.value.game.requriedNumbers)
-                ), false
-            )
-            _columns.value = GameScreenContract.Columns(
-                listOf(
-                    GameScreenContract.Column(
-                        GameScreenContract.SelectedNumbers(
-                            selectedNumbers = arrayOfNulls(gameState.value.game.requriedNumbers)
-                        ), false
+                val response = handleResponse(
+                    ticketApi.postBuyTicket(
+                        ticket = BuyTicketRequest(
+                            game = gameState.value.game._id,
+                            numbers = columnNumbers
+                        ), token = userToken
                     )
                 )
-            )
+
+                withContext(Dispatchers.Main) {
+                    when (response) {
+                        is ApiResponse.Success -> {
+                            _selectedNumbersState.value = GameScreenContract.SelectedNumbers(
+                                selectedNumbers = arrayOfNulls(gameState.value.game.requriedNumbers)
+                            )
+                            _column.value = GameScreenContract.Column(
+                                GameScreenContract.SelectedNumbers(
+                                    selectedNumbers = arrayOfNulls(gameState.value.game.requriedNumbers)
+                                ), false
+                            )
+                            _columns.value = GameScreenContract.Columns(
+                                listOf(
+                                    GameScreenContract.Column(
+                                        GameScreenContract.SelectedNumbers(
+                                            selectedNumbers = arrayOfNulls(gameState.value.game.requriedNumbers)
+                                        ), false
+                                    )
+                                )
+                            )
+
+                            updateAlertDialogState(true)
+                        }
+
+                        is ApiResponse.Error -> {
+                            response.response?.let {
+                                GameScreenContract.ErrorState(
+                                    code = it.code,
+                                    message = it.message,
+                                    success = it.success,
+                                    id = UUID.randomUUID().toString()
+                                )
+                            }?.let { updateErrorState(it) }
+                        }
+                    }
+                }
+
+            } catch (e: Exception) {
+                GameScreenContract.ErrorState(
+                    code = 500,
+                    message = e.message.toString(),
+                    success = false,
+                    id = UUID.randomUUID().toString()
+                )
+            }
+
         }
+
 
     }
 

@@ -9,12 +9,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -62,8 +63,6 @@ fun LoginRegisterLayout(
                                 .width(160.dp)
                                 .height(50.dp)
                                 .align(Alignment.BottomCenter)
-
-
                         )
                     }
                 }
@@ -79,11 +78,19 @@ fun LoginRegisterLayout(
 fun OtpScreenLayout(
     inputComponent: @Composable (navController: NavHostController) -> Unit,
     navController: NavHostController,
+    snackbarHostState: SnackbarHostState,
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState,
+            ) {
+                Snackbar(
+                    snackbarData = it, containerColor = Color.Red, contentColor = Color.White
+                )
+            }
+        }
 
     ) { innerPadding ->
         BackgroundImage()
@@ -95,7 +102,7 @@ fun OtpScreenLayout(
                 modifier = Modifier.fillMaxSize()
             ) {
 
-                inputComponent(navController = navController)
+                inputComponent(navController)
                 Box(modifier = Modifier.height(125.dp)) {
                     Box(
                         modifier = Modifier
@@ -127,6 +134,7 @@ fun OtpScreenLayout(
 fun GeneralLayout(
     inputComponent: @Composable (snackbarHost: SnackbarHostState) -> Unit,
     navController: NavHostController,
+    snackbarHostState: SnackbarHostState,
 ) {
 
     Column(
@@ -138,7 +146,17 @@ fun GeneralLayout(
         Scaffold(
             bottomBar = { BottomBarNavigation(navController = navController) },
             topBar = { TopBarComponent(navController = navController) },
-            snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+            snackbarHost = {
+                SnackbarHost(
+                    hostState = snackbarHostState,
+                ) {
+                    Snackbar(
+                        snackbarData = it,
+                        containerColor = Color.Red,
+                        contentColor = Color.White
+                    )
+                }
+            }
         ) { innerPadding ->
             BackgroundImage()
             Column(modifier = Modifier.padding(innerPadding)) {

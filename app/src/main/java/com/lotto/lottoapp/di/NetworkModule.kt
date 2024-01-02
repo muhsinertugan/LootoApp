@@ -19,20 +19,19 @@ import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 
-
-object ENDPOINTS{
+object ENDPOINTS {
     const val BASE_URL = "https://sea-turtle-app-qpyzd.ondigitalocean.app/api/v1/"
     const val GAMES_URL = "games"
-    const val DRAWS_URL= "draws/recents"
+    const val DRAWS_URL = "draws/recents"
     const val CITIES_URL = "cities"
-    const val AUTH_LOGIN_URL="auth/login/email"
-    const val OTP_LOGIN_URL="auth/login/email/otp"
-    const val AUTH_REGISTER_URL="auth/register/email"
-    const val OTP_REGISTER_URL="auth/register/email/otp"
+    const val AUTH_LOGIN_URL = "auth/login/email"
+    const val OTP_LOGIN_URL = "auth/login/email/otp"
+    const val AUTH_REGISTER_URL = "auth/register/email"
+    const val OTP_REGISTER_URL = "auth/register/email/otp"
     const val PROFILE_URL = "profile/user"
-    const val TICKETS_URL="tickets"
-    const val BALANCE_URL="balance"
-    const val BALANCE_ADD_URL="balance/add"
+    const val TICKETS_URL = "tickets"
+    const val BALANCE_URL = "balance"
+    const val BALANCE_ADD_URL = "balance/add"
 }
 
 

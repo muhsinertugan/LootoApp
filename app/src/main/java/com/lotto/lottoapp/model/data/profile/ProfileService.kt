@@ -14,7 +14,7 @@ interface ProfileService {
     @PATCH(ENDPOINTS.PROFILE_URL)
     suspend fun patchProfile(
         @Body body: EditProfileRequest,
-        @Header("Authorization") token: String
+        @Header("Authorization") token: String,
     ): Response<EditProfileResponse>
 
     @POST(ENDPOINTS.PROFILE_URL)

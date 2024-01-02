@@ -9,5 +9,5 @@ data class CityResponseItem(
     val longitude: String,
     val name: String,
     val population: Int,
-    val region: String
+    val region: String,
 )

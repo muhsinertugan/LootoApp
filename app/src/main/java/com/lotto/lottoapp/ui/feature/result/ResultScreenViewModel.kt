@@ -4,16 +4,19 @@ import androidx.compose.runtime.State
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lotto.lottoapp.model.data.tickets.TicketApi
+import com.lotto.lottoapp.model.response.ApiResponse
 import com.lotto.lottoapp.model.response.tickets.SingleTicketResponse
 import com.lotto.lottoapp.model.response.tickets.Tickets
 import com.lotto.lottoapp.model.response.tickets.UserTicketsResponse
 import com.lotto.lottoapp.utils.SharedPreferencesUtil
+import com.lotto.lottoapp.utils.handleResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,6 +27,24 @@ class ResultScreenViewModel @Inject constructor(
 
     init {
         getUserTickets()
+    }
+
+    private var _errorState = MutableStateFlow(
+        ResultScreenContract.ErrorState(
+            code = 0,
+            message = "",
+            success = false,
+            id = ""
+        )
+    )
+
+    var errorState = _errorState.asStateFlow()
+
+    private fun updateErrorState(newState: ResultScreenContract.ErrorState) {
+        viewModelScope.launch(Dispatchers.Main) {
+            _errorState.value = newState
+        }
+
     }
 
     private var _userTicketsState = MutableStateFlow(
@@ -87,34 +108,54 @@ class ResultScreenViewModel @Inject constructor(
 
     fun getSingleTicketResult(ticketNumber: State<ResultScreenContract.UserSingleTicketSearch>) {
         viewModelScope.launch(Dispatchers.IO) {
+
             try {
                 val userToken = sharedPreferencesUtil.loadData<String>("userToken")
-                val response =
-                    ticketApi.getTicketResult(userToken, ticketNumber = ticketNumber.value.search)
+                val response = handleResponse(
+                    ticketApi.getTicketResult(
+                        userToken,
+                        ticketNumber = ticketNumber.value.search
+                    )
+                )
                 withContext(Dispatchers.Main) {
-                    if (response.isSuccessful) {
-                        val ticketsResponse = response.body()
-                        if (ticketsResponse != null) {
-                            if (ticketsResponse.success) {
-                                val newState = ResultScreenContract.SingleTicket(
-                                    ticket = SingleTicketResponse(
-                                        currency = ticketsResponse.currency,
-                                        game = ticketsResponse.game,
-                                        guessedNumbers = ticketsResponse.guessedNumbers,
-                                        isWinner = ticketsResponse.isWinner,
-                                        prize = ticketsResponse.prize,
-                                        success = ticketsResponse.success,
-                                        ticketCode = ticketsResponse.ticketCode
-                                    )
+                    when (response) {
+                        is ApiResponse.Success -> {
+                            val ticketsResponse = response.data
+
+                            val newState = ResultScreenContract.SingleTicket(
+                                ticket = SingleTicketResponse(
+                                    currency = ticketsResponse.currency,
+                                    game = ticketsResponse.game,
+                                    guessedNumbers = ticketsResponse.guessedNumbers,
+                                    isWinner = ticketsResponse.isWinner,
+                                    prize = ticketsResponse.prize,
+                                    success = ticketsResponse.success,
+                                    ticketCode = ticketsResponse.ticketCode
                                 )
-                                updateSingleTicketsState(newState)
-                            }
+                            )
+                            updateSingleTicketsState(newState)
+                        }
+
+                        is ApiResponse.Error -> {
+                            response.response?.let {
+                                ResultScreenContract.ErrorState(
+                                    code = it.code,
+                                    message = it.message,
+                                    success = it.success,
+                                    id = UUID.randomUUID().toString()
+                                )
+
+                            }?.let { updateErrorState(it) }
                         }
                     }
-
                 }
             } catch (e: Exception) {
-                //TODO: handle error
+                ResultScreenContract.ErrorState(
+                    code = 500,
+                    message = e.message.toString(),
+                    success = false,
+                    id = UUID.randomUUID().toString()
+                )
             }
 
         }
@@ -122,32 +163,46 @@ class ResultScreenViewModel @Inject constructor(
 
     private fun getUserTickets() {
         viewModelScope.launch(Dispatchers.IO) {
+
             try {
                 val userToken = sharedPreferencesUtil.loadData<String>("userToken")
-                val response = ticketApi.getUserTickets(userToken)
+                val response = handleResponse(ticketApi.getUserTickets(userToken))
                 withContext(Dispatchers.Main) {
-                    if (response.isSuccessful) {
-                        val ticketsResponse = response.body()
-                        if (ticketsResponse != null) {
-                            if (ticketsResponse.success) {
-                                val newState = ResultScreenContract.UserTicketsList(
-                                    ticketsResponse = UserTicketsResponse(
-                                        data = ticketsResponse.data,
-                                        message = ticketsResponse.message,
-                                        success = ticketsResponse.success
-                                    )
+                    when (response) {
+                        is ApiResponse.Success -> {
+                            val ticketsResponse = response.data
+
+                            val newState = ResultScreenContract.UserTicketsList(
+                                ticketsResponse = UserTicketsResponse(
+                                    data = ticketsResponse.data,
+                                    message = ticketsResponse.message,
+                                    success = ticketsResponse.success
                                 )
-                                updateUserTicketsState(newState)
+                            )
+                            updateUserTicketsState(newState)
+                        }
+
+                        is ApiResponse.Error -> {
+                            response.response?.let {
+                                ResultScreenContract.ErrorState(
+                                    code = it.code,
+                                    message = it.message,
+                                    success = it.success,
+                                    id = UUID.randomUUID().toString()
+                                )
 
                             }
                         }
                     }
-
                 }
             } catch (e: Exception) {
-                //TODO: handle error
+                ResultScreenContract.ErrorState(
+                    code = 500,
+                    message = e.message.toString(),
+                    success = false,
+                    id = UUID.randomUUID().toString()
+                )
             }
-
         }
     }
 }

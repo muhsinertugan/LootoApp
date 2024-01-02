@@ -27,5 +27,25 @@ class EditProfileScreenContract {
 
     }
 
+    data class ErrorState(
+        val code: Int,
+        val message: String,
+        val success: Boolean,
+        val id: String,
+    ) : StateFlow<ErrorState> {
+
+        private val _state = MutableStateFlow(this)
+        override val replayCache: List<ErrorState>
+            get() = _state.replayCache
+
+        override suspend fun collect(collector: FlowCollector<ErrorState>): Nothing {
+            _state.collect(collector)
+        }
+
+        override val value: ErrorState
+            get() = _state.value
+
+    }
+
 
 }

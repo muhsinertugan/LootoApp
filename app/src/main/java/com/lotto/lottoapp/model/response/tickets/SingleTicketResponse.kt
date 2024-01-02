@@ -7,5 +7,5 @@ data class SingleTicketResponse(
     val isWinner: Boolean,
     val prize: Int,
     val success: Boolean,
-    val ticketCode: String
+    val ticketCode: String,
 )

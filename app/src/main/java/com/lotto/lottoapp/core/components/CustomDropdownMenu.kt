@@ -1,5 +1,6 @@
 package com.lotto.lottoapp.core.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -32,13 +33,18 @@ import com.lotto.lottoapp.ui.theme.Inter
 
 @Composable
 fun CustomDropdownMenu(
+    selectedCity: String?,
     state: State<SplashScreenContract.CityState>,
     fieldName: String,
-    onFieldValueChange: (String) -> Unit
-) {
+    onFieldValueChange: (String) -> Unit,
+
+    ) {
 
     var expanded by remember { mutableStateOf(false) }
     var cityNameText by remember { mutableStateOf("Select a City") }
+    var _selectedCity by remember { mutableStateOf(value = selectedCity) }
+
+    Log.d("_selectedCity", _selectedCity.toString())
 
     Column(
         verticalArrangement = Arrangement.Center, modifier = Modifier.zIndex(1000F)
@@ -65,11 +71,13 @@ fun CustomDropdownMenu(
                 horizontalArrangement = Arrangement.Start,
                 modifier = Modifier.fillMaxSize()
             ) {
-                Text(
-                    text = cityNameText,
-                    color = Color(92, 92, 92),
-                    style = TextStyle(fontFamily = Inter)
-                )
+                (if (_selectedCity != null) selectedCity else cityNameText)?.let {
+                    Text(
+                        text = it,
+                        color = Color(92, 92, 92),
+                        style = TextStyle(fontFamily = Inter)
+                    )
+                }
             }
         }
 
@@ -83,6 +91,7 @@ fun CustomDropdownMenu(
 
             state.value.cities.forEach {
                 DropdownMenuItem(onClick = {
+                    _selectedCity = null
                     expanded = false
                     cityNameText = it.name
                     onFieldValueChange(it._id)

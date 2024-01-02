@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 fun SplashScreen(
     navController: NavController,
     isUserSignedIn: Boolean,
-    splashScreenViewModel: SplashScreenViewModel = hiltViewModel()
+    splashScreenViewModel: SplashScreenViewModel = hiltViewModel(),
 ) {
     val cityState = splashScreenViewModel.cityState.collectAsState()
     LaunchedEffect(key1 = cityState.value.isLoading) {

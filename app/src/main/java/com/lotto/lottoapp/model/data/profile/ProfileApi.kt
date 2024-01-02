@@ -11,12 +11,13 @@ import javax.inject.Singleton
 class ProfileApi @Inject constructor(private val service: ProfileService) {
     suspend fun patchProfile(
         token: String,
-        patchProfileBody: EditProfileRequest
+        patchProfileBody: EditProfileRequest,
     ): Response<EditProfileResponse> =
         service.patchProfile(
             token = "token $token",
             body = patchProfileBody
         )
 
-    suspend fun getProfile(token: String): Response<ProfileResponse> = service.getProfile(token = "token $token")
+    suspend fun getProfile(token: String): Response<ProfileResponse> =
+        service.getProfile(token = "token $token")
 }

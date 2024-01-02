@@ -18,21 +18,40 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun CustomCountDownTimer(totalDuration: Float, remainingTime: Float){
+fun CustomCountDownTimer(totalDuration: Float, remainingTime: Float) {
 
 
-
-    Box(modifier = Modifier
-        .width(96.dp)
-        .height(96.dp)) {
-        Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
+    Box(
+        modifier = Modifier
+            .width(96.dp)
+            .height(96.dp)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Box {
-                CircularProgressIndicator(modifier = Modifier.size(86.dp), progress = (remainingTime / totalDuration), strokeWidth = 5.dp, color = Color(red = 204, green = 0, blue = 205))
+                CircularProgressIndicator(
+                    modifier = Modifier.size(86.dp),
+                    progress = (remainingTime / totalDuration),
+                    strokeWidth = 5.dp,
+                    color = Color(red = 204, green = 0, blue = 205)
+                )
             }
         }
-        Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
 
-            Text(text = "${remainingTime.toInt()}", style= MaterialTheme.typography.displaySmall, textAlign = TextAlign.Center, color = Color.White)
+            Text(
+                text = "${remainingTime.toInt()}",
+                style = MaterialTheme.typography.displaySmall,
+                textAlign = TextAlign.Center,
+                color = Color.White
+            )
         }
     }
 }

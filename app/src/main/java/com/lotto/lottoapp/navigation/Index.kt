@@ -2,10 +2,12 @@
 
 package com.lotto.lottoapp.navigation
 
-import android.util.Log
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -29,12 +31,14 @@ import com.lotto.lottoapp.ui.layout.LoginRegisterLayout
 import com.lotto.lottoapp.ui.layout.OtpScreenLayout
 import com.lotto.lottoapp.utils.SharedPreferencesUtil
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun Index(
     sharedPreferencesUtil: SharedPreferencesUtil,
 ) {
     val navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
+    val keyboardController = LocalSoftwareKeyboardController.current
     val isUserSignedIn = checkUserAuthenticationState(sharedPreferencesUtil)
 
     NavHost(navController = navController, startDestination = NavigationItems.Splash.route) {
@@ -42,17 +46,18 @@ fun Index(
             SplashScreen(navController = navController, isUserSignedIn = isUserSignedIn)
         }
 
-        if (!isUserSignedIn) {
-            loginRegisterFlow(navController, snackbarHostState)
-        }
+        loginRegisterFlow(navController, snackbarHostState, keyboardController)
+        mainAppFlow(navController, snackbarHostState, keyboardController)
 
-        mainAppFlow(navController)
+
     }
 }
 
-private fun NavGraphBuilder.loginRegisterFlow(
+@OptIn(ExperimentalComposeUiApi::class)
+fun NavGraphBuilder.loginRegisterFlow(
     navController: NavHostController,
     snackbarHostState: SnackbarHostState,
+    keyboardController: SoftwareKeyboardController?,
 ) {
     navigation(
         route = NavigationItems.Auth.route,
@@ -63,7 +68,8 @@ private fun NavGraphBuilder.loginRegisterFlow(
                 inputComponent = {
                     LoginScreen(
                         navController = navController,
-                        snackbarHostState = snackbarHostState
+                        snackbarHostState = snackbarHostState,
+                        keyboardController = keyboardController
                     )
                 },
                 navController = navController, snackbarHostState = snackbarHostState,
@@ -75,10 +81,56 @@ private fun NavGraphBuilder.loginRegisterFlow(
                 inputComponent = {
                     RegisterScreen(
                         navController = navController,
-                        snackbarHostState = snackbarHostState
+                        snackbarHostState = snackbarHostState,
+                        keyboardController = keyboardController
                     )
                 },
                 navController = navController, snackbarHostState = snackbarHostState
+            )
+        }
+
+
+        composable(
+            route = "${NavigationItems.Auth.Otp.route}/{${ScreenArguments.EMAIL}}",
+            arguments = listOf(
+                navArgument("{${ScreenArguments.EMAIL}}") { nullable = true },
+                navArgument("{${ScreenArguments.NAME}}") { nullable = true },
+                navArgument("{${ScreenArguments.SURNAME}}") { nullable = true },
+                navArgument("{${ScreenArguments.PHONE}}") { nullable = true },
+                navArgument("{${ScreenArguments.CITY}}") { nullable = true },
+                navArgument("{${ScreenArguments.BIRTHDATE}}") { nullable = true },
+            )
+        ) { navBackStackEntry ->
+            val args = navBackStackEntry.arguments
+            val email = args?.getString(ScreenArguments.EMAIL)?.takeIf { it != "null" }
+            val birthDate = args?.getString(ScreenArguments.BIRTHDATE)?.takeIf { it != "null" }
+            val cityId = args?.getString(ScreenArguments.CITY)?.takeIf { it != "null" }
+            val lastName = args?.getString(ScreenArguments.SURNAME)?.takeIf { it != "null" }
+            val name = args?.getString(ScreenArguments.NAME)?.takeIf { it != "null" }
+            val phoneNumber = args?.getString(ScreenArguments.PHONE)?.takeIf { it != "null" }
+
+
+            val registerInput = RegisterRequest(
+                birthDate = birthDate,
+                cityId = cityId,
+                email = email,
+                lastName = lastName,
+                name = name,
+                phoneNumber = phoneNumber
+            )
+            val loginInput = LoginRequest(email = email)
+
+            OtpScreenLayout(
+                inputComponent = {
+                    OtpScreen(
+                        navController = navController,
+                        userLoginInput = loginInput,
+                        userRegisterInput = registerInput,
+                        snackbarHostState = snackbarHostState,
+                        keyboardController = keyboardController
+                    )
+                },
+                navController = navController, snackbarHostState = snackbarHostState,
             )
         }
 
@@ -101,7 +153,6 @@ private fun NavGraphBuilder.loginRegisterFlow(
             val name = args?.getString(ScreenArguments.NAME)?.takeIf { it != "null" }
             val phoneNumber = args?.getString(ScreenArguments.PHONE)?.takeIf { it != "null" }
 
-            Log.d("birthDate", birthDate.toString())
             val registerInput = RegisterRequest(
                 birthDate = birthDate,
                 cityId = cityId,
@@ -117,24 +168,36 @@ private fun NavGraphBuilder.loginRegisterFlow(
                     OtpScreen(
                         navController = navController,
                         userLoginInput = loginInput,
-                        userRegisterInput = registerInput
+                        userRegisterInput = registerInput,
+                        snackbarHostState = snackbarHostState,
+                        keyboardController = keyboardController
                     )
                 },
-                navController = navController
+                navController = navController,
+                snackbarHostState = snackbarHostState
             )
         }
     }
 }
 
-private fun NavGraphBuilder.mainAppFlow(navController: NavHostController) {
+@OptIn(ExperimentalComposeUiApi::class)
+private fun NavGraphBuilder.mainAppFlow(
+    navController: NavHostController, snackbarHostState: SnackbarHostState,
+    keyboardController: SoftwareKeyboardController?,
+) {
     navigation(
         route = NavigationItems.App.route,
         startDestination = NavigationItems.App.Home.route,
     ) {
         composable(NavigationItems.App.Home.route) {
             GeneralLayout(
-                inputComponent = { HomeScreen(navController = navController) },
-                navController = navController
+                inputComponent = {
+                    HomeScreen(
+                        navController = navController, snackbarHostState = snackbarHostState,
+                        keyboardController = keyboardController
+                    )
+                },
+                navController = navController, snackbarHostState = snackbarHostState,
             )
         }
 
@@ -145,15 +208,27 @@ private fun NavGraphBuilder.mainAppFlow(navController: NavHostController) {
             )
         ) {
             GeneralLayout(
-                inputComponent = { GameScreen() },
-                navController = navController
+                inputComponent = {
+                    GameScreen(
+                        snackbarHostState = snackbarHostState,
+                        keyboardController = keyboardController
+                    )
+                },
+                navController = navController,
+                snackbarHostState = snackbarHostState
             )
         }
 
         composable(NavigationItems.App.Results.route) {
             GeneralLayout(
-                inputComponent = { ResultScreen() },
-                navController = navController
+                inputComponent = {
+                    ResultScreen(
+                        snackbarHostState = snackbarHostState,
+                        keyboardController = keyboardController
+                    )
+                },
+                navController = navController,
+                snackbarHostState = snackbarHostState
             )
         }
 
@@ -163,15 +238,27 @@ private fun NavGraphBuilder.mainAppFlow(navController: NavHostController) {
         ) {
             composable(NavigationItems.App.Profile.Profile.route) {
                 GeneralLayout(
-                    inputComponent = { ProfileScreen(navController = navController) },
-                    navController = navController
+                    inputComponent = {
+                        ProfileScreen(
+                            navController = navController, snackbarHostState = snackbarHostState,
+                            keyboardController = keyboardController
+                        )
+                    },
+                    navController = navController,
+                    snackbarHostState = snackbarHostState
                 )
             }
 
             composable(NavigationItems.App.Profile.EditProfile.route) {
                 GeneralLayout(
-                    inputComponent = { EditProfileScreen(navController = navController) },
-                    navController = navController
+                    inputComponent = {
+                        EditProfileScreen(
+                            navController = navController, snackbarHostState = snackbarHostState,
+                            keyboardController = keyboardController
+                        )
+                    },
+                    navController = navController,
+                    snackbarHostState = snackbarHostState
                 )
             }
         }

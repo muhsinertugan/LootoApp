@@ -5,14 +5,16 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.lotto.lottoapp.model.data.draws.RecentDrawsApi
 import com.lotto.lottoapp.model.data.games.GamesListApi
+import com.lotto.lottoapp.model.response.ApiResponse
 import com.lotto.lottoapp.navigation.Paths
-import com.lotto.lottoapp.utils.SharedPreferencesUtil
+import com.lotto.lottoapp.utils.handleResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -108,7 +110,12 @@ class HomeScreenViewModel @Inject constructor(
 
                 }
             } catch (e: Exception) {
-
+                HomeScreenContract.ErrorState(
+                    code = 500,
+                    message = e.message.toString(),
+                    success = false,
+                    id = UUID.randomUUID().toString()
+                )
             }
         }
     }
@@ -148,7 +155,12 @@ class HomeScreenViewModel @Inject constructor(
 
                 }
             } catch (e: Exception) {
-
+                HomeScreenContract.ErrorState(
+                    code = 500,
+                    message = e.message.toString(),
+                    success = false,
+                    id = UUID.randomUUID().toString()
+                )
             }
         }
 

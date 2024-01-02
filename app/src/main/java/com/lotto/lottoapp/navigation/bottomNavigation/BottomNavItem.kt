@@ -8,21 +8,23 @@ import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class BottomNavItem(
     var title: String,
-    var route : String,
-    var icon: ImageVector
-)  {
+    var route: String,
+    var icon: ImageVector,
+) {
     object Home :
         BottomNavItem(
             "Home",
             "home_screen",
             Icons.Outlined.Home
         )
+
     object Results :
         BottomNavItem(
             "Results",
             "result_screen",
             Icons.Outlined.Search
         )
+
     object Profile :
         BottomNavItem(
             "Profile",

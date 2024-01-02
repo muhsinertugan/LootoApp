@@ -10,7 +10,7 @@ class GameScreenContract {
     data class GameState(
         val game: Game,
 
-    ) : StateFlow<GameState> {
+        ) : StateFlow<GameState> {
         private val _state = MutableStateFlow(this)
         override val replayCache: List<GameState>
             get() = _state.replayCache
@@ -59,7 +59,7 @@ class GameScreenContract {
 
     data class Column(
         val column: SelectedNumbers,
-        val isReady: Boolean
+        val isReady: Boolean,
 
         ) : StateFlow<Column> {
         private val _state = MutableStateFlow(this)
@@ -92,5 +92,41 @@ class GameScreenContract {
 
     }
 
+    data class ErrorState(
+        val code: Int,
+        val message: String,
+        val success: Boolean,
+        val id: String,
+    ) : StateFlow<ErrorState> {
+
+        private val _state = MutableStateFlow(this)
+        override val replayCache: List<ErrorState>
+            get() = _state.replayCache
+
+        override suspend fun collect(collector: FlowCollector<ErrorState>): Nothing {
+            _state.collect(collector)
+        }
+
+        override val value: ErrorState
+            get() = _state.value
+
+    }
+
+    data class AlertDialogState(
+        val open: Boolean,
+    ) : StateFlow<AlertDialogState> {
+
+        private val _state = MutableStateFlow(this)
+        override val replayCache: List<AlertDialogState>
+            get() = _state.replayCache
+
+        override suspend fun collect(collector: FlowCollector<AlertDialogState>): Nothing {
+            _state.collect(collector)
+        }
+
+        override val value: AlertDialogState
+            get() = _state.value
+
+    }
 
 }

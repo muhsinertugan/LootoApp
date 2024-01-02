@@ -1,27 +1,28 @@
 package com.lotto.lottoapp.ui.feature.editProfile
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.lotto.lottoapp.model.data.profile.ProfileApi
 import com.lotto.lottoapp.model.request.EditProfileRequest
+import com.lotto.lottoapp.model.response.ApiResponse
 import com.lotto.lottoapp.model.response.general.CityResponseItem
 import com.lotto.lottoapp.model.response.general.SerializableCityState
 import com.lotto.lottoapp.navigation.NavigationItems
-import com.lotto.lottoapp.ui.feature.profile.ProfileScreenContract
 import com.lotto.lottoapp.ui.feature.splash.SplashScreenContract
 import com.lotto.lottoapp.utils.SharedPreferencesUtil
 import com.lotto.lottoapp.utils.TimeUtil
+import com.lotto.lottoapp.utils.handleResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -48,6 +49,24 @@ class EditProfileScreenViewModel @Inject constructor(
                 sharedPreferencesUtil.loadData("cities")
             updateCityState(cities)
         }
+    }
+
+    private var _errorState = MutableStateFlow(
+        EditProfileScreenContract.ErrorState(
+            code = 0,
+            message = "",
+            success = false,
+            id = ""
+        )
+    )
+
+    var errorState = _errorState.asStateFlow()
+
+    private fun updateErrorState(newState: EditProfileScreenContract.ErrorState) {
+        viewModelScope.launch(Dispatchers.Main) {
+            _errorState.value = newState
+        }
+
     }
 
     private var _cityState = MutableStateFlow(
@@ -137,6 +156,56 @@ class EditProfileScreenViewModel @Inject constructor(
                 }
             } catch (_: Exception) {
 
+            }
+            try {
+                val userToken = sharedPreferencesUtil.loadData<String>("userToken")
+                val response = handleResponse(
+                    profileApi.patchProfile(
+                        token = userToken, patchProfileBody = editedInputs
+                    )
+                )
+                withContext(Dispatchers.Main) {
+                    when (response) {
+                        is ApiResponse.Success -> {
+                            val editProfileResponse = response.data
+
+                            val userCity: CityResponseItem = cityState.value.cities.find {
+                                return@find editProfileResponse.user.cityId == it._id
+                            }!!
+                            val newState = EditProfileScreenContract.UserState(
+                                birthDate = timeUtil.convertDateFormat(editProfileResponse.user.birthDate),
+                                city = userCity,
+                                email = editProfileResponse.user.email,
+                                lastName = editProfileResponse.user.lastName,
+                                name = editProfileResponse.user.name,
+                                phoneNumber = editProfileResponse.user.phoneNumber
+                            )
+                            viewModelScope.launch(Dispatchers.Main) {
+                                updateEditProfileState(newState)
+                                navController.navigate(NavigationItems.App.Profile.route)
+                            }
+                        }
+
+                        is ApiResponse.Error -> {
+                            response.response?.let {
+                                EditProfileScreenContract.ErrorState(
+                                    code = it.code,
+                                    message = it.message,
+                                    success = it.success,
+                                    id = UUID.randomUUID().toString()
+                                )
+
+                            }?.let { updateErrorState(it) }
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                EditProfileScreenContract.ErrorState(
+                    code = 500,
+                    message = e.message.toString(),
+                    success = false,
+                    id = UUID.randomUUID().toString()
+                )
             }
 
         }

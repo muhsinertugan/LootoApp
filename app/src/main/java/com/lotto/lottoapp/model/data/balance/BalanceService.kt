@@ -12,7 +12,7 @@ interface BalanceService {
     @POST(ENDPOINTS.BALANCE_ADD_URL)
     suspend fun addBalance(
         @Body balanceAmount: BalanceRequest,
-        @Header("Authorization") token: String
+        @Header("Authorization") token: String,
     ): Response<BalanceResponse>
 
     @POST(ENDPOINTS.BALANCE_URL)

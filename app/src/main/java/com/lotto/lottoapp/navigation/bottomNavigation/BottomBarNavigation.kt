@@ -21,7 +21,7 @@ fun BottomBarNavigation(navController: NavHostController) {
         BottomNavItem.Home,
         BottomNavItem.Results,
         BottomNavItem.Profile,
-        )
+    )
 
     NavigationBar(containerColor = Color.DarkGray) {
         items.forEach { item ->

@@ -9,14 +9,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -29,15 +33,30 @@ import com.lotto.lottoapp.ui.theme.CustomPurple
 import com.lotto.lottoapp.ui.theme.Typography
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun EditProfileScreen(
     navController: NavHostController,
+    snackbarHostState: SnackbarHostState,
+    keyboardController: SoftwareKeyboardController?,
 ) {
     val scope = rememberCoroutineScope()
     val editProfileScreenViewModel: EditProfileScreenViewModel = hiltViewModel()
     val profileData = editProfileScreenViewModel.editProfileState.collectAsState()
     val cityState = editProfileScreenViewModel.cityState.collectAsState()
 
+    val errorState = editProfileScreenViewModel.errorState.collectAsState()
+
+
+    LaunchedEffect(errorState.value.id) {
+        if (!errorState.value.success && errorState.value.code != 0) {
+            keyboardController?.hide()
+            snackbarHostState.showSnackbar(
+                message = errorState.value.message,
+                withDismissAction = true,
+            )
+        }
+    }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -78,7 +97,9 @@ fun EditProfileScreen(
         )
 
         CustomDropdownMenu(
-            fieldName = Constants.CITY, state = cityState
+            fieldName = Constants.CITY,
+            state = cityState,
+            selectedCity = profileData.value.city.name
         ) { newValue ->
             editProfileScreenViewModel.updateField("cityId", newValue)
         }

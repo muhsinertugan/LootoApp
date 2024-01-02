@@ -5,15 +5,18 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.lotto.lottoapp.model.data.loginRegister.LoginRegisterApi
 import com.lotto.lottoapp.model.request.LoginRequest
+import com.lotto.lottoapp.model.response.ApiResponse
 import com.lotto.lottoapp.model.response.login.LoginData
 import com.lotto.lottoapp.navigation.NavigationItems
-import com.lotto.lottoapp.navigation.Paths
+import com.lotto.lottoapp.ui.constants.ErrorCodes
+import com.lotto.lottoapp.utils.handleResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,6 +28,7 @@ class LoginScreenViewModel @Inject constructor(private val loginRegisterService:
             code = 0,
             message = "",
             success = false,
+            id = ""
         )
     )
 
@@ -112,10 +116,11 @@ class LoginScreenViewModel @Inject constructor(private val loginRegisterService:
                     }
                 }
             } catch (e: Exception) {
-                updateState(
-                    LoginScreenContract.UserState(
-                        message = "Error: ${e.message}", success = false, data = null
-                    )
+                LoginScreenContract.ErrorState(
+                    code = 500,
+                    message = e.message.toString(),
+                    success = false,
+                    id = UUID.randomUUID().toString()
                 )
             }
 

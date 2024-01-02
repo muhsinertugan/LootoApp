@@ -7,5 +7,5 @@ data class BuyTicketResponse(
     val message: String,
     val numbers: List<List<Int>>,
     val success: Boolean,
-    val ticketCode: String
+    val ticketCode: String,
 )

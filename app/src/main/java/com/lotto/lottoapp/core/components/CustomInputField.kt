@@ -20,6 +20,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.lotto.lottoapp.ui.constants.Constants
 import com.lotto.lottoapp.ui.theme.Inter
@@ -44,7 +45,6 @@ fun CustomInputField(
         Text(
             text = fieldName,
             color = Color.White,
-            style = TextStyle(fontFamily = Inter),
             modifier = Modifier.padding(vertical = 10.dp, horizontal = 5.dp)
         )
 
@@ -58,7 +58,15 @@ fun CustomInputField(
                     .width(320.dp)
                     .height(50.dp),
                 value = text,
-                onValueChange = { onFieldValueChange(it) },
+                onValueChange = { newValue ->
+                    val limitedValue = if (fieldName == Constants.PHONE) {
+                        newValue.take(10)
+                    } else {
+                        newValue
+                    }
+
+                    onFieldValueChange(limitedValue)
+                },
                 placeholder = {
                     Text(
                         text = placeholderText,
@@ -67,7 +75,11 @@ fun CustomInputField(
                     )
                 },
                 shape = RoundedCornerShape(12.dp),
-                textStyle = TextStyle(color = Color(92, 92, 92), fontWeight = FontWeight(600)),
+                textStyle = TextStyle(
+                    color = Color(92, 92, 92),
+                    fontWeight = FontWeight(600),
+                    fontSize = 12.sp
+                ),
                 singleLine = true,
 
                 keyboardOptions = when (fieldName) {

@@ -12,7 +12,7 @@ import javax.inject.Singleton
 class TicketApi @Inject constructor(private val service: TicketService) {
     suspend fun postBuyTicket(
         ticket: BuyTicketRequest,
-        token: String
+        token: String,
     ): Response<BuyTicketResponse> = service.postTicket(
         token = "token $token",
         ticketRequest = ticket
@@ -23,7 +23,7 @@ class TicketApi @Inject constructor(private val service: TicketService) {
 
     suspend fun getTicketResult(
         token: String,
-        ticketNumber: String
+        ticketNumber: String,
     ): Response<SingleTicketResponse> = service.getTicketResult(
         token = "token $token",
         ticketNumber = ticketNumber

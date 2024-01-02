@@ -10,8 +10,8 @@ class HomeScreenContract {
 
     data class GamesListState(
         val games: List<Game> = listOf(),
-        val success: Boolean
-    ) : StateFlow<GamesListState>{
+        val success: Boolean,
+    ) : StateFlow<GamesListState> {
         private val _state = MutableStateFlow(this)
         override val replayCache: List<GamesListState>
             get() = _state.replayCache
@@ -28,8 +28,8 @@ class HomeScreenContract {
     data class RecentDrawsState(
         val recentDraws: List<Draw> = listOf(),
         val count: Int,
-        val success: Boolean
-    ): StateFlow<RecentDrawsState>{
+        val success: Boolean,
+    ) : StateFlow<RecentDrawsState> {
         private val _state = MutableStateFlow(this)
         override val replayCache: List<RecentDrawsState>
             get() = _state.replayCache
@@ -39,6 +39,26 @@ class HomeScreenContract {
         }
 
         override val value: RecentDrawsState
+            get() = _state.value
+
+    }
+
+    data class ErrorState(
+        val code: Int,
+        val message: String,
+        val success: Boolean,
+        val id: String,
+    ) : StateFlow<ErrorState> {
+
+        private val _state = MutableStateFlow(this)
+        override val replayCache: List<ErrorState>
+            get() = _state.replayCache
+
+        override suspend fun collect(collector: FlowCollector<ErrorState>): Nothing {
+            _state.collect(collector)
+        }
+
+        override val value: ErrorState
             get() = _state.value
 
     }

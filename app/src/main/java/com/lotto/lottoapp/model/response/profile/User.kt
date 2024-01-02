@@ -13,5 +13,5 @@ data class User(
     val lastName: String,
     val name: String,
     val phoneNumber: String,
-    val privacyPolicy: Boolean
+    val privacyPolicy: Boolean,
 )

@@ -5,5 +5,5 @@ data class DrawnGame(
     val gameCode: String,
     val name: String,
     val prize: Int,
-    val image: String
+    val image: String,
 )
