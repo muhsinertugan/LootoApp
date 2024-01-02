@@ -27,7 +27,7 @@ class RegisterScreenContract {
     }
 
     data class ErrorState(
-        val code: String,
+        val code: Int,
         val message: String,
         val success: Boolean
     ) : StateFlow<ErrorState> {
@@ -43,10 +43,6 @@ class RegisterScreenContract {
         override val value: ErrorState
             get() = _state.value
 
-    }
-
-    sealed class Effect {
-        object DataWasLoaded : Effect()
     }
 
 

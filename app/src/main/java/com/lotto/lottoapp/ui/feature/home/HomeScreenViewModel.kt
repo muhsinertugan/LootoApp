@@ -19,15 +19,33 @@ import javax.inject.Inject
 class HomeScreenViewModel @Inject constructor(
     private val gamesListApi: GamesListApi,
     private val recentDrawsApi: RecentDrawsApi,
-    sharedPreferencesUtil: SharedPreferencesUtil
-) :
-    ViewModel() {
+) : ViewModel() {
+
+
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
             initHomeScreen()
 
         }
+    }
+
+    private var _errorState = MutableStateFlow(
+        HomeScreenContract.ErrorState(
+            code = 0,
+            message = "",
+            success = false,
+            id = ""
+        )
+    )
+
+    var errorState = _errorState.asStateFlow()
+
+    private fun updateErrorState(newState: HomeScreenContract.ErrorState) {
+        viewModelScope.launch(Dispatchers.Main) {
+            _errorState.value = newState
+        }
+
     }
 
 
@@ -62,20 +80,32 @@ class HomeScreenViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val response = gamesListApi.getGamesList()
+                val response = handleResponse(gamesListApi.getGamesList())
 
                 withContext(Dispatchers.Main) {
-                    if (response.isSuccessful) {
-                        val gamesListResponse = response.body()
-
-                        if (gamesListResponse != null) {
+                    when (response) {
+                        is ApiResponse.Success -> {
+                            val gamesListResponse = response.data
                             val newState = HomeScreenContract.GamesListState(
                                 games = gamesListResponse.gameList,
                                 success = gamesListResponse.success
                             )
                             updateGamesListState(newState)
                         }
+
+                        is ApiResponse.Error -> {
+                            response.response?.let {
+                                HomeScreenContract.ErrorState(
+                                    code = it.code,
+                                    message = it.message,
+                                    success = it.success,
+                                    id = UUID.randomUUID().toString()
+                                )
+                            }?.let { updateErrorState(it) }
+
+                        }
                     }
+
                 }
             } catch (e: Exception) {
 
@@ -87,13 +117,13 @@ class HomeScreenViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val response = recentDrawsApi.getRecentDraws()
+                val response = handleResponse(recentDrawsApi.getRecentDraws())
 
                 withContext(Dispatchers.Main) {
-                    if (response.isSuccessful) {
-                        val recentDrawsResponse = response.body()
+                    when (response) {
+                        is ApiResponse.Success -> {
 
-                        if (recentDrawsResponse != null) {
+                            val recentDrawsResponse = response.data
                             val newState = HomeScreenContract.RecentDrawsState(
                                 recentDraws = recentDrawsResponse.draws,
                                 count = recentDrawsResponse.count,
@@ -102,7 +132,20 @@ class HomeScreenViewModel @Inject constructor(
 
                             updateRecentDrawsState(newState)
                         }
+
+                        is ApiResponse.Error -> {
+                            response.response?.let {
+                                HomeScreenContract.ErrorState(
+                                    code = it.code,
+                                    message = it.message,
+                                    success = it.success,
+                                    id = UUID.randomUUID().toString()
+                                )
+                            }?.let { updateErrorState(it) }
+
+                        }
                     }
+
                 }
             } catch (e: Exception) {
 

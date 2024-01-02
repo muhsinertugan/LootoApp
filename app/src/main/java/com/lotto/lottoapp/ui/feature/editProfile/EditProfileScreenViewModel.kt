@@ -28,14 +28,14 @@ import javax.inject.Inject
 class EditProfileScreenViewModel @Inject constructor(
     private val profileApi: ProfileApi,
     private val sharedPreferencesUtil: SharedPreferencesUtil,
-    private val timeUtil: TimeUtil
+    private val timeUtil: TimeUtil,
 ) : ViewModel() {
     init {
         viewModelScope.launch(Dispatchers.Main) {
-            val editProfileData: ProfileScreenContract.UserData =
+            val editProfileData: EditProfileScreenContract.UserState =
                 sharedPreferencesUtil.loadData("userData")
             updateEditProfileState(
-                newState = ProfileScreenContract.UserData(
+                newState = EditProfileScreenContract.UserState(
                     birthDate = timeUtil.convertDateFormat(editProfileData.birthDate),
                     city = editProfileData.city,
                     email = editProfileData.email,
@@ -79,7 +79,7 @@ class EditProfileScreenViewModel @Inject constructor(
 
 
     private var _editProfileState = MutableStateFlow(
-        ProfileScreenContract.UserData(
+        EditProfileScreenContract.UserState(
             birthDate = "", city = CityResponseItem(
                 __v = 0,
                 _id = "",
@@ -96,7 +96,7 @@ class EditProfileScreenViewModel @Inject constructor(
 
     val editProfileState = _editProfileState.asStateFlow()
 
-    private fun updateEditProfileState(newState: ProfileScreenContract.UserData) {
+    private fun updateEditProfileState(newState: EditProfileScreenContract.UserState) {
         viewModelScope.launch(Dispatchers.Main) {
             _editProfileState.value = newState
         }
@@ -120,7 +120,7 @@ class EditProfileScreenViewModel @Inject constructor(
                             val userCity: CityResponseItem = cityState.value.cities.find {
                                 return@find editProfileResponse.user.cityId == it._id
                             }!!
-                            val newState = ProfileScreenContract.UserData(
+                            val newState = EditProfileScreenContract.UserState(
                                 birthDate = timeUtil.convertDateFormat(editProfileResponse.user.birthDate),
                                 city = userCity,
                                 email = editProfileResponse.user.email,
@@ -143,20 +143,11 @@ class EditProfileScreenViewModel @Inject constructor(
     }
 
 
+    @SuppressLint("SimpleDateFormat")
     private fun getDateTime(date: Long): String {
-        val simpleDate = SimpleDateFormat("dd/M/yyyy", Locale.getDefault())
+        val simpleDate = SimpleDateFormat("dd/M/yyyy")
         val formatted = Date(date)
         return simpleDate.format(formatted)
-    }
-
-    private fun getTimestamp(dateTimeString: String): Long? {
-        val simpleDate = SimpleDateFormat("dd/M/yyyy", Locale.getDefault())
-        return try {
-            val date = simpleDate.parse(dateTimeString)
-            date?.time
-        } catch (e: ParseException) {
-            null
-        }
     }
 
 
@@ -191,13 +182,14 @@ class EditProfileScreenViewModel @Inject constructor(
             "birthDate" -> currentInput.copy(birthDate = getDateTime(value))
             else -> currentInput
         }
+
         _editProfileState.value = updatedInput
     }
 
     fun editProfile(navController: NavHostController) {
         patchProfile(
             editedInputs = EditProfileRequest(
-                birthDate = "${getTimestamp(editProfileState.value.birthDate)}",
+                birthDate = editProfileState.value.birthDate,
                 cityId = editProfileState.value.city._id,
                 lastName = editProfileState.value.lastName,
                 name = editProfileState.value.name,

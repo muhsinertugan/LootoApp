@@ -26,13 +26,19 @@ import com.lotto.lottoapp.navigation.bottomNavigation.BottomBarNavigation
 
 @Composable
 fun LoginRegisterLayout(
-    inputComponent: @Composable (navController: NavHostController) -> Unit,
+    inputComponent: @Composable () -> Unit,
     navController: NavHostController,
+    snackbarHostState: SnackbarHostState,
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
-    Scaffold(
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
 
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState,
+            ) {
+                Snackbar(snackbarData = it, containerColor = Color.Red, contentColor = Color.White)
+            }
+        }
     ) { innerPadding ->
         BackgroundImage()
         Column(modifier = Modifier.padding(innerPadding)) {
@@ -41,7 +47,7 @@ fun LoginRegisterLayout(
                 verticalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxSize()
             ) {
-                inputComponent(navController = navController)
+                inputComponent()
                 Box(modifier = Modifier.height(125.dp)) {
                     Box(
                         modifier = Modifier
@@ -119,10 +125,10 @@ fun OtpScreenLayout(
 
 @Composable
 fun GeneralLayout(
-    inputComponent: @Composable () -> Unit,
+    inputComponent: @Composable (snackbarHost: SnackbarHostState) -> Unit,
     navController: NavHostController,
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween,
@@ -136,7 +142,7 @@ fun GeneralLayout(
         ) { innerPadding ->
             BackgroundImage()
             Column(modifier = Modifier.padding(innerPadding)) {
-                inputComponent()
+                inputComponent(snackbarHostState)
 
             }
 

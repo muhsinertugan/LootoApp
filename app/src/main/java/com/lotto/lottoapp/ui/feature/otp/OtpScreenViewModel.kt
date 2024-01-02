@@ -70,64 +70,58 @@ class OtpScreenViewModel @Inject constructor(
     }
 
     fun postRegisterOtp(registerOtpRequest: RegisterOtpRequest, navController: NavController) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
-                val response = withContext(Dispatchers.IO) {
-                    loginRegisterService.postRegisterOtp(registerOtpRequest = registerOtpRequest)
-                }
-                if (response.isSuccessful) {
-                    val registerOtpResponse = response.body()
-                    if (registerOtpResponse != null) {
+                val response =
+                    handleResponse(loginRegisterService.postRegisterOtp(registerOtpRequest = registerOtpRequest))
 
+                withContext(Dispatchers.Main) {
+                    when (response) {
+                        is ApiResponse.Success -> {
+                            val registerOtpResponse = response.data
+                            sharedPreferencesUtil.saveData(
+                                key = "userToken",
+                                data = registerOtpResponse.data.token
+                            )
+                            val newState = OtpScreenContract.RegisterUserState(
+                                data = registerOtpResponse.data,
+                                message = registerOtpResponse.message,
+                                success = registerOtpResponse.success
+                            )
+                            updateState(newState)
 
-                        sharedPreferencesUtil.saveData(
-                            key = "userToken",
-                            data = registerOtpResponse.data.token
-                        )
-
-                        //TODO: Handle success false cases for register and login UI and logic both.
-                        val newState = OtpScreenContract.RegisterUserState(
-                            data = registerOtpResponse.data,
-                            message = registerOtpResponse.message,
-                            success = registerOtpResponse.success
-                        )
-                        updateState(newState)
-                        if (registerOtpResponse.success) {
-                            withContext(Dispatchers.Main) {
-                                navController.navigate(NavigationItems.App.route) {
-                                    popUpTo(NavigationItems.Auth.route) {
-                                        inclusive = true
-                                    }
+                            navController.navigate(NavigationItems.App.route) {
+                                popUpTo(NavigationItems.Auth.route) {
+                                    inclusive = true
                                 }
                             }
                         }
-                    } else {
-                        updateState(
-                            OtpScreenContract.RegisterUserState(
-                                message = "Null response body", success = false, data = null
-                            )
-                        )
+
+                        is ApiResponse.Error -> {
+                            response.response?.let {
+                                OtpScreenContract.ErrorState(
+                                    code = it.code,
+                                    message = it.message,
+                                    success = it.success,
+                                    id = UUID.randomUUID().toString()
+                                )
+                            }?.let { updateErrorState(it) }
+
+                        }
                     }
 
-
-                } else {
-                    updateState(
-                        OtpScreenContract.RegisterUserState(
-                            message = "Unsuccessful response: ${response.code()}",
-                            success = false,
-                            data = null
-                        )
-                    )
                 }
             } catch (e: Exception) {
-                updateState(
-                    OtpScreenContract.RegisterUserState(
-                        message = "Error: ${e.message}", success = false, data = null
-                    )
+                OtpScreenContract.ErrorState(
+                    code = 500,
+                    message = e.message.toString(),
+                    success = false,
+                    id = UUID.randomUUID().toString()
                 )
             }
         }
     }
+
 
     fun postLoginOtp(loginOtpRequest: LoginOtpRequest, navController: NavController) {
         viewModelScope.launch {

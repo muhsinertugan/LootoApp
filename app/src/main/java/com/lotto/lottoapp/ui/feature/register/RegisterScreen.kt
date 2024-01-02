@@ -34,16 +34,25 @@ import kotlinx.coroutines.launch
 fun RegisterScreen(
 
     navController: NavHostController,
-    viewModel: RegisterScreenViewModel = hiltViewModel()
+    viewModel: RegisterScreenViewModel = hiltViewModel(),
+    snackbarHostState: SnackbarHostState,
+    keyboardController: SoftwareKeyboardController?,
 ) {
     val scope = rememberCoroutineScope()
 
     val userRegisterInput = viewModel.userInput.collectAsState()
     val userRegisterState = viewModel.userState.collectAsState()
     val cityState = viewModel.cityState.collectAsState()
-    val errorState by viewModel.errorState.collectAsState()
-
-
+    val errorState = viewModel.errorState.collectAsState()
+    LaunchedEffect(errorState.value.id) {
+        if (!errorState.value.success && errorState.value.code != 0) {
+            keyboardController?.hide()
+            snackbarHostState.showSnackbar(
+                message = errorState.value.message,
+                withDismissAction = true,
+            )
+        }
+    }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -113,7 +122,6 @@ fun RegisterScreen(
                     }
                     if (userRegisterState.value.success) {
                         navController.navigate(Paths.OTP_SCREEN)
-
                     }
                 }
                 .clip(RoundedCornerShape(8.dp))

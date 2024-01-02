@@ -27,7 +27,7 @@ class LoginScreenContract {
     }
 
     data class ErrorState(
-        val code: String,
+        val code: Int,
         val message: String,
         val success: Boolean
     ): StateFlow<ErrorState> {
@@ -45,8 +45,5 @@ class LoginScreenContract {
 
     }
 
-    sealed class Effect {
-        object DataFetched : Effect()
-    }
 }
 

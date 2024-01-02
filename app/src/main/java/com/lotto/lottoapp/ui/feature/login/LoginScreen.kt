@@ -28,9 +28,11 @@ import com.lotto.lottoapp.ui.theme.Typography
 @Composable
 fun LoginScreen(
     navController: NavHostController,
-    viewModel: LoginScreenViewModel = hiltViewModel()
+    viewModel: LoginScreenViewModel = hiltViewModel(),
+    snackbarHostState: SnackbarHostState,
+    keyboardController: SoftwareKeyboardController?,
 ) {
-
+    val scope = rememberCoroutineScope()
     val userLoginInput by viewModel.userInput.collectAsState()
     val userLoginState by viewModel.userState.collectAsState()
     val errorState by viewModel.errorState.collectAsState()
@@ -48,7 +50,7 @@ fun LoginScreen(
             onFieldValueChange = { newValue ->
                 viewModel.updateField("email", newValue)
             },
-            isError = userLoginState.success
+            isError = errorState.value.success
         )
 
 
@@ -58,13 +60,17 @@ fun LoginScreen(
             style = Typography.titleMedium.copy(color = Color.White),
             modifier = Modifier
                 .clickable {
-                    viewModel.onClick(navController = navController)
+                    scope.launch {
+                        viewModel.onClick(navController = navController)
+
+                    }
                 }
                 .clip(RoundedCornerShape(8.dp))
                 .background(color = CustomPurple)
                 .padding(vertical = 16.dp, horizontal = 30.dp)
         )
     }
+
 
 }
 

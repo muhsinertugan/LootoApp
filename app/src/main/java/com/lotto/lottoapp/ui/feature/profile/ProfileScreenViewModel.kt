@@ -55,8 +55,6 @@ class ProfileScreenViewModel @Inject constructor(
         )
     )
 
-    private var userState = _userState.asStateFlow()
-
 
     private var _profileState = MutableStateFlow(
         ProfileScreenContract.ProfileState(
@@ -258,11 +256,6 @@ class ProfileScreenViewModel @Inject constructor(
 
     fun handleLogout(navController: NavHostController) {
         sharedPreferencesUtil.deleteData("userToken")
-        navController.navigate(NavigationItems.Auth.Login.route) {
-            popUpTo(NavigationItems.Auth.route) {
-                inclusive = true
-            }
-        }
     }
 
     private fun initProfile() {

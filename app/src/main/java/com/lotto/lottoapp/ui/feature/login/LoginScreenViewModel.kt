@@ -22,7 +22,7 @@ class LoginScreenViewModel @Inject constructor(private val loginRegisterService:
 
     private var _errorState = MutableStateFlow(
         LoginScreenContract.ErrorState(
-            code = "",
+            code = 0,
             message = "",
             success = false,
         )
@@ -44,8 +44,6 @@ class LoginScreenViewModel @Inject constructor(private val loginRegisterService:
             success = false,
         )
     )
-
-    var userState = _userState.asStateFlow()
 
     private fun updateState(newState: LoginScreenContract.UserState) {
         viewModelScope.launch(Dispatchers.Main) {
@@ -78,48 +76,39 @@ class LoginScreenViewModel @Inject constructor(private val loginRegisterService:
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val response = loginRegisterService.postLogin(loginRequest = loginRequest)
+                val response =
+                    handleResponse(loginRegisterService.postLogin(loginRequest = loginRequest))
+                withContext(Dispatchers.Main) {
+                    when (response) {
+                        is ApiResponse.Success -> {
+                            val loginResponse = response.data
 
-                withContext(Dispatchers.Main){
-                    if (response.isSuccessful) {
-                        val loginResponse = response.body()
-                        if (loginResponse != null) {
-                            if (loginResponse.success) {
-                                val newState = LoginScreenContract.UserState(
-                                    data = loginResponse.data,
-                                    message = loginResponse.message,
-                                    success = loginResponse.success
-                                )
-                                updateState(newState)
+                            val newState = LoginScreenContract.UserState(
+                                data = loginResponse.data,
+                                message = loginResponse.message,
+                                success = loginResponse.success
+                            )
+                            updateState(newState)
+                            navController.navigate("${NavigationItems.Auth.Otp.route}/${loginRequest.email}")
+                        }
 
-                                navController.navigate("${NavigationItems.Auth.Otp.route}/${loginRequest.email}")
-                            } else{
-                                val newState = LoginScreenContract.ErrorState(
-                                    code = loginResponse.code,
-                                    message = loginResponse.message,
-                                    success = loginResponse.success
+                        is ApiResponse.Error -> {
+                            response.response?.let {
+                                LoginScreenContract.ErrorState(
+                                    code = it.code,
+                                    message = it.message,
+                                    success = it.success,
+                                    id = UUID.randomUUID().toString()
                                 )
-                                updateErrorState(newState)
-                                    when(loginResponse.code){
-                                        "2023" -> navController.navigate(Paths.REGISTER_SCREEN)
-                                    }
+
+                            }?.let { updateErrorState(it) }
+                            when (response.response?.code) {
+                                ErrorCodes.USER_NOT_FOUND.code -> {
+                                    navController.navigate(NavigationItems.Auth.Register.route)
+                                }
 
                             }
-                        } else {
-                            updateState(
-                                LoginScreenContract.UserState(
-                                    message = "Null response body", success = false, data = null
-                                )
-                            )
                         }
-                    } else {
-                        updateState(
-                            LoginScreenContract.UserState(
-                                message = "Unsuccessful response: ${response.code()}",
-                                success = false,
-                                data = null
-                            )
-                        )
                     }
                 }
             } catch (e: Exception) {
@@ -145,3 +134,5 @@ class LoginScreenViewModel @Inject constructor(private val loginRegisterService:
 
 
 }
+
+

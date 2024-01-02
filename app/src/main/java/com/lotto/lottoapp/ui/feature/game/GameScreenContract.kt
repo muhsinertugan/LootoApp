@@ -43,9 +43,7 @@ class GameScreenContract {
             other as SelectedNumbers
 
             if (!selectedNumbers.contentEquals(other.selectedNumbers)) return false
-            if (_state != other._state) return false
-
-            return true
+            return _state == other._state
         }
 
         override fun hashCode(): Int {

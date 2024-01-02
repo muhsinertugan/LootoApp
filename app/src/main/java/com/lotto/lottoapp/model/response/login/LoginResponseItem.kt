@@ -9,6 +9,8 @@ data class LoginResponseItem(
 }
 
 
+
 data class LoginData(
     val email: String
 )
+
